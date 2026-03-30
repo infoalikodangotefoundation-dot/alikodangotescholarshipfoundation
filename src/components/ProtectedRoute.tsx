@@ -14,8 +14,8 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ childr
     );
   }
 
-  if (!currentUser) {
-    return <Navigate to="/signup" state={{ from: location }} replace />;
+  if (!currentUser || !currentUser.emailVerified) {
+    return <Navigate to="/login" state={{ from: location, unverified: currentUser && !currentUser.emailVerified }} replace />;
   }
 
   return <>{children}</>;

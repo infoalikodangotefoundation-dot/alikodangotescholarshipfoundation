@@ -7,7 +7,8 @@ import {
   GoogleAuthProvider, 
   signOut,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword
+  createUserWithEmailAndPassword,
+  sendEmailVerification
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -33,6 +34,8 @@ interface AuthContextType {
   login: (email: string, password?: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
   signUp: (email: string, password: string, fullName: string, phoneNumber: string) => Promise<void>;
+  resendVerificationEmail: () => Promise<void>;
+  reloadUser: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -43,6 +46,8 @@ const AuthContext = createContext<AuthContextType>({
   login: async () => {},
   loginWithGoogle: async () => {},
   signUp: async () => {},
+  resendVerificationEmail: async () => {},
+  reloadUser: async () => {},
   logout: async () => {},
 });
 
@@ -100,7 +105,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password?: string) => {
     if (!password) throw new Error("Password is required for email login");
-    await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    
+    if (!userCredential.user.emailVerified) {
+      throw new Error("EMAIL_NOT_VERIFIED");
+    }
   };
 
   const loginWithGoogle = async () => {
@@ -112,6 +121,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const uid = userCredential.user.uid;
     
+    // Send verification email
+    await sendEmailVerification(userCredential.user);
+    
     const newProfile = {
       fullName,
       phoneNumber,
@@ -122,6 +134,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     await setDoc(doc(db, 'users', uid), newProfile);
     setUserProfile(newProfile);
+    
+    // Sign out after sign up to force verification on next login
+    await signOut(auth);
+  };
+
+  const resendVerificationEmail = async () => {
+    // This is tricky because we might have signed them out.
+    // If we want to resend, we might need them to be signed in.
+    // Or we can use a separate flow. 
+    // Usually, you can only send verification if the user is signed in.
+    if (auth.currentUser) {
+      await sendEmailVerification(auth.currentUser);
+    } else {
+      throw new Error("No user signed in to send verification email to.");
+    }
+  };
+
+  const reloadUser = async () => {
+    if (auth.currentUser) {
+      await auth.currentUser.reload();
+      const firebaseUser = auth.currentUser;
+      const user: User = {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email || '',
+        displayName: firebaseUser.displayName || '',
+        emailVerified: firebaseUser.emailVerified,
+        providerData: firebaseUser.providerData,
+      };
+      setCurrentUser(user);
+    }
   };
 
   const logout = async () => {
@@ -129,7 +171,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, userProfile, loading, login, loginWithGoogle, signUp, logout }}>
+    <AuthContext.Provider value={{ currentUser, userProfile, loading, login, loginWithGoogle, signUp, resendVerificationEmail, reloadUser, logout }}>
       {!loading && children}
     </AuthContext.Provider>
   );

@@ -36,7 +36,7 @@ async function testConnection() {
     
     if (error.message?.includes('the client is offline')) {
       console.error("Please check your Firebase configuration. The client is offline.");
-    } else if (error.message?.includes('permission-denied')) {
+    } else if (error.message?.includes('permission-denied') || error.message?.includes('Missing or insufficient permissions')) {
       console.log("Firebase connection test: Connected (but permission denied, which is expected if 'test/connection' is private)");
     }
   }
