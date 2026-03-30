@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth, db } from '../firebase';
+import { auth, db, handleFirestoreError, OperationType } from '../firebase';
 import { 
   onAuthStateChanged, 
   User as FirebaseUser, 
@@ -81,6 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const fetchProfile = async (uid: string, user: User) => {
+    const path = `users/${uid}`;
     try {
       const docRef = doc(db, 'users', uid);
       const docSnap = await getDoc(docRef);
@@ -96,8 +97,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await setDoc(docRef, newProfile);
         setUserProfile(newProfile);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching user profile:", error);
+      if (error.message?.includes('permission-denied') || error.message?.includes('Missing or insufficient permissions')) {
+        handleFirestoreError(error, OperationType.GET, path);
+      }
     } finally {
       setLoading(false);
     }
@@ -113,8 +117,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const loginWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+    } catch (error: any) {
+      if (error.code === 'auth/unauthorized-domain') {
+        throw new Error("UNAUTHORIZED_DOMAIN");
+      }
+      throw error;
+    }
   };
 
   const signUp = async (email: string, password: string, fullName: string, phoneNumber: string) => {

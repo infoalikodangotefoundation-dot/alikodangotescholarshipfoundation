@@ -15,6 +15,7 @@ export interface ApplicationData {
   // Step 2
   secondarySchool: string;
   waecResultUrl: string;
+  necoResultUrl: string;
   undergradDegree: string;
   gpa: string;
   fieldOfStudy: string;
@@ -58,6 +59,7 @@ export const useApplicationStore = create<ApplicationState>()(
         nationality: 'Nigerian',
         secondarySchool: '',
         waecResultUrl: '',
+        necoResultUrl: '',
         undergradDegree: '',
         gpa: '',
         fieldOfStudy: '',
@@ -87,6 +89,7 @@ export const useApplicationStore = create<ApplicationState>()(
           nationality: 'Nigerian',
           secondarySchool: '',
           waecResultUrl: '',
+          necoResultUrl: '',
           undergradDegree: '',
           gpa: '',
           fieldOfStudy: '',

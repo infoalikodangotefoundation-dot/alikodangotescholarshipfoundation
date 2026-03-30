@@ -40,7 +40,11 @@ export default function SignUp() {
       navigate('/login');
     } catch (error: any) {
       console.error(error);
-      toast.error(error.message || 'Failed to create account');
+      if (error.code === 'auth/email-already-in-use') {
+        toast.error('This email is already in use. Please sign in instead.');
+      } else {
+        toast.error(error.message || 'Failed to create account');
+      }
     } finally {
       setLoading(false);
     }

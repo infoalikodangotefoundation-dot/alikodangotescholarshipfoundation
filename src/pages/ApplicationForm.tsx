@@ -42,7 +42,8 @@ const step1Schema = z.object({
 
 const step2Schema = z.object({
   secondarySchool: z.preprocess((val) => val ?? '', z.string().min(3, 'Secondary school name is required')),
-  waecResultUrl: z.preprocess((val) => val ?? '', z.string().min(1, 'WAEC/NECO result is required').url('Valid URL required for WAEC/NECO result')),
+  waecResultUrl: z.preprocess((val) => val ?? '', z.string().optional().or(z.literal(''))),
+  necoResultUrl: z.preprocess((val) => val ?? '', z.string().optional().or(z.literal(''))),
   undergradDegree: z.preprocess((val) => val ?? '', z.string().optional().or(z.literal(''))),
   gpa: z.preprocess((val) => val ?? '', z.string().optional().or(z.literal(''))),
   fieldOfStudy: z.preprocess((val) => val ?? '', z.string().min(3, 'Field of study is required')),
@@ -296,35 +297,48 @@ export default function ApplicationForm() {
   );
 
   const renderStep2 = () => (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="secondarySchool">Secondary School Name</Label>
-        <Input id="secondarySchool" {...register('secondarySchool')} />
+        <Input id="secondarySchool" {...register('secondarySchool')} placeholder="Enter your secondary school name" />
         {errors.secondarySchool && <p className="text-sm text-red-500">{errors.secondarySchool.message as string}</p>}
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="waecResultUrl" className="sr-only">WAEC/NECO Result URL</Label>
-        <input type="hidden" {...register('waecResultUrl')} />
-        <FileUpload 
-          label="WAEC/NECO Result" 
-          onUploadSuccess={(url) => setValue('waecResultUrl', url, { shouldValidate: true })} 
-          value={watch('waecResultUrl')}
-        />
-        {errors.waecResultUrl && <p className="text-sm text-red-500">{errors.waecResultUrl.message as string}</p>}
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <input type="hidden" {...register('waecResultUrl')} />
+          <FileUpload 
+            label="WAEC Result (Optional)" 
+            onUploadSuccess={(url) => setValue('waecResultUrl', url, { shouldValidate: true })} 
+            value={watch('waecResultUrl')}
+          />
+          {errors.waecResultUrl && <p className="text-sm text-red-500">{errors.waecResultUrl.message as string}</p>}
+        </div>
+
+        <div className="space-y-2">
+          <input type="hidden" {...register('necoResultUrl')} />
+          <FileUpload 
+            label="NECO Result (Optional)" 
+            onUploadSuccess={(url) => setValue('necoResultUrl', url, { shouldValidate: true })} 
+            value={watch('necoResultUrl')}
+          />
+          {errors.necoResultUrl && <p className="text-sm text-red-500">{errors.necoResultUrl.message as string}</p>}
+        </div>
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="undergradDegree">Undergraduate Degree (Optional)</Label>
-          <Input id="undergradDegree" {...register('undergradDegree')} />
+          <Input id="undergradDegree" {...register('undergradDegree')} placeholder="e.g. B.Sc. Computer Science" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="gpa">GPA (Optional)</Label>
-          <Input id="gpa" {...register('gpa')} />
+          <Input id="gpa" {...register('gpa')} placeholder="e.g. 4.5/5.0" />
         </div>
       </div>
       <div className="space-y-2">
         <Label htmlFor="fieldOfStudy">Field of Study</Label>
-        <Input id="fieldOfStudy" {...register('fieldOfStudy')} />
+        <Input id="fieldOfStudy" {...register('fieldOfStudy')} placeholder="Enter your intended field of study" />
         {errors.fieldOfStudy && <p className="text-sm text-red-500">{errors.fieldOfStudy.message as string}</p>}
       </div>
     </div>

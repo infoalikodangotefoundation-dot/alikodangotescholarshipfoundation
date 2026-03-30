@@ -92,7 +92,13 @@ export default function Login() {
       navigate('/');
     } catch (error: any) {
       console.error(error);
-      toast.error(error.message || 'Failed to login');
+      if (error.message === 'UNAUTHORIZED_DOMAIN') {
+        toast.error('This domain is not authorized for Google login. Please contact support or use email login.');
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        // Ignore
+      } else {
+        toast.error(error.message || 'Failed to login');
+      }
     } finally {
       setLoading(false);
     }

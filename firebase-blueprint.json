@@ -46,6 +46,7 @@
         "nationality": { "type": "string" },
         "secondarySchool": { "type": "string" },
         "waecResultUrl": { "type": "string", "format": "uri" },
+        "necoResultUrl": { "type": "string", "format": "uri" },
         "undergradDegree": { "type": "string" },
         "gpa": { "type": "string" },
         "fieldOfStudy": { "type": "string" },
@@ -68,7 +69,7 @@
       },
       "required": [
         "fullName", "dob", "gender", "phone", "email", "stateOfOrigin", "nin", "nationality",
-        "secondarySchool", "waecResultUrl", "fieldOfStudy", "preferredUniversity", "courseOfInterest",
+        "secondarySchool", "fieldOfStudy", "preferredUniversity", "courseOfInterest",
         "degreeLevel", "passportUrl", "academicCertUrl", "recommendationUrl", "personalStatement",
         "declaration", "paymentReference", "paymentStatus", "status", "submittedAt", "userId",
         "applicationId", "hasBeenEdited", "amountPaid"
