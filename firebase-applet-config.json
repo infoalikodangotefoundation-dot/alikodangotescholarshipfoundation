@@ -1,10 +1,10 @@
 {
-  "projectId": "gen-lang-client-0557535462",
-  "appId": "1:65652639976:web:2ec6a552e4f2f02588e15d",
-  "apiKey": "AIzaSyDYBHlQNcz8332NRPfg3-SR8Gnz09OyB74",
-  "authDomain": "gen-lang-client-0557535462.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-652b0f84-abad-42b2-8ef0-30be384380bc",
-  "storageBucket": "gen-lang-client-0557535462.firebasestorage.app",
-  "messagingSenderId": "65652639976",
+  "projectId": "aliko-dangote-foundation",
+  "appId": "1:405319626865:web:40dc32046bc7974105abd0",
+  "apiKey": "AIzaSyDLZlPH8TaObVfctQh2-A2HH8E0FoPH5p8",
+  "authDomain": "aliko-dangote-foundation.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "aliko-dangote-foundation.firebasestorage.app",
+  "messagingSenderId": "405319626865",
   "measurementId": ""
 }

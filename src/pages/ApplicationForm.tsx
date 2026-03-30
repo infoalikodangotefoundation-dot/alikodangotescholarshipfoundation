@@ -26,7 +26,6 @@ import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { FileUpload } from '@/components/FileUpload';
-import { usePaystackPayment } from 'react-paystack';
 import { useAuth } from '../contexts/AuthContext';
 
 // Validation Schemas
@@ -115,10 +114,7 @@ export default function ApplicationForm() {
   const { currentUser } = useAuth();
   const { data, step, updateData, setStep, nextStep, prevStep } = useApplicationStore();
   const [loading, setLoading] = useState(false);
-  const [paymentLoading, setPaymentLoading] = useState(false);
   const [stateOpen, setStateOpen] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (!currentUser) {
@@ -142,36 +138,17 @@ export default function ApplicationForm() {
     mode: 'onChange',
   });
 
-  const paystackConfig = {
-    reference: (new Date()).getTime().toString(),
-    email: watch('email') || currentUser?.email || '',
-    amount: 5000 * 100, // Amount is in kobo
-    publicKey: (import.meta as any).env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-  };
-
-  const initializePayment = usePaystackPayment(paystackConfig);
-
-  const onSuccess = (reference: any) => {
-    handleFinalSubmit(reference.reference);
-  };
-
-  const onClose = () => {
-    toast.error('Payment cancelled');
-    setPaymentLoading(false);
-  };
-
   const onSubmit = async (formData: any) => {
     updateData(formData);
     if (step < 5) {
       nextStep();
     } else {
-      setPaymentLoading(true);
-      initializePayment({ onSuccess, onClose });
+      handleFinalSubmit('direct_submission');
     }
   };
 
   const handleFinalSubmit = async (paymentReference: string) => {
-    setPaymentLoading(true);
+    setLoading(true);
     try {
       if (!currentUser) throw new Error('Not authenticated');
 
@@ -183,43 +160,34 @@ export default function ApplicationForm() {
       };
       const appId = generateAppId();
 
-      await saveApplicationToFirestore({
+      const applicationData = {
         ...finalData,
         applicationId: appId,
         paymentReference,
-        paymentStatus: 'paid',
+        paymentStatus: 'pending_verification',
         status: 'Submitted',
         submittedAt: new Date().toISOString(),
         userId: currentUser.uid,
         hasBeenEdited: false,
         amountPaid: '₦5,000'
-      }, appId);
-      
-    } catch (error: any) {
-      console.error("Submission error:", error);
-      toast.error(error.message || 'Submission failed. Please try again.');
-      setPaymentLoading(false);
-    }
-  };
+      };
 
-  const saveApplicationToFirestore = async (applicationData: any, appId: string) => {
-    try {
-      if (!currentUser) throw new Error('Not authenticated');
-      
-      const docRef = doc(db, 'applications', appId);
-      await setDoc(docRef, applicationData);
+      await setDoc(doc(db, 'applications', appId), applicationData);
       
       const { reset } = useApplicationStore.getState();
       reset();
       
-      toast.success('Application Submitted Successfully');
+      toast.success('Application submitted successfully!');
       navigate('/application-status');
+      
     } catch (error: any) {
       if (error.message?.includes('Missing or insufficient permissions')) {
-        handleFirestoreError(error, OperationType.WRITE, `applications/${appId}`);
+        handleFirestoreError(error, OperationType.WRITE, `applications/new`);
       }
-      console.error("Error saving to Firestore:", error);
-      throw error;
+      console.error("Submission error:", error);
+      toast.error(error.message || 'Submission failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -473,8 +441,8 @@ export default function ApplicationForm() {
         </div>
 
         <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-          <h4 className="font-semibold text-yellow-800 mb-2">Application Fee: ₦5,000</h4>
-          <p className="text-yellow-700 text-sm">A non-refundable application fee of <strong>₦5,000</strong> is required to submit your application.</p>
+          <h4 className="font-semibold text-yellow-800 mb-2">Application Submission</h4>
+          <p className="text-yellow-700 text-sm">Review your details carefully. Once submitted, you can track your application status in your dashboard.</p>
         </div>
 
         <div className="flex items-start space-x-3 pt-4">
@@ -534,7 +502,7 @@ export default function ApplicationForm() {
                 updateData(watch());
                 prevStep();
               }}
-              disabled={step === 1 || paymentLoading}
+              disabled={step === 1 || loading}
             >
               {t('form.prev')}
             </Button>
@@ -548,13 +516,13 @@ export default function ApplicationForm() {
                   updateData(watch());
                   toast.success('Progress saved locally!');
                 }}
-                disabled={paymentLoading}
+                disabled={loading}
               >
                 {t('form.save')}
               </Button>
               
-              <Button type="submit" className="w-full sm:w-auto bg-green-700 hover:bg-green-800" disabled={paymentLoading}>
-                {paymentLoading ? 'Processing...' : step === 5 ? 'Pay & Submit' : t('form.next')}
+              <Button type="submit" className="w-full sm:w-auto bg-green-700 hover:bg-green-800" disabled={loading}>
+                {loading ? 'Processing...' : step === 5 ? 'Submit Application' : t('form.next')}
               </Button>
             </div>
           </div>
