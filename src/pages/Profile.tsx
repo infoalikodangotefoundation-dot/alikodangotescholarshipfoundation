@@ -68,7 +68,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 pb-24 md:pb-8">
+    <div className="max-w-2xl mx-auto px-4 py-12 pb-24 md:pb-12">
       <BackButton />
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Profile</h1>
       

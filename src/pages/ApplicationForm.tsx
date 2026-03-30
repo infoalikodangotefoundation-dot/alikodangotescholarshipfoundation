@@ -480,7 +480,7 @@ export default function ApplicationForm() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
       <BackButton />
       <div className="mb-6 sm:mb-10 text-center sm:text-left">
         <h1 className="text-2xl sm:text-3xl font-bold text-green-800 mb-2">Scholarship Application</h1>
