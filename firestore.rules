@@ -1,0 +1,203 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// This security rules file assumes the following data structures:
+//
+// Collection: users
+// Document ID: userId (matches auth.uid)
+// Fields:
+//   - role: string (required, 'applicant' or 'admin') - The user's role.
+//   - email: string (required) - The user's email address.
+//   - fullName: string (optional) - The user's full name.
+//   - phoneNumber: string (optional) - The user's phone number.
+//   - createdAt: string (optional) - The time the user was created.
+//
+// Collection: applications
+// Document ID: applicationId (matches auth.uid)
+// Fields:
+//   - fullName: string (required)
+//   - dob: string (required)
+//   - gender: string (required)
+//   - phone: string (required)
+//   - email: string (required)
+//   - stateOfOrigin: string (required)
+//   - nin: string (required)
+//   - nationality: string (required)
+//   - secondarySchool: string (required)
+//   - waecResultUrl: string (required)
+//   - undergradDegree: string (optional)
+//   - gpa: string (optional)
+//   - fieldOfStudy: string (required)
+//   - preferredUniversity: string (required)
+//   - courseOfInterest: string (required)
+//   - degreeLevel: string (required)
+//   - passportUrl: string (required)
+//   - academicCertUrl: string (required)
+//   - recommendationUrl: string (required)
+//   - personalStatement: string (required)
+//   - declaration: boolean (required)
+//   - paymentReference: string (required)
+//   - paymentStatus: string (required)
+//   - status: string (required, 'Submitted', 'Under Review', 'Approved', 'Denied')
+//   - submittedAt: string (required)
+//   - userId: string (required, must match auth.uid)
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "info.alikodangotefoundation@gmail.com" && request.auth.token.email_verified == true));
+    }
+    
+    function uidUnchanged() {
+      return request.resource.data.userId == request.auth.uid;
+    }
+    
+    function uidNotModified() {
+      return request.resource.data.userId == resource.data.userId;
+    }
+    
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+    
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+    
+    function validStringLength(field, minLen, maxLen) {
+      return request.resource.data[field] is string &&
+        request.resource.data[field].size() >= minLen &&
+        request.resource.data[field].size() <= maxLen;
+    }
+    
+    function isValidUrl(url) {
+      return url is string && (url.matches("^https://.*") || url.matches("^http://.*")) && url.size() < 500;
+    }
+    
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$") && email.size() < 100;
+    }
+    
+    function isValidOptionalString(field, minLen, maxLen) {
+      return !(field in request.resource.data) ||
+             (request.resource.data[field] is string &&
+              request.resource.data[field].size() >= minLen &&
+              request.resource.data[field].size() <= maxLen);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return hasOnlyAllowedFields(['role', 'email', 'fullName', 'phoneNumber', 'createdAt']) &&
+             data.role in ['applicant', 'admin'] &&
+             (!('email' in data) || isValidEmail(data.email)) &&
+             (!('fullName' in data) || (data.fullName is string && data.fullName.size() < 100)) &&
+             (!('phoneNumber' in data) || (data.phoneNumber is string && data.phoneNumber.size() < 20)) &&
+             (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() < 50));
+    }
+
+    function isValidApplication(data) {
+      return hasRequiredFields([
+               'fullName', 'dob', 'gender', 'phone', 'email', 'stateOfOrigin', 'nin', 'nationality',
+               'secondarySchool', 'waecResultUrl', 'fieldOfStudy', 'preferredUniversity', 'courseOfInterest',
+               'degreeLevel', 'passportUrl', 'academicCertUrl', 'recommendationUrl', 'personalStatement',
+               'declaration', 'paymentReference', 'paymentStatus', 'status', 'submittedAt', 'userId',
+               'applicationId', 'hasBeenEdited', 'amountPaid'
+             ]) &&
+             hasOnlyAllowedFields([
+               'fullName', 'dob', 'gender', 'phone', 'email', 'stateOfOrigin', 'nin', 'nationality',
+               'secondarySchool', 'waecResultUrl', 'undergradDegree', 'gpa', 'fieldOfStudy', 'preferredUniversity', 'courseOfInterest',
+               'degreeLevel', 'passportUrl', 'academicCertUrl', 'recommendationUrl', 'personalStatement',
+               'declaration', 'paymentReference', 'paymentStatus', 'status', 'submittedAt', 'userId',
+               'applicationId', 'hasBeenEdited', 'amountPaid'
+             ]) &&
+             validStringLength('fullName', 1, 150) &&
+             validStringLength('dob', 1, 50) &&
+             validStringLength('gender', 1, 20) &&
+             validStringLength('phone', 1, 20) &&
+             isValidEmail(data.email) &&
+             validStringLength('stateOfOrigin', 1, 50) &&
+             validStringLength('nin', 11, 11) &&
+             validStringLength('nationality', 1, 50) &&
+             validStringLength('secondarySchool', 1, 150) &&
+             isValidUrl(data.waecResultUrl) &&
+             isValidOptionalString('undergradDegree', 1, 150) &&
+             isValidOptionalString('gpa', 1, 20) &&
+             validStringLength('fieldOfStudy', 1, 150) &&
+             validStringLength('preferredUniversity', 1, 150) &&
+             validStringLength('courseOfInterest', 1, 150) &&
+             validStringLength('degreeLevel', 1, 50) &&
+             isValidUrl(data.passportUrl) &&
+             isValidUrl(data.academicCertUrl) &&
+             isValidUrl(data.recommendationUrl) &&
+             validStringLength('personalStatement', 1, 10000) &&
+             data.declaration == true &&
+             validStringLength('paymentReference', 1, 100) &&
+             validStringLength('paymentStatus', 1, 50) &&
+             data.status in ['Submitted', 'Under Review', 'Approved', 'Denied'] &&
+             validStringLength('submittedAt', 1, 50) &&
+             validStringLength('applicationId', 1, 50) &&
+             data.hasBeenEdited is bool &&
+             validStringLength('amountPaid', 1, 50);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Only allow users to create their own user document, and they can't make themselves admin unless they are already admin
+      allow create: if isAuthenticated() && isValidUser(request.resource.data) && isOwner(userId) && 
+                    ((request.resource.data.role == 'applicant') || isAdmin());
+                    
+      // Only allow users to update their own document, and they can't change their role to admin
+      allow update: if isAuthenticated() && isValidUser(request.resource.data) && isOwner(userId) && 
+                    ((request.resource.data.role == resource.data.role) || isAdmin());
+                    
+      allow delete: if isAdmin();
+    }
+
+    match /applications/{applicationId} {
+      allow read: if isDocOwner() || isAdmin();
+      
+      allow create: if isAuthenticated() && isValidApplication(request.resource.data) && uidUnchanged();
+      
+      allow update: if isAuthenticated() && 
+                    (
+                      // Owner can update their application, but status must remain unchanged, and they can only edit once
+                      (isDocOwner() && isValidApplication(request.resource.data) && uidNotModified() && request.resource.data.status == resource.data.status && resource.data.hasBeenEdited == false && request.resource.data.hasBeenEdited == true) ||
+                      // Admin can update the application (e.g., change status)
+                      (isAdmin() && isValidApplication(request.resource.data) && uidNotModified())
+                    );
+                    
+      allow delete: if isAdmin();
+    }
+  }
+}

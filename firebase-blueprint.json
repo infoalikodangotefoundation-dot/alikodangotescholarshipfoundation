@@ -1,0 +1,88 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user of the application, which can be an applicant or an admin.",
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": ["applicant", "admin"],
+          "description": "The role of the user."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The user's email address."
+        },
+        "fullName": {
+          "type": "string",
+          "description": "The user's full name."
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The user's phone number."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The time the user was created."
+        }
+      },
+      "required": ["role", "email"]
+    },
+    "Application": {
+      "title": "Application",
+      "description": "A scholarship application submitted by a user.",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string" },
+        "dob": { "type": "string" },
+        "gender": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "stateOfOrigin": { "type": "string" },
+        "nin": { "type": "string" },
+        "nationality": { "type": "string" },
+        "secondarySchool": { "type": "string" },
+        "waecResultUrl": { "type": "string", "format": "uri" },
+        "undergradDegree": { "type": "string" },
+        "gpa": { "type": "string" },
+        "fieldOfStudy": { "type": "string" },
+        "preferredUniversity": { "type": "string" },
+        "courseOfInterest": { "type": "string" },
+        "degreeLevel": { "type": "string" },
+        "passportUrl": { "type": "string", "format": "uri" },
+        "academicCertUrl": { "type": "string", "format": "uri" },
+        "recommendationUrl": { "type": "string", "format": "uri" },
+        "personalStatement": { "type": "string" },
+        "declaration": { "type": "boolean" },
+        "paymentReference": { "type": "string" },
+        "paymentStatus": { "type": "string" },
+        "status": { "type": "string", "enum": ["Submitted", "Under Review", "Approved", "Denied"] },
+        "submittedAt": { "type": "string", "format": "date-time" },
+        "userId": { "type": "string" },
+        "applicationId": { "type": "string" },
+        "hasBeenEdited": { "type": "boolean" },
+        "amountPaid": { "type": "string" }
+      },
+      "required": [
+        "fullName", "dob", "gender", "phone", "email", "stateOfOrigin", "nin", "nationality",
+        "secondarySchool", "waecResultUrl", "fieldOfStudy", "preferredUniversity", "courseOfInterest",
+        "degreeLevel", "passportUrl", "academicCertUrl", "recommendationUrl", "personalStatement",
+        "declaration", "paymentReference", "paymentStatus", "status", "submittedAt", "userId",
+        "applicationId", "hasBeenEdited", "amountPaid"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles and roles."
+    },
+    "/applications/{applicationId}": {
+      "schema": { "$ref": "#/entities/Application" },
+      "description": "Stores scholarship applications."
+    }
+  }
+}
