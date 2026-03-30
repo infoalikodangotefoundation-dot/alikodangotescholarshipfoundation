@@ -10,12 +10,14 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import { LegalModal } from '../components/LegalModal';
 
 export default function SignUp() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const { currentUser, signUp, loginWithGoogle } = useAuth();
+  const [modalType, setModalType] = useState<'privacy' | 'terms' | null>(null);
   const [formData, setFormData] = useState({
     fullName: '',
     phoneNumber: '',
@@ -248,8 +250,18 @@ export default function SignUp() {
                 <div className="mt-4 text-center text-xs text-white/40">
                   <p className="mb-2">By signing up, you agree to our</p>
                   <div className="flex justify-center gap-4">
-                    <Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-                    <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+                    <button 
+                      onClick={() => setModalType('terms')}
+                      className="hover:text-white transition-colors cursor-pointer"
+                    >
+                      Terms of Service
+                    </button>
+                    <button 
+                      onClick={() => setModalType('privacy')}
+                      className="hover:text-white transition-colors cursor-pointer"
+                    >
+                      Privacy Policy
+                    </button>
                   </div>
                 </div>
               </CardContent>
@@ -257,6 +269,12 @@ export default function SignUp() {
           </div>
         </div>
       </div>
+
+      <LegalModal 
+        isOpen={modalType !== null} 
+        onClose={() => setModalType(null)} 
+        type={modalType || 'terms'} 
+      />
     </div>
   );
 }
