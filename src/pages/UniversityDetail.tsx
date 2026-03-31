@@ -30,7 +30,7 @@ export default function UniversityDetail() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
         <h1 className="text-2xl font-bold text-slate-900 mb-4">University Not Found</h1>
-        <Link to="/">
+        <Link to="/home">
           <Button variant="outline">Return to Home</Button>
         </Link>
       </div>

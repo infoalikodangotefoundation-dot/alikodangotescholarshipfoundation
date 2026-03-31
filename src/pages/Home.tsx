@@ -93,37 +93,54 @@ export default function Home() {
       {/* Hero Section */}
       <section className="w-full h-[calc(100vh-64px)] min-h-[600px] text-white relative z-10 flex items-center justify-center overflow-hidden">
         <div className="container px-4 md:px-6 relative z-10 mx-auto text-center flex flex-col items-center justify-start pt-4 md:pt-6 pb-12 md:pb-0 h-full">
+          {/* Mobile Hero Content - Hidden as requested */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="flex flex-col items-center w-full h-full md:h-auto justify-start space-y-6 md:space-y-4"
+            className="lg:hidden flex flex-col items-center w-full h-full md:h-auto justify-start space-y-6 md:space-y-4"
           >
             <div className="flex flex-col items-center space-y-4">
               <div className="inline-flex items-center rounded-full bg-green-600/80 backdrop-blur-sm px-4 py-1.5 text-xs sm:text-sm font-medium text-white mb-2 sm:mb-4 border border-green-500/30">
                 <GraduationCap className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                 2026/2027 Applications Now Open
               </div>
-              <h1 className="hidden lg:block text-3xl leading-[1.2] font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl max-w-4xl text-white drop-shadow-lg px-4">
-                {t('home.title')}
-              </h1>
-            </div>
-
-            <div className="flex flex-col items-center space-y-6 md:space-y-8 mt-4 md:mt-0">
-              <p className="hidden lg:block mx-auto max-w-[700px] text-gray-200 text-sm sm:text-base md:text-lg drop-shadow-md px-6">
-                {t('home.subtitle')}
-              </p>
-              
-              {/* Desktop Hero Button */}
-              <div className="hidden lg:flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-6 sm:px-0">
-                <Link to="/apply" className="w-full sm:w-auto">
-                  <Button size="lg" className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold px-8 h-14 text-lg shadow-2xl hover:shadow-xl transition-all md:rounded-full md:h-16 md:px-12 md:text-xl border-2 border-green-500/50">
-                    {t('home.apply_now')}
-                  </Button>
-                </Link>
-              </div>
             </div>
           </motion.div>
+
+          {/* Desktop Hero Content (Centralized) */}
+          <div className="hidden lg:flex flex-col items-center absolute bottom-16 left-1/2 -translate-x-1/2 text-center z-20 w-full max-w-5xl">
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-3xl xl:text-4xl font-bold tracking-tight mb-3 text-white drop-shadow-lg whitespace-nowrap"
+            >
+              {t('home.title')}
+            </motion.h1>
+            
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-lg xl:text-xl text-gray-200 mb-8 drop-shadow-md font-medium max-w-2xl"
+            >
+              {t('home.subtitle')}
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="w-full flex justify-center px-4"
+            >
+              <Link to="/apply" className="w-full max-w-[50vw] flex justify-center">
+                <Button size="lg" className="w-full bg-[#ff0000] hover:bg-[#cc0000] text-white font-bold h-12 text-lg rounded-full shadow-2xl hover:scale-[1.02] transition-all duration-300 border-2 border-white/30">
+                  {t('home.apply_now')}
+                </Button>
+              </Link>
+            </motion.div>
+          </div>
         </div>
       </section>
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,10 +19,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { AIAssistant } from '@/components/AIAssistant';
 import { toast } from 'sonner';
 import { handleFirestoreError, OperationType } from '../lib/firestore-errors';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
@@ -56,9 +56,9 @@ const step3Schema = z.object({
 });
 
 const step4Schema = z.object({
-  passportUrl: z.preprocess((val) => val ?? '', z.string().min(1, 'Passport photograph is required').url('Valid URL required for passport photograph')),
-  academicCertUrl: z.preprocess((val) => val ?? '', z.string().min(1, 'Academic certificates are required').url('Valid URL required for academic certificates')),
-  recommendationUrl: z.preprocess((val) => val ?? '', z.string().min(1, 'Recommendation letter is required').url('Valid URL required for recommendation letter')),
+  passportUrl: z.preprocess((val) => val ?? '', z.string().min(1, 'Passport photograph is required')),
+  academicCertUrl: z.preprocess((val) => val ?? '', z.string().min(1, 'Academic certificates are required')),
+  recommendationUrl: z.preprocess((val) => val ?? '', z.string().min(1, 'Recommendation letter is required')),
   personalStatement: z.preprocess((val) => val ?? '', z.string().min(100, 'Personal statement must be at least 100 characters')),
 });
 
@@ -116,6 +116,7 @@ export default function ApplicationForm() {
   const { data, step, updateData, setStep, nextStep, prevStep } = useApplicationStore();
   const [loading, setLoading] = useState(false);
   const [stateOpen, setStateOpen] = useState(false);
+  const [activeUploads, setActiveUploads] = useState(0);
 
   useEffect(() => {
     if (!currentUser) {
@@ -309,7 +310,14 @@ export default function ApplicationForm() {
           <input type="hidden" {...register('waecResultUrl')} />
           <FileUpload 
             label="WAEC Result (Optional)" 
-            onUploadSuccess={(url) => setValue('waecResultUrl', url, { shouldValidate: true })} 
+            onUploadStart={() => setActiveUploads(prev => prev + 1)}
+            onUploadError={() => setActiveUploads(prev => Math.max(0, prev - 1))}
+            onUploadSuccess={(url) => {
+              setActiveUploads(prev => Math.max(0, prev - 1));
+              setValue('waecResultUrl', url, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+              updateData({ ...data, waecResultUrl: url });
+              trigger('waecResultUrl');
+            }} 
             value={watch('waecResultUrl')}
           />
           {errors.waecResultUrl && <p className="text-sm text-red-500">{errors.waecResultUrl.message as string}</p>}
@@ -319,7 +327,14 @@ export default function ApplicationForm() {
           <input type="hidden" {...register('necoResultUrl')} />
           <FileUpload 
             label="NECO Result (Optional)" 
-            onUploadSuccess={(url) => setValue('necoResultUrl', url, { shouldValidate: true })} 
+            onUploadStart={() => setActiveUploads(prev => prev + 1)}
+            onUploadError={() => setActiveUploads(prev => Math.max(0, prev - 1))}
+            onUploadSuccess={(url) => {
+              setActiveUploads(prev => Math.max(0, prev - 1));
+              setValue('necoResultUrl', url, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+              updateData({ ...data, necoResultUrl: url });
+              trigger('necoResultUrl');
+            }} 
             value={watch('necoResultUrl')}
           />
           {errors.necoResultUrl && <p className="text-sm text-red-500">{errors.necoResultUrl.message as string}</p>}
@@ -393,7 +408,14 @@ export default function ApplicationForm() {
         <FileUpload 
           label="Passport Photograph" 
           accept="image/*"
-          onUploadSuccess={(url) => setValue('passportUrl', url, { shouldValidate: true })} 
+          onUploadStart={() => setActiveUploads(prev => prev + 1)}
+          onUploadError={() => setActiveUploads(prev => Math.max(0, prev - 1))}
+          onUploadSuccess={(url) => {
+            setActiveUploads(prev => Math.max(0, prev - 1));
+            setValue('passportUrl', url, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+            updateData({ ...data, passportUrl: url });
+            trigger('passportUrl');
+          }} 
           value={watch('passportUrl')}
         />
         {errors.passportUrl && <p className="text-sm text-red-500">{errors.passportUrl.message as string}</p>}
@@ -402,7 +424,14 @@ export default function ApplicationForm() {
         <input type="hidden" {...register('academicCertUrl')} />
         <FileUpload 
           label="Academic Certificates" 
-          onUploadSuccess={(url) => setValue('academicCertUrl', url, { shouldValidate: true })} 
+          onUploadStart={() => setActiveUploads(prev => prev + 1)}
+          onUploadError={() => setActiveUploads(prev => Math.max(0, prev - 1))}
+          onUploadSuccess={(url) => {
+            setActiveUploads(prev => Math.max(0, prev - 1));
+            setValue('academicCertUrl', url, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+            updateData({ ...data, academicCertUrl: url });
+            trigger('academicCertUrl');
+          }} 
           value={watch('academicCertUrl')}
         />
         {errors.academicCertUrl && <p className="text-sm text-red-500">{errors.academicCertUrl.message as string}</p>}
@@ -411,26 +440,31 @@ export default function ApplicationForm() {
         <input type="hidden" {...register('recommendationUrl')} />
         <FileUpload 
           label="Recommendation Letter" 
-          onUploadSuccess={(url) => setValue('recommendationUrl', url, { shouldValidate: true })} 
+          onUploadStart={() => setActiveUploads(prev => prev + 1)}
+          onUploadError={() => setActiveUploads(prev => Math.max(0, prev - 1))}
+          onUploadSuccess={(url) => {
+            setActiveUploads(prev => Math.max(0, prev - 1));
+            setValue('recommendationUrl', url, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+            updateData({ ...data, recommendationUrl: url });
+            trigger('recommendationUrl');
+          }} 
           value={watch('recommendationUrl')}
         />
         {errors.recommendationUrl && <p className="text-sm text-red-500">{errors.recommendationUrl.message as string}</p>}
       </div>
       <div className="space-y-2">
         <Label htmlFor="personalStatement">Personal Statement</Label>
-        <input type="hidden" {...register('personalStatement')} />
         <Textarea 
           id="personalStatement" 
           rows={6} 
           {...register('personalStatement')} 
           placeholder="Write your personal statement here..."
+          onChange={(e) => {
+            register('personalStatement').onChange(e);
+            updateData({ ...data, personalStatement: e.target.value });
+          }}
         />
         {errors.personalStatement && <p className="text-sm text-red-500">{errors.personalStatement.message as string}</p>}
-        
-        <AIAssistant 
-          currentText={watch('personalStatement') || ''} 
-          onApplySuggestion={(text) => setValue('personalStatement', text, { shouldValidate: true })} 
-        />
       </div>
     </div>
   );
@@ -488,24 +522,54 @@ export default function ApplicationForm() {
       </div>
 
       <div className="mb-6 sm:mb-10">
+        <div className="flex justify-between items-center mb-6">
+          {[1, 2, 3, 4, 5].map((s) => (
+            <div key={s} className="flex flex-col items-center gap-2">
+              <div 
+                className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300",
+                  step === s ? "bg-green-700 text-white scale-110 ring-4 ring-green-100" : 
+                  step > s ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-400"
+                )}
+              >
+                {step > s ? <Check className="w-4 h-4" /> : s}
+              </div>
+              <span className={cn(
+                "text-[10px] font-medium hidden sm:block",
+                step === s ? "text-green-700" : "text-slate-400"
+              )}>
+                Step {s}
+              </span>
+            </div>
+          ))}
+        </div>
         <div className="flex justify-between text-xs sm:text-sm font-medium text-slate-500 mb-2">
-          <span>Step {step} of 5</span>
           <span>{step * 20}% Completed</span>
         </div>
         <Progress value={step * 20} className="h-1.5 sm:h-2 bg-slate-100" />
       </div>
 
-      <div className="bg-white shadow-md sm:shadow-sm border border-slate-200 rounded-xl p-4 sm:p-6 md:p-8">
+      <div className="bg-white shadow-md sm:shadow-sm border border-slate-200 rounded-xl p-4 sm:p-6 md:p-8 overflow-hidden">
         <h2 className="text-lg sm:text-xl font-bold text-slate-800 mb-5 sm:mb-6 pb-2 border-b">
           {t(`form.step${step}`)}
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          {step === 1 && renderStep1()}
-          {step === 2 && renderStep2()}
-          {step === 3 && renderStep3()}
-          {step === 4 && renderStep4()}
-          {step === 5 && renderStep5()}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+            >
+              {step === 1 && renderStep1()}
+              {step === 2 && renderStep2()}
+              {step === 3 && renderStep3()}
+              {step === 4 && renderStep4()}
+              {step === 5 && renderStep5()}
+            </motion.div>
+          </AnimatePresence>
 
           <div className="flex flex-col sm:flex-row justify-between mt-8 pt-6 border-t border-slate-100 gap-4">
             <Button
@@ -535,8 +599,17 @@ export default function ApplicationForm() {
                 {t('form.save')}
               </Button>
               
-              <Button type="submit" className="w-full sm:w-auto bg-green-700 hover:bg-green-800" disabled={loading}>
-                {loading ? 'Processing...' : step === 5 ? 'Submit Application' : t('form.next')}
+              <Button 
+                type="submit" 
+                className="w-full sm:w-auto bg-green-700 hover:bg-green-800" 
+                disabled={loading || activeUploads > 0}
+              >
+                {activeUploads > 0 ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Uploading...
+                  </>
+                ) : loading ? 'Processing...' : step === 5 ? 'Submit Application' : t('form.next')}
               </Button>
             </div>
           </div>

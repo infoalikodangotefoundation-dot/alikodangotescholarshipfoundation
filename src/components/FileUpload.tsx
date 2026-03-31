@@ -12,12 +12,22 @@ import { useAuth } from '../contexts/AuthContext';
 interface FileUploadProps {
   label: string;
   onUploadSuccess: (url: string) => void;
+  onUploadStart?: () => void;
+  onUploadError?: (error: string) => void;
   accept?: string;
   maxSizeMB?: number;
   value?: string;
 }
 
-export function FileUpload({ label, onUploadSuccess, accept = "image/*,.pdf", maxSizeMB = 5, value }: FileUploadProps) {
+export function FileUpload({ 
+  label, 
+  onUploadSuccess, 
+  onUploadStart,
+  onUploadError,
+  accept = "image/*,.pdf", 
+  maxSizeMB = 5, 
+  value 
+}: FileUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -56,6 +66,7 @@ export function FileUpload({ label, onUploadSuccess, accept = "image/*,.pdf", ma
 
     setIsUploading(true);
     setError(null);
+    if (onUploadStart) onUploadStart();
 
     const fileExtension = selectedFile.name.split('.').pop();
     const fileName = `${currentUser.uid}_${Date.now()}.${fileExtension}`;
@@ -78,6 +89,7 @@ export function FileUpload({ label, onUploadSuccess, accept = "image/*,.pdf", ma
         setError(errorMsg);
         toast.error(errorMsg);
         setIsUploading(false);
+        if (onUploadError) onUploadError(errorMsg);
       },
       async () => {
         try {
@@ -88,7 +100,9 @@ export function FileUpload({ label, onUploadSuccess, accept = "image/*,.pdf", ma
           setSelectedFile(null);
         } catch (err) {
           console.error("Error getting download URL:", err);
-          setError("Failed to get file URL.");
+          const msg = "Failed to get file URL.";
+          setError(msg);
+          if (onUploadError) onUploadError(msg);
           setIsUploading(false);
         }
       }
