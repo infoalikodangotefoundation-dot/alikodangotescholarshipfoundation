@@ -1,123 +1,148 @@
-import React from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { User, Mail, Phone, Shield, LogOut, Calendar } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { auth } from '../firebase';
+import { updatePassword, sendPasswordResetEmail } from 'firebase/auth';
+import { BackButton } from '../components/BackButton';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { LogOut, User, Lock, Mail, Phone, Shield } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Profile() {
-  const { currentUser, userProfile, logout } = useAuth();
+  const { currentUser: user, userProfile: userData, logout } = useAuth();
+  const [newPassword, setNewPassword] = useState('');
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    } else {
+      setLoading(false);
+    }
+  }, [user, navigate]);
 
   const handleLogout = async () => {
     try {
       await logout();
-      toast.success('Logged out successfully');
-      navigate('/home');
+      navigate('/');
     } catch (error) {
-      toast.error('Failed to logout');
+      toast.error('Failed to log out');
     }
   };
 
-  if (!currentUser) return null;
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPassword || newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters long');
+      return;
+    }
+    if (!auth.currentUser) return;
+    try {
+      await updatePassword(auth.currentUser, newPassword);
+      toast.success('Password updated successfully');
+      setNewPassword('');
+    } catch (error: any) {
+      if (error.code === 'auth/requires-recent-login') {
+        toast.error('Please log out and log back in to change your password for security reasons.');
+      } else {
+        toast.error(error.message || 'Failed to update password.');
+      }
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!user?.email) return;
+    try {
+      await sendPasswordResetEmail(auth, user.email);
+      toast.success('Password reset email sent!');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to send reset email');
+    }
+  };
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Profile Sidebar */}
-        <div className="w-full md:w-1/3 space-y-6">
-          <Card className="border-slate-100 shadow-sm overflow-hidden">
-            <div className="h-24 bg-green-700" />
-            <CardContent className="pt-0 -mt-12 text-center">
-              <div className="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full border-4 border-white shadow-lg mb-4">
-                <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center text-slate-400">
-                  <User className="w-10 h-10" />
-                </div>
-              </div>
-              <h2 className="text-xl font-bold text-slate-900">{userProfile?.fullName || 'User'}</h2>
-              <p className="text-sm text-slate-500 mb-6">{currentUser.email}</p>
-              <Button 
-                variant="outline" 
-                className="w-full border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700"
-                onClick={handleLogout}
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </Button>
-            </CardContent>
-          </Card>
+    <div className="max-w-2xl mx-auto px-4 py-12 pb-24 md:pb-12">
+      <BackButton />
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Profile</h1>
+      
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+        <div className="p-6 border-b border-gray-200 bg-gray-50 flex items-center gap-3">
+          <User className="w-6 h-6 text-green-700" />
+          <h2 className="text-xl font-semibold text-gray-800">Personal Information</h2>
         </div>
-
-        {/* Profile Content */}
-        <div className="w-full md:w-2/3 space-y-6">
-          <Card className="border-slate-100 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg font-bold">Personal Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="space-y-1">
-                  <Label className="text-xs text-slate-500 uppercase tracking-wider">Full Name</Label>
-                  <div className="flex items-center gap-2 text-slate-900 font-medium">
-                    <User className="w-4 h-4 text-slate-400" />
-                    {userProfile?.fullName}
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs text-slate-500 uppercase tracking-wider">Email Address</Label>
-                  <div className="flex items-center gap-2 text-slate-900 font-medium">
-                    <Mail className="w-4 h-4 text-slate-400" />
-                    {currentUser.email}
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs text-slate-500 uppercase tracking-wider">Phone Number</Label>
-                  <div className="flex items-center gap-2 text-slate-900 font-medium">
-                    <Phone className="w-4 h-4 text-slate-400" />
-                    {userProfile?.phoneNumber || 'Not provided'}
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs text-slate-500 uppercase tracking-wider">Account Role</Label>
-                  <div className="flex items-center gap-2 text-slate-900 font-medium">
-                    <Shield className="w-4 h-4 text-slate-400" />
-                    <span className="capitalize">{userProfile?.role || 'Applicant'}</span>
-                  </div>
-                </div>
+        <div className="p-6 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <Label className="text-gray-500 mb-1 block">Full Name</Label>
+              <div className="flex items-center gap-2 text-gray-900 font-medium bg-gray-50 p-3 rounded-md border border-gray-100">
+                <User className="w-4 h-4 text-gray-400" />
+                {userData?.fullName || user?.displayName || 'Not provided'}
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-slate-100 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg font-bold">Account Settings</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white rounded-lg shadow-sm">
-                    <Calendar className="w-4 h-4 text-slate-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">Email Verification</p>
-                    <p className="text-xs text-slate-500">
-                      {currentUser.emailVerified ? 'Your email is verified' : 'Please verify your email'}
-                    </p>
-                  </div>
-                </div>
-                <div className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${currentUser.emailVerified ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                  {currentUser.emailVerified ? 'Verified' : 'Pending'}
-                </div>
+            </div>
+            <div>
+              <Label className="text-gray-500 mb-1 block">Email Address</Label>
+              <div className="flex items-center gap-2 text-gray-900 font-medium bg-gray-50 p-3 rounded-md border border-gray-100">
+                <Mail className="w-4 h-4 text-gray-400" />
+                {user?.email || 'Not provided'}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+            <div>
+              <Label className="text-gray-500 mb-1 block">Phone Number</Label>
+              <div className="flex items-center gap-2 text-gray-900 font-medium bg-gray-50 p-3 rounded-md border border-gray-100">
+                <Phone className="w-4 h-4 text-gray-400" />
+                {userData?.phoneNumber || 'Not provided'}
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+        <div className="p-6 border-b border-gray-200 bg-gray-50 flex items-center gap-3">
+          <Shield className="w-6 h-6 text-green-700" />
+          <h2 className="text-xl font-semibold text-gray-800">Security</h2>
+        </div>
+        <div className="p-6 space-y-6">
+          <form onSubmit={handlePasswordChange} className="space-y-4 max-w-md">
+            <div>
+              <Label htmlFor="newPassword">Change Password</Label>
+              <div className="flex gap-3 mt-1">
+                <Input
+                  id="newPassword"
+                  type="password"
+                  placeholder="New password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="flex-1"
+                />
+                <Button type="submit" className="bg-green-700 hover:bg-green-800">Update</Button>
+              </div>
+            </div>
+          </form>
+          
+          <div className="pt-4 border-t border-gray-100">
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Forgot your password?</h3>
+            <Button variant="outline" onClick={handleForgotPassword} className="text-gray-700">
+              <Lock className="w-4 h-4 mr-2" />
+              Send Reset Email
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-center md:justify-start">
+        <Button variant="destructive" onClick={handleLogout} className="w-full md:w-auto flex items-center gap-2">
+          <LogOut className="w-4 h-4" />
+          Log Out
+        </Button>
       </div>
     </div>
   );
-}
-
-function Label({ children, className }: { children: React.ReactNode, className?: string }) {
-  return <p className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`}>{children}</p>;
 }

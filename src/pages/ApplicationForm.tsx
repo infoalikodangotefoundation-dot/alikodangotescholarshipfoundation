@@ -26,6 +26,7 @@ import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { FileUpload } from '@/components/FileUpload';
+import { useAuth } from '../contexts/AuthContext';
 
 // Validation Schemas
 const step1Schema = z.object({
@@ -111,18 +112,24 @@ export default function ApplicationForm() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const { currentUser } = useAuth();
   const { data, step, updateData, setStep, nextStep, prevStep } = useApplicationStore();
   const [loading, setLoading] = useState(false);
   const [stateOpen, setStateOpen] = useState(false);
 
   useEffect(() => {
+    if (!currentUser) {
+      toast.error('Please login to continue');
+      navigate('/login');
+    }
+
     // Handle pre-filled university from location.state
     const state = location.state as { selectedUniversity?: string };
     if (state?.selectedUniversity && !data.preferredUniversity) {
       updateData({ ...data, preferredUniversity: state.selectedUniversity });
       setValue('preferredUniversity', state.selectedUniversity);
     }
-  }, [location.state, data.preferredUniversity, updateData]);
+  }, [navigate, currentUser, location.state, data.preferredUniversity, updateData]);
 
   const currentSchema = [step1Schema, step2Schema, step3Schema, step4Schema, step5Schema][step - 1];
 
@@ -144,6 +151,8 @@ export default function ApplicationForm() {
   const handleFinalSubmit = async (paymentReference: string) => {
     setLoading(true);
     try {
+      if (!currentUser) throw new Error('Not authenticated');
+
       const finalData = { ...data, ...watch() };
 
       const generateAppId = () => {
@@ -159,6 +168,7 @@ export default function ApplicationForm() {
         paymentStatus: 'pending_verification',
         status: 'Submitted',
         submittedAt: new Date().toISOString(),
+        userId: currentUser.uid,
         hasBeenEdited: false,
         amountPaid: '₦5,000'
       };
@@ -169,7 +179,7 @@ export default function ApplicationForm() {
       reset();
       
       toast.success('Application submitted successfully!');
-      navigate('/home');
+      navigate('/application-status');
       
     } catch (error: any) {
       if (error.message?.includes('Missing or insufficient permissions')) {
@@ -446,7 +456,7 @@ export default function ApplicationForm() {
 
         <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
           <h4 className="font-semibold text-yellow-800 mb-2">Application Submission</h4>
-          <p className="text-yellow-700 text-sm">Review your details carefully. Once submitted, your application will be processed by our team.</p>
+          <p className="text-yellow-700 text-sm">Review your details carefully. Once submitted, you can track your application status in your dashboard.</p>
         </div>
 
         <div className="flex items-start space-x-3 pt-4">
