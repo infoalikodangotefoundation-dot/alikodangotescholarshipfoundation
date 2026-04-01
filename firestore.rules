@@ -1,8 +1,157 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {userId} (Firebase Auth UID)
+    // Fields:
+    //   - role: string (required, enum: ['applicant', 'admin'])
+    //   - email: string (required, format: email)
+    //   - fullName: string (optional)
+    //   - phoneNumber: string (optional)
+    //   - createdAt: string (optional, format: date-time)
+    //
+    // Collection: applications
+    // Document ID: {applicationId}
+    // Fields:
+    //   - fullName: string (required)
+    //   - dob: string (required)
+    //   - gender: string (required)
+    //   - phone: string (required)
+    //   - email: string (required, format: email)
+    //   - stateOfOrigin: string (required)
+    //   - nin: string (required, length: 11)
+    //   - nationality: string (required)
+    //   - secondarySchool: string (required)
+    //   - waecResultUrl: string (optional)
+    //   - necoResultUrl: string (optional)
+    //   - undergradDegree: string (optional)
+    //   - gpa: string (optional)
+    //   - fieldOfStudy: string (required)
+    //   - preferredUniversity: string (required)
+    //   - courseOfInterest: string (required)
+    //   - degreeLevel: string (required)
+    //   - passportUrl: string (required)
+    //   - academicCertUrl: string (required)
+    //   - recommendationUrl: string (required)
+    //   - personalStatement: string (required)
+    //   - declaration: bool (required)
+    //   - paymentReference: string (required)
+    //   - paymentStatus: string (required)
+    //   - status: string (required, enum: ['Submitted', 'Under Review', 'Approved', 'Denied'])
+    //   - submittedAt: string (required, format: date-time)
+    //   - userId: string (required, matches Auth UID)
+    //   - applicationId: string (required)
+    //   - hasBeenEdited: bool (required)
+    //   - amountPaid: string (required)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "info.alikodangotefoundation@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidUrl(url) {
+      return url is string && (url.matches("^https://.*") || url.matches("^http://.*"));
+    }
+
+    function isValidDateString(dateStr) {
+      return dateStr is string && dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*Z?$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['role', 'email']) &&
+             data.role in ['applicant', 'admin'] &&
+             isValidEmail(data.email) &&
+             (!('fullName' in data) || (data.fullName is string && data.fullName.size() < 100)) &&
+             (!('phoneNumber' in data) || (data.phoneNumber is string && data.phoneNumber.size() < 20)) &&
+             (!('createdAt' in data) || isValidDateString(data.createdAt));
+    }
+
+    function isValidApplication(data) {
+      let requiredFields = [
+        'fullName', 'dob', 'gender', 'phone', 'email', 'stateOfOrigin', 'nin', 'nationality',
+        'secondarySchool', 'fieldOfStudy', 'preferredUniversity', 'courseOfInterest',
+        'degreeLevel', 'passportUrl', 'academicCertUrl', 'recommendationUrl', 'personalStatement',
+        'declaration', 'paymentReference', 'paymentStatus', 'status', 'submittedAt', 'userId',
+        'applicationId', 'hasBeenEdited', 'amountPaid'
+      ];
+      return data.keys().hasAll(requiredFields) &&
+             data.fullName is string && data.fullName.size() < 100 &&
+             data.dob is string && data.dob.size() < 20 &&
+             data.gender is string && data.gender.size() < 20 &&
+             data.phone is string && data.phone.size() < 20 &&
+             data.email is string && isValidEmail(data.email) &&
+             data.stateOfOrigin is string && data.stateOfOrigin.size() < 50 &&
+             data.nin is string && data.nin.size() == 11 &&
+             data.nationality is string && data.nationality.size() < 50 &&
+             data.secondarySchool is string && data.secondarySchool.size() < 200 &&
+             data.fieldOfStudy is string && data.fieldOfStudy.size() < 100 &&
+             data.preferredUniversity is string && data.preferredUniversity.size() < 200 &&
+             data.courseOfInterest is string && data.courseOfInterest.size() < 200 &&
+             data.degreeLevel is string && data.degreeLevel.size() < 50 &&
+             isValidUrl(data.passportUrl) &&
+             isValidUrl(data.academicCertUrl) &&
+             isValidUrl(data.recommendationUrl) &&
+             data.personalStatement is string && data.personalStatement.size() < 5000 &&
+             data.status in ['Submitted', 'Under Review', 'Approved', 'Denied'] &&
+             isValidDateString(data.submittedAt) &&
+             data.userId == request.auth.uid &&
+             data.declaration is bool &&
+             data.hasBeenEdited is bool &&
+             data.amountPaid is string && data.amountPaid.size() < 20;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data) && 
+                    (request.resource.data.role == 'applicant' || isAdmin());
+      allow update: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data) &&
+                    (request.resource.data.role == resource.data.role || isAdmin());
+    }
+
+    match /applications/{applicationId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && isValidApplication(request.resource.data);
+      allow update: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin()) && 
+                    isValidApplication(request.resource.data) &&
+                    (isAdmin() || (request.resource.data.status == resource.data.status));
+      allow delete: if isAdmin();
+    }
+
+    // Default deny
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
   }
 }
