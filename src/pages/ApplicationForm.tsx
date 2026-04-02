@@ -30,6 +30,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 // Validation Schemas
 const step1Schema = z.object({
+  applyingFor: z.preprocess((val) => val ?? '', z.string().min(1, 'Please select who you are applying for')),
   fullName: z.preprocess((val) => val ?? '', z.string().min(3, 'Full name is required')),
   dob: z.preprocess((val) => val ?? '', z.string().min(1, 'Date of birth is required')),
   gender: z.preprocess((val) => val ?? '', z.string().min(1, 'Gender is required')),
@@ -56,13 +57,32 @@ const step3Schema = z.object({
 });
 
 const step4Schema = z.object({
-  passportUrl: z.preprocess((val) => val ?? '', z.string().min(1, 'Passport photograph is required')),
-  academicCertUrl: z.preprocess((val) => val ?? '', z.string().min(1, 'Academic certificates are required')),
-  recommendationUrl: z.preprocess((val) => val ?? '', z.string().min(1, 'Recommendation letter is required')),
+  passportUrl: z.preprocess((val) => val ?? '', z.string().optional().or(z.literal(''))),
+  academicCertUrl: z.preprocess((val) => val ?? '', z.string().optional().or(z.literal(''))),
+  recommendationUrl: z.preprocess((val) => val ?? '', z.string().optional().or(z.literal(''))),
   personalStatement: z.preprocess((val) => val ?? '', z.string().min(100, 'Personal statement must be at least 100 characters')),
 });
 
 const step5Schema = z.object({
+  annualIncome: z.preprocess((val) => val ?? '', z.string().min(1, 'Annual income is required')),
+  sourceOfFunds: z.preprocess((val) => val ?? '', z.string().min(1, 'Source of funds is required')),
+  bankName: z.preprocess((val) => val ?? '', z.string().min(1, 'Bank name is required')),
+  accountNumber: z.preprocess((val) => val ?? '', z.string().length(10, 'Account number must be 10 digits')),
+  accountName: z.preprocess((val) => val ?? '', z.string().min(3, 'Account name is required')),
+});
+
+const step6Schema = z.object({
+  referee1Name: z.preprocess((val) => val ?? '', z.string().min(3, 'Referee 1 name is required')),
+  referee1Email: z.preprocess((val) => val ?? '', z.string().email('Invalid email for referee 1')),
+  referee1Phone: z.preprocess((val) => val ?? '', z.string().min(10, 'Referee 1 phone is required')),
+  referee1Relationship: z.preprocess((val) => val ?? '', z.string().min(1, 'Referee 1 relationship is required')),
+  referee2Name: z.preprocess((val) => val ?? '', z.string().min(3, 'Referee 2 name is required')),
+  referee2Email: z.preprocess((val) => val ?? '', z.string().email('Invalid email for referee 2')),
+  referee2Phone: z.preprocess((val) => val ?? '', z.string().min(10, 'Referee 2 phone is required')),
+  referee2Relationship: z.preprocess((val) => val ?? '', z.string().min(1, 'Referee 2 relationship is required')),
+});
+
+const step7Schema = z.object({
   declaration: z.boolean().refine((val) => val === true, {
     message: 'You must agree to the declaration',
   }),
@@ -118,31 +138,40 @@ export default function ApplicationForm() {
   const [stateOpen, setStateOpen] = useState(false);
   const [activeUploads, setActiveUploads] = useState(0);
 
+  const currentSchema = [step1Schema, step2Schema, step3Schema, step4Schema, step5Schema, step6Schema, step7Schema][step - 1];
+
+    const { register, handleSubmit, formState: { errors }, setValue, watch, trigger, reset: resetForm } = useForm<any>({
+    resolver: zodResolver(currentSchema),
+    values: data,
+    mode: 'onSubmit',
+  });
+
   useEffect(() => {
     if (!currentUser) {
       toast.error('Please login to continue');
       navigate('/login');
     }
 
-    // Handle pre-filled university from location.state
-    const state = location.state as { selectedUniversity?: string };
-    if (state?.selectedUniversity && !data.preferredUniversity) {
-      updateData({ ...data, preferredUniversity: state.selectedUniversity });
+    // Handle pre-filled university and applyingFor from location.state
+    const state = location.state as { selectedUniversity?: string, applyingFor?: string };
+    if (state?.selectedUniversity) {
+      updateData({ preferredUniversity: state.selectedUniversity });
       setValue('preferredUniversity', state.selectedUniversity);
     }
-  }, [navigate, currentUser, location.state, data.preferredUniversity, updateData]);
-
-  const currentSchema = [step1Schema, step2Schema, step3Schema, step4Schema, step5Schema][step - 1];
-
-  const { register, handleSubmit, formState: { errors }, setValue, watch, trigger } = useForm<any>({
-    resolver: zodResolver(currentSchema),
-    values: data,
-    mode: 'onChange',
-  });
+    if (state?.applyingFor) {
+      updateData({ applyingFor: state.applyingFor });
+      setValue('applyingFor', state.applyingFor);
+    }
+    
+    if (state?.selectedUniversity || state?.applyingFor) {
+      // Clear state to prevent re-applying on every render
+      window.history.replaceState({}, document.title);
+    }
+  }, [navigate, currentUser, location.state, data.preferredUniversity, data.applyingFor, updateData, setValue]);
 
   const onSubmit = async (formData: any) => {
     updateData(formData);
-    if (step < 5) {
+    if (step < 7) {
       nextStep();
     } else {
       handleFinalSubmit('direct_submission');
@@ -178,6 +207,7 @@ export default function ApplicationForm() {
       
       const { reset } = useApplicationStore.getState();
       reset();
+      resetForm();
       
       toast.success('Application submitted successfully!');
       navigate('/application-status');
@@ -195,6 +225,24 @@ export default function ApplicationForm() {
 
   const renderStep1 = () => (
     <div className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="applyingFor">Who Are You Applying For?</Label>
+        <input type="hidden" {...register('applyingFor')} />
+        <Select onValueChange={(val) => setValue('applyingFor', val, { shouldValidate: true })} value={watch('applyingFor')}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select Relationship" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="myself">Myself</SelectItem>
+            <SelectItem value="family">Family Member</SelectItem>
+            <SelectItem value="relative">My Relative</SelectItem>
+            <SelectItem value="friend">Friend</SelectItem>
+            <SelectItem value="others">Others</SelectItem>
+          </SelectContent>
+        </Select>
+        {errors.applyingFor && <p className="text-sm text-red-500">{errors.applyingFor.message as string}</p>}
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="fullName">{t('form.fullname')}</Label>
@@ -315,7 +363,7 @@ export default function ApplicationForm() {
             onUploadSuccess={(url) => {
               setActiveUploads(prev => Math.max(0, prev - 1));
               setValue('waecResultUrl', url, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
-              updateData({ ...data, waecResultUrl: url });
+              updateData({ waecResultUrl: url });
               trigger('waecResultUrl');
             }} 
             value={watch('waecResultUrl')}
@@ -332,7 +380,7 @@ export default function ApplicationForm() {
             onUploadSuccess={(url) => {
               setActiveUploads(prev => Math.max(0, prev - 1));
               setValue('necoResultUrl', url, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
-              updateData({ ...data, necoResultUrl: url });
+              updateData({ necoResultUrl: url });
               trigger('necoResultUrl');
             }} 
             value={watch('necoResultUrl')}
@@ -406,14 +454,14 @@ export default function ApplicationForm() {
       <div className="space-y-2">
         <input type="hidden" {...register('passportUrl')} />
         <FileUpload 
-          label="Passport Photograph" 
+          label="Passport Photograph (Optional)" 
           accept="image/*"
           onUploadStart={() => setActiveUploads(prev => prev + 1)}
           onUploadError={() => setActiveUploads(prev => Math.max(0, prev - 1))}
           onUploadSuccess={(url) => {
             setActiveUploads(prev => Math.max(0, prev - 1));
             setValue('passportUrl', url, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
-            updateData({ ...data, passportUrl: url });
+            updateData({ passportUrl: url });
             trigger('passportUrl');
           }} 
           value={watch('passportUrl')}
@@ -423,13 +471,13 @@ export default function ApplicationForm() {
       <div className="space-y-2">
         <input type="hidden" {...register('academicCertUrl')} />
         <FileUpload 
-          label="Academic Certificates" 
+          label="Academic Certificates (Optional)" 
           onUploadStart={() => setActiveUploads(prev => prev + 1)}
           onUploadError={() => setActiveUploads(prev => Math.max(0, prev - 1))}
           onUploadSuccess={(url) => {
             setActiveUploads(prev => Math.max(0, prev - 1));
             setValue('academicCertUrl', url, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
-            updateData({ ...data, academicCertUrl: url });
+            updateData({ academicCertUrl: url });
             trigger('academicCertUrl');
           }} 
           value={watch('academicCertUrl')}
@@ -439,13 +487,13 @@ export default function ApplicationForm() {
       <div className="space-y-2">
         <input type="hidden" {...register('recommendationUrl')} />
         <FileUpload 
-          label="Recommendation Letter" 
+          label="Recommendation Letter (Optional)" 
           onUploadStart={() => setActiveUploads(prev => prev + 1)}
           onUploadError={() => setActiveUploads(prev => Math.max(0, prev - 1))}
           onUploadSuccess={(url) => {
             setActiveUploads(prev => Math.max(0, prev - 1));
             setValue('recommendationUrl', url, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
-            updateData({ ...data, recommendationUrl: url });
+            updateData({ recommendationUrl: url });
             trigger('recommendationUrl');
           }} 
           value={watch('recommendationUrl')}
@@ -461,7 +509,7 @@ export default function ApplicationForm() {
           placeholder="Write your personal statement here..."
           onChange={(e) => {
             register('personalStatement').onChange(e);
-            updateData({ ...data, personalStatement: e.target.value });
+            updateData({ personalStatement: e.target.value });
           }}
         />
         {errors.personalStatement && <p className="text-sm text-red-500">{errors.personalStatement.message as string}</p>}
@@ -469,28 +517,190 @@ export default function ApplicationForm() {
     </div>
   );
 
-  const renderStep5 = () => {
+  const renderStep5 = () => (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="annualIncome">Annual Household Income (NGN)</Label>
+        <Input id="annualIncome" type="number" {...register('annualIncome')} placeholder="e.g. 500000" />
+        {errors.annualIncome && <p className="text-sm text-red-500">{errors.annualIncome.message as string}</p>}
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="sourceOfFunds">Source of Funds</Label>
+        <Input id="sourceOfFunds" {...register('sourceOfFunds')} placeholder="e.g. Salary, Business, Parents" />
+        {errors.sourceOfFunds && <p className="text-sm text-red-500">{errors.sourceOfFunds.message as string}</p>}
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="bankName">Bank Name</Label>
+          <Input id="bankName" {...register('bankName')} />
+          {errors.bankName && <p className="text-sm text-red-500">{errors.bankName.message as string}</p>}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="accountNumber">Account Number</Label>
+          <Input id="accountNumber" {...register('accountNumber')} maxLength={10} />
+          {errors.accountNumber && <p className="text-sm text-red-500">{errors.accountNumber.message as string}</p>}
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="accountName">Account Name</Label>
+        <Input id="accountName" {...register('accountName')} />
+        {errors.accountName && <p className="text-sm text-red-500">{errors.accountName.message as string}</p>}
+      </div>
+    </div>
+  );
+
+  const renderStep6 = () => (
+    <div className="space-y-8">
+      <div className="space-y-4">
+        <h3 className="font-bold text-slate-900 border-b pb-2">Referee 1</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="referee1Name">Full Name</Label>
+            <Input id="referee1Name" {...register('referee1Name')} />
+            {errors.referee1Name && <p className="text-sm text-red-500">{errors.referee1Name.message as string}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="referee1Email">Email Address</Label>
+            <Input id="referee1Email" type="email" {...register('referee1Email')} />
+            {errors.referee1Email && <p className="text-sm text-red-500">{errors.referee1Email.message as string}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="referee1Phone">Phone Number</Label>
+            <Input id="referee1Phone" {...register('referee1Phone')} />
+            {errors.referee1Phone && <p className="text-sm text-red-500">{errors.referee1Phone.message as string}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="referee1Relationship">Relationship</Label>
+            <Input id="referee1Relationship" {...register('referee1Relationship')} placeholder="e.g. Lecturer, Employer" />
+            {errors.referee1Relationship && <p className="text-sm text-red-500">{errors.referee1Relationship.message as string}</p>}
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="font-bold text-slate-900 border-b pb-2">Referee 2</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="referee2Name">Full Name</Label>
+            <Input id="referee2Name" {...register('referee2Name')} />
+            {errors.referee2Name && <p className="text-sm text-red-500">{errors.referee2Name.message as string}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="referee2Email">Email Address</Label>
+            <Input id="referee2Email" type="email" {...register('referee2Email')} />
+            {errors.referee2Email && <p className="text-sm text-red-500">{errors.referee2Email.message as string}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="referee2Phone">Phone Number</Label>
+            <Input id="referee2Phone" {...register('referee2Phone')} />
+            {errors.referee2Phone && <p className="text-sm text-red-500">{errors.referee2Phone.message as string}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="referee2Relationship">Relationship</Label>
+            <Input id="referee2Relationship" {...register('referee2Relationship')} placeholder="e.g. Mentor, Family Friend" />
+            {errors.referee2Relationship && <p className="text-sm text-red-500">{errors.referee2Relationship.message as string}</p>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep7 = () => {
     const allData = { ...data, ...watch() };
     
     return (
       <div className="space-y-6">
-        <div className="bg-slate-50 p-4 sm:p-6 rounded-lg border border-slate-200">
-          <h3 className="text-base sm:text-lg font-bold mb-4 border-b pb-2">Review Your Application</h3>
+        <div className="bg-slate-50 p-4 sm:p-6 rounded-lg border border-slate-200 max-h-[60vh] overflow-y-auto custom-scrollbar">
+          <h3 className="text-base sm:text-lg font-bold mb-4 border-b pb-2 sticky top-0 bg-slate-50 z-10">Review Your Application</h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 sm:gap-y-4 gap-x-8 text-xs sm:text-sm">
-            <div className="flex flex-col sm:flex-row sm:gap-2"><span className="font-semibold text-slate-500">Full Name:</span> <span className="break-words">{allData.fullName}</span></div>
-            <div className="flex flex-col sm:flex-row sm:gap-2"><span className="font-semibold text-slate-500">Email:</span> <span className="break-words">{allData.email}</span></div>
-            <div className="flex flex-col sm:flex-row sm:gap-2"><span className="font-semibold text-slate-500">Phone:</span> <span>{allData.phone}</span></div>
-            <div className="flex flex-col sm:flex-row sm:gap-2"><span className="font-semibold text-slate-500">NIN:</span> <span>{allData.nin}</span></div>
-            <div className="flex flex-col sm:flex-row sm:gap-2"><span className="font-semibold text-slate-500">University:</span> <span className="break-words">{allData.preferredUniversity}</span></div>
-            <div className="flex flex-col sm:flex-row sm:gap-2"><span className="font-semibold text-slate-500">Course:</span> <span className="break-words">{allData.courseOfInterest}</span></div>
-            <div className="flex flex-col sm:flex-row sm:gap-2"><span className="font-semibold text-slate-500">Degree:</span> <span>{allData.degreeLevel}</span></div>
+          <div className="space-y-8">
+            {/* Personal Information */}
+            <section>
+              <h4 className="font-bold text-green-800 text-sm uppercase tracking-wider mb-3">Personal Information</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8 text-xs sm:text-sm">
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">Applying For:</span> <span className="capitalize">{allData.applyingFor}</span></div>
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">Full Name:</span> <span>{allData.fullName}</span></div>
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">Email:</span> <span>{allData.email}</span></div>
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">Phone:</span> <span>{allData.phone}</span></div>
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">Date of Birth:</span> <span>{allData.dob}</span></div>
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">Gender:</span> <span>{allData.gender}</span></div>
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">State of Origin:</span> <span>{allData.stateOfOrigin}</span></div>
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">NIN:</span> <span>{allData.nin}</span></div>
+              </div>
+            </section>
+
+            {/* Academic Background */}
+            <section className="border-t pt-4">
+              <h4 className="font-bold text-green-800 text-sm uppercase tracking-wider mb-3">Academic Background</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8 text-xs sm:text-sm">
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">Secondary School:</span> <span>{allData.secondarySchool}</span></div>
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">Field of Study:</span> <span>{allData.fieldOfStudy}</span></div>
+                {allData.undergradDegree && <div className="flex flex-col"><span className="font-semibold text-slate-500">Undergrad Degree:</span> <span>{allData.undergradDegree}</span></div>}
+                {allData.gpa && <div className="flex flex-col"><span className="font-semibold text-slate-500">GPA:</span> <span>{allData.gpa}</span></div>}
+              </div>
+            </section>
+
+            {/* Scholarship Selection */}
+            <section className="border-t pt-4">
+              <h4 className="font-bold text-green-800 text-sm uppercase tracking-wider mb-3">Scholarship Selection</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8 text-xs sm:text-sm">
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">University:</span> <span>{allData.preferredUniversity}</span></div>
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">Course:</span> <span>{allData.courseOfInterest}</span></div>
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">Degree Level:</span> <span>{allData.degreeLevel}</span></div>
+              </div>
+            </section>
+
+            {/* Documents */}
+            <section className="border-t pt-4">
+              <h4 className="font-bold text-green-800 text-sm uppercase tracking-wider mb-3">Documents & Statement</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8 text-xs sm:text-sm mb-4">
+                <div className="flex items-center gap-2"><Check className="w-4 h-4 text-green-600" /> <span className="font-semibold text-slate-500">Passport Photo</span></div>
+                <div className="flex items-center gap-2"><Check className="w-4 h-4 text-green-600" /> <span className="font-semibold text-slate-500">Academic Certificates</span></div>
+                <div className="flex items-center gap-2"><Check className="w-4 h-4 text-green-600" /> <span className="font-semibold text-slate-500">Recommendation Letter</span></div>
+              </div>
+              <div className="flex flex-col text-xs sm:text-sm">
+                <span className="font-semibold text-slate-500 mb-1">Personal Statement:</span>
+                <p className="text-slate-600 line-clamp-3 bg-white p-2 rounded border italic">
+                  {allData.personalStatement}
+                </p>
+              </div>
+            </section>
+
+            {/* Financial Information */}
+            <section className="border-t pt-4">
+              <h4 className="font-bold text-green-800 text-sm uppercase tracking-wider mb-3">Financial Information</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8 text-xs sm:text-sm">
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">Annual Income:</span> <span>₦{Number(allData.annualIncome).toLocaleString()}</span></div>
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">Source of Funds:</span> <span>{allData.sourceOfFunds}</span></div>
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">Bank Name:</span> <span>{allData.bankName}</span></div>
+                <div className="flex flex-col"><span className="font-semibold text-slate-500">Account:</span> <span>{allData.accountNumber} ({allData.accountName})</span></div>
+              </div>
+            </section>
+
+            {/* References */}
+            <section className="border-t pt-4">
+              <h4 className="font-bold text-green-800 text-sm uppercase tracking-wider mb-3">References</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs sm:text-sm">
+                <div className="bg-white p-3 rounded border">
+                  <p className="font-bold text-slate-700 mb-1">Referee 1</p>
+                  <p className="text-slate-600">{allData.referee1Name}</p>
+                  <p className="text-slate-500 text-[10px]">{allData.referee1Relationship}</p>
+                  <p className="text-slate-500 text-[10px]">{allData.referee1Email}</p>
+                </div>
+                <div className="bg-white p-3 rounded border">
+                  <p className="font-bold text-slate-700 mb-1">Referee 2</p>
+                  <p className="text-slate-600">{allData.referee2Name}</p>
+                  <p className="text-slate-500 text-[10px]">{allData.referee2Relationship}</p>
+                  <p className="text-slate-500 text-[10px]">{allData.referee2Email}</p>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
 
         <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-          <h4 className="font-semibold text-yellow-800 mb-2">Application Submission</h4>
-          <p className="text-yellow-700 text-sm">Review your details carefully. Once submitted, you can track your application status in your dashboard.</p>
+          <h4 className="font-semibold text-yellow-800 mb-2">Final Declaration</h4>
+          <p className="text-yellow-700 text-sm">Please review all information above. By submitting, you certify that all information is true and correct to the best of your knowledge.</p>
         </div>
 
         <div className="flex items-start space-x-3 pt-4">
@@ -500,11 +710,11 @@ export default function ApplicationForm() {
             onCheckedChange={(checked) => setValue('declaration', checked as boolean, { shouldValidate: true })}
           />
           <div className="grid gap-1.5 leading-none">
-            <Label htmlFor="declaration" className="font-medium">
-              I confirm all information provided is accurate.
+            <Label htmlFor="declaration" className="font-medium cursor-pointer">
+              I solemnly declare that the information provided is true and correct.
             </Label>
             <p className="text-sm text-slate-500">
-              By checking this box, you agree to our Terms and Conditions and confirm that you are a Nigerian citizen.
+              I understand that any false statement may lead to disqualification or withdrawal of the scholarship.
             </p>
             {errors.declaration && <p className="text-sm text-red-500 mt-1">{errors.declaration.message as string}</p>}
           </div>
@@ -523,7 +733,7 @@ export default function ApplicationForm() {
 
       <div className="mb-6 sm:mb-10">
         <div className="flex justify-between items-center mb-6">
-          {[1, 2, 3, 4, 5].map((s) => (
+          {[1, 2, 3, 4, 5, 6, 7].map((s) => (
             <div key={s} className="flex flex-col items-center gap-2">
               <div 
                 className={cn(
@@ -544,9 +754,9 @@ export default function ApplicationForm() {
           ))}
         </div>
         <div className="flex justify-between text-xs sm:text-sm font-medium text-slate-500 mb-2">
-          <span>{step * 20}% Completed</span>
+          <span>{Math.round((step / 7) * 100)}% Completed</span>
         </div>
-        <Progress value={step * 20} className="h-1.5 sm:h-2 bg-slate-100" />
+        <Progress value={(step / 7) * 100} className="h-1.5 sm:h-2 bg-slate-100" />
       </div>
 
       <div className="bg-white shadow-md sm:shadow-sm border border-slate-200 rounded-xl p-4 sm:p-6 md:p-8 overflow-hidden">
@@ -568,6 +778,8 @@ export default function ApplicationForm() {
               {step === 3 && renderStep3()}
               {step === 4 && renderStep4()}
               {step === 5 && renderStep5()}
+              {step === 6 && renderStep6()}
+              {step === 7 && renderStep7()}
             </motion.div>
           </AnimatePresence>
 
@@ -609,7 +821,7 @@ export default function ApplicationForm() {
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Uploading...
                   </>
-                ) : loading ? 'Processing...' : step === 5 ? 'Submit Application' : t('form.next')}
+                ) : loading ? 'Processing...' : step === 7 ? 'Submit Application' : t('form.next')}
               </Button>
             </div>
           </div>

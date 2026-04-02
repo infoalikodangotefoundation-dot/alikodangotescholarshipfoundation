@@ -8,7 +8,9 @@ import {
   signOut,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  sendEmailVerification
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  confirmPasswordReset
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -25,6 +27,7 @@ interface UserProfile {
   phoneNumber?: string;
   email?: string;
   role?: string;
+  photoURL?: string;
 }
 
 interface AuthContextType {
@@ -36,6 +39,9 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName: string, phoneNumber: string) => Promise<void>;
   resendVerificationEmail: () => Promise<void>;
   reloadUser: () => Promise<void>;
+  updateProfile: (data: Partial<UserProfile>) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  confirmReset: (code: string, newPass: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -48,6 +54,9 @@ const AuthContext = createContext<AuthContextType>({
   signUp: async () => {},
   resendVerificationEmail: async () => {},
   reloadUser: async () => {},
+  updateProfile: async () => {},
+  resetPassword: async () => {},
+  confirmReset: async () => {},
   logout: async () => {},
 });
 
@@ -143,8 +152,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       createdAt: new Date().toISOString(),
     };
     
-    await setDoc(doc(db, 'users', uid), newProfile);
-    setUserProfile(newProfile);
+    try {
+      await setDoc(doc(db, 'users', uid), newProfile);
+      setUserProfile(newProfile);
+    } catch (error: any) {
+      if (error.message?.includes('permission-denied') || error.message?.includes('Missing or insufficient permissions')) {
+        handleFirestoreError(error, OperationType.CREATE, `users/${uid}`);
+      }
+      throw error;
+    }
     
     // Sign out after sign up to force verification on next login
     await signOut(auth);
@@ -177,12 +193,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateProfile = async (data: Partial<UserProfile>) => {
+    if (!currentUser) throw new Error("No user logged in");
+    
+    // Security check: Don't allow email updates for now as per requirements
+    const { email, ...updateData } = data;
+    if (email) {
+      console.warn("Email updates are not permitted through updateProfile at this time.");
+    }
+
+    const docRef = doc(db, 'users', currentUser.uid);
+    try {
+      await setDoc(docRef, updateData, { merge: true });
+      setUserProfile(prev => prev ? { ...prev, ...updateData } : updateData);
+    } catch (error: any) {
+      if (error.message?.includes('permission-denied') || error.message?.includes('Missing or insufficient permissions')) {
+        handleFirestoreError(error, OperationType.UPDATE, `users/${currentUser.uid}`);
+      }
+      throw error;
+    }
+  };
+
+  const resetPassword = async (email: string) => {
+    const actionCodeSettings = {
+      url: window.location.origin + '/reset-password',
+      handleCodeInApp: true,
+    };
+    await sendPasswordResetEmail(auth, email, actionCodeSettings);
+  };
+
+  const confirmReset = async (code: string, newPass: string) => {
+    await confirmPasswordReset(auth, code, newPass);
+  };
+
   const logout = async () => {
     await signOut(auth);
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, userProfile, loading, login, loginWithGoogle, signUp, resendVerificationEmail, reloadUser, logout }}>
+    <AuthContext.Provider value={{ currentUser, userProfile, loading, login, loginWithGoogle, signUp, resendVerificationEmail, reloadUser, updateProfile, resetPassword, confirmReset, logout }}>
       {!loading && children}
     </AuthContext.Provider>
   );

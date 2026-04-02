@@ -64,7 +64,7 @@ export default function ApplicationStatus() {
               <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <GraduationCap className="w-4 h-4 text-green-700" />
-                  <span className="text-sm font-bold text-slate-900">{app.applicationId}</span>
+                  <span className="text-sm font-bold text-slate-900">Application ID: {app.applicationId}</span>
                 </div>
                 <div className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${
                   app.status === 'Submitted' ? 'bg-blue-100 text-blue-700' :

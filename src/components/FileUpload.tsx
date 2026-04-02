@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { storage } from '../firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -59,47 +59,88 @@ export function FileUpload({
     setError(null);
     setSelectedFile(file);
     setProgress(0);
+    
+    // Auto-start upload
+    startUpload(file);
   };
 
-  const handleUpload = async () => {
-    if (!selectedFile || !currentUser) return;
+  const startUpload = async (file: File) => {
+    console.log(`[${label}] Starting upload for:`, file.name);
+    if (!currentUser) {
+      console.error(`[${label}] No current user, cannot upload.`);
+      return;
+    }
 
     setIsUploading(true);
     setError(null);
     if (onUploadStart) onUploadStart();
 
-    const fileExtension = selectedFile.name.split('.').pop();
+    const fileExtension = file.name.split('.').pop();
     const fileName = `${currentUser.uid}_${Date.now()}.${fileExtension}`;
     const storageRef = ref(storage, `applications/${currentUser.uid}/${fileName}`);
+    console.log(`[${label}] Storage path:`, `applications/${currentUser.uid}/${fileName}`);
 
-    const uploadTask = uploadBytesResumable(storageRef, selectedFile);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    // Set a safety timeout
+    const timeoutId = setTimeout(() => {
+      if (isUploading && progress === 0) {
+        console.warn(`[${label}] Upload seems stuck at 0%, attempting fallback...`);
+      }
+    }, 15000);
 
     uploadTask.on(
       'state_changed',
       (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setProgress(progress);
+        const totalBytes = snapshot.totalBytes || 1;
+        const p = (snapshot.bytesTransferred / totalBytes) * 100;
+        console.log(`[${label}] Progress: ${Math.round(p)}% (${snapshot.bytesTransferred}/${snapshot.totalBytes})`);
+        setProgress(isNaN(p) ? 0 : p);
       },
-      (error) => {
-        console.error("Upload error:", error);
-        let errorMsg = "Failed to upload file. Please try again.";
-        if (error.code === 'storage/unauthorized') {
-          errorMsg = "You don't have permission to upload this file.";
+      async (error: any) => {
+        clearTimeout(timeoutId);
+        console.error(`[${label}] Resumable upload error:`, error);
+        
+        // Fallback to simple uploadBytes if resumable fails
+        console.log(`[${label}] Attempting fallback uploadBytes...`);
+        try {
+          // Try to cancel the resumable task if possible
+          try { uploadTask.cancel(); } catch (e) {}
+          
+          const result = await uploadBytes(storageRef, file);
+          console.log(`[${label}] Fallback upload successful`);
+          const downloadURL = await getDownloadURL(result.ref);
+          console.log(`[${label}] Download URL (fallback):`, downloadURL);
+          onUploadSuccess(downloadURL);
+          toast.success(`${label} uploaded successfully`);
+          setIsUploading(false);
+          setSelectedFile(null);
+        } catch (fallbackError: any) {
+          console.error(`[${label}] Fallback upload error:`, fallbackError);
+          let errorMsg = `Upload failed (${fallbackError.code || 'unknown'}). Please try again.`;
+          if (fallbackError.code === 'storage/unauthorized') {
+            errorMsg = "Permission denied. Please check storage rules.";
+          } else if (fallbackError.code === 'storage/retry-limit-exceeded') {
+            errorMsg = "Connection timed out. Please check your internet or try a smaller file.";
+          }
+          setError(errorMsg);
+          toast.error(errorMsg);
+          setIsUploading(false);
+          if (onUploadError) onUploadError(errorMsg);
         }
-        setError(errorMsg);
-        toast.error(errorMsg);
-        setIsUploading(false);
-        if (onUploadError) onUploadError(errorMsg);
       },
       async () => {
+        clearTimeout(timeoutId);
+        console.log(`[${label}] Upload completed successfully`);
         try {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          console.log(`[${label}] Download URL:`, downloadURL);
           onUploadSuccess(downloadURL);
           toast.success(`${label} uploaded successfully`);
           setIsUploading(false);
           setSelectedFile(null);
         } catch (err) {
-          console.error("Error getting download URL:", err);
+          console.error(`[${label}] Error getting download URL:`, err);
           const msg = "Failed to get file URL.";
           setError(msg);
           if (onUploadError) onUploadError(msg);
@@ -150,7 +191,7 @@ export function FileUpload({
         </div>
       )}
 
-      {selectedFile && !value && (
+      {(selectedFile || isUploading) && !value && (
         <div className="bg-white border rounded-lg p-3 space-y-3">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded bg-slate-100 flex items-center justify-center overflow-hidden border">
@@ -161,39 +202,29 @@ export function FileUpload({
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-slate-900 truncate">{selectedFile.name}</p>
-              <p className="text-xs text-slate-500">{formatSize(selectedFile.size)} • {selectedFile.type || 'Unknown type'}</p>
+              <p className="text-sm font-medium text-slate-900 truncate">{selectedFile?.name || 'Uploading...'}</p>
+              <p className="text-xs text-slate-500">{selectedFile ? formatSize(selectedFile.size) : 'Please wait'}</p>
             </div>
-            <Button 
-              type="button" 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => setSelectedFile(null)}
-              disabled={isUploading}
-              className="text-slate-400 hover:text-red-500"
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
+            {!isUploading && (
+              <Button 
+                type="button" 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setSelectedFile(null)}
+                className="text-slate-400 hover:text-red-500"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
           </div>
 
-          {isUploading ? (
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-[10px] font-medium text-slate-500">
-                <span>Uploading...</span>
-                <span>{Math.round(progress)}%</span>
-              </div>
-              <Progress value={progress} className="h-1.5" />
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-[10px] font-medium text-slate-500">
+              <span>{progress > 0 ? 'Uploading...' : 'Preparing...'}</span>
+              <span>{Math.round(progress)}%</span>
             </div>
-          ) : (
-            <Button 
-              type="button" 
-              onClick={handleUpload} 
-              className="w-full bg-green-600 hover:bg-green-700 h-9 text-sm"
-            >
-              <UploadCloud className="w-4 h-4 mr-2" />
-              Start Upload
-            </Button>
-          )}
+            <Progress value={progress} className="h-1.5" />
+          </div>
         </div>
       )}
       

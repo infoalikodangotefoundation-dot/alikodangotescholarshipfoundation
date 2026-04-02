@@ -38,7 +38,7 @@ export default function UniversityDetail() {
   }
 
   const handleApply = () => {
-    navigate('/apply', { state: { selectedUniversity: university.name } });
+    navigate('/apply-selection', { state: { selectedUniversity: university.name } });
   };
 
   return (
@@ -73,10 +73,24 @@ export default function UniversityDetail() {
                 </span>
               </div>
               <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-2 sm:mb-4 drop-shadow-lg break-words">{university.name}</h1>
-              <div className="flex items-center gap-2 sm:gap-4 text-yellow-400 font-semibold text-base sm:text-lg">
+              <div className="flex items-center gap-2 sm:gap-4 text-yellow-400 font-semibold text-base sm:text-lg mb-6">
                 <Trophy className="w-5 h-5 sm:w-6 sm:h-6" />
                 {university.ranking}
               </div>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                <Button 
+                  onClick={handleApply}
+                  className="bg-green-600 hover:bg-green-700 text-white px-8 h-12 sm:h-14 text-lg font-bold rounded-xl shadow-xl shadow-green-900/20 transition-all hover:scale-[1.05] active:scale-[0.95] flex items-center gap-2"
+                >
+                  <GraduationCap className="w-5 h-5" />
+                  Apply to this University
+                </Button>
+              </motion.div>
             </motion.div>
           </div>
         </div>
@@ -217,6 +231,25 @@ export default function UniversityDetail() {
                   </div>
                 </div>
               </div>
+            </motion.section>
+
+            {/* Bottom Call to Action */}
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="bg-green-50 p-8 sm:p-12 rounded-[2.5rem] border border-green-100 text-center space-y-6"
+            >
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Ready to start your journey at {university.name}?</h2>
+              <p className="text-slate-600 max-w-xl mx-auto">
+                Join hundreds of Aliko Dangote Scholars already studying at top institutions worldwide.
+              </p>
+              <Button 
+                onClick={handleApply}
+                className="bg-green-600 hover:bg-green-700 text-white px-12 h-16 text-xl font-bold rounded-2xl shadow-xl shadow-green-200 transition-all hover:scale-[1.05] active:scale-[0.95]"
+              >
+                Apply to {university.name} Now
+              </Button>
             </motion.section>
           </div>
 

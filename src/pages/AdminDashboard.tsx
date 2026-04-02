@@ -145,7 +145,7 @@ export default function AdminDashboard() {
         <Table>
           <TableHeader className="bg-slate-50">
             <TableRow>
-              <TableHead>App ID</TableHead>
+              <TableHead>Application ID</TableHead>
               <TableHead>Applicant</TableHead>
               <TableHead>University & Course</TableHead>
               <TableHead>State & NIN</TableHead>
@@ -164,7 +164,7 @@ export default function AdminDashboard() {
             ) : (
               filteredApplications.map((app) => (
                 <TableRow key={app.id}>
-                  <TableCell className="font-medium text-slate-900">{app.applicationId || app.id.substring(0, 8)}</TableCell>
+                  <TableCell className="font-medium text-slate-900">{app.applicationId}</TableCell>
                   <TableCell>
                     <div className="font-medium text-slate-900">{app.fullName}</div>
                     <div className="text-xs text-slate-500">{app.email}</div>

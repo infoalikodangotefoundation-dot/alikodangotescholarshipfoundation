@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Globe, User, Home, ClipboardList, GraduationCap, Bell } from 'lucide-react';
+import { motion } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import FloatingChatbot from './FloatingChatbot';
 import {
@@ -40,9 +41,15 @@ export default function Layout() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isApplying, setIsApplying] = React.useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    if (location.pathname === '/apply-selection' || location.pathname === '/apply') {
+      setIsApplying(true);
+    } else {
+      setIsApplying(false);
+    }
   }, [location.pathname]);
 
   const changeLanguage = (lng: string) => {
@@ -53,6 +60,11 @@ export default function Layout() {
     if (location.pathname === path) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  };
+
+  const handleApplyClick = () => {
+    setIsApplying(true);
+    handleNavClick('/apply-selection');
   };
 
   return (
@@ -134,8 +146,8 @@ export default function Layout() {
 
         {/* Mobile Header */}
         <div className="md:hidden flex flex-col w-full bg-white shadow-sm">
-          <div className="px-2 py-3 text-center overflow-hidden">
-            <h1 className="text-green-700 font-bold text-[13px] sm:text-sm whitespace-nowrap">
+          <div className="px-2 py-2 text-center overflow-hidden">
+            <h1 className="text-green-700 font-bold text-[11px] whitespace-nowrap">
               Aliko Dangote Scholarship Foundation Portal
             </h1>
           </div>
@@ -162,7 +174,7 @@ export default function Layout() {
               <ul className="space-y-2 text-sm">
                 <li><Link to="/home" className="hover:text-white transition-colors">{t('nav.home')}</Link></li>
                 <li><Link to="/benefits" className="hover:text-white transition-colors">{t('nav.benefits')}</Link></li>
-                <li><Link to="/apply" className="hover:text-white transition-colors">{t('home.apply_now')}</Link></li>
+                <li><Link to="/apply-selection" className="hover:text-white transition-colors">{t('home.apply_now')}</Link></li>
               </ul>
             </div>
             <div>
@@ -201,12 +213,29 @@ export default function Layout() {
 
           {/* Center Apply Now Button */}
           <div className="relative -top-6 flex justify-center w-16">
-            <Link to="/apply" onClick={() => handleNavClick('/apply')}>
+            <Link to="/apply-selection" onClick={handleApplyClick}>
               <div className="relative">
-                <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-75 duration-1000"></div>
-                <div className="relative flex items-center justify-center w-14 h-14 bg-green-700 rounded-full shadow-lg border-4 border-white text-white hover:scale-105 transition-transform">
+                {!isApplying && (
+                  <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-75 duration-1000"></div>
+                )}
+                <motion.div 
+                  animate={!isApplying ? {
+                    scale: [1, 1, 1.25, 0.75, 1, 1],
+                    rotate: [0, -5, 5, -5, 5, 0, 0, 0, 0, -5, 5, -5, 5, 0],
+                    x: [0, -2, 2, -2, 2, 0, 0, 0, 0, -2, 2, -2, 2, 0]
+                  } : { scale: 1, rotate: 0, x: 0 }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.85, 0.9, 0.95, 1]
+                  }}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative flex items-center justify-center w-14 h-14 bg-green-700 rounded-full shadow-lg border-4 border-white text-white"
+                >
                   <GraduationCap className="w-6 h-6" />
-                </div>
+                </motion.div>
               </div>
             </Link>
           </div>

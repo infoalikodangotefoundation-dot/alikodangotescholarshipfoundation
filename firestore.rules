@@ -2,6 +2,14 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    match /test/connection {
+      allow read: if true;
+    }
+
+    match /test/{document=**} {
+      allow read: if true;
+    }
+
     // ===============================================================
     // Assumed Data Model
     // ===============================================================
@@ -13,6 +21,7 @@ service cloud.firestore {
     //   - email: string (required, format: email)
     //   - fullName: string (optional)
     //   - phoneNumber: string (optional)
+    //   - photoURL: string (optional, format: uri)
     //   - createdAt: string (optional, format: date-time)
     //
     // Collection: applications
@@ -65,8 +74,8 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() &&
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
-          (request.auth.token.email == "info.alikodangotefoundation@gmail.com" && request.auth.token.email_verified == true));
+        ( (request.auth.token.email == "info.alikodangotefoundation@gmail.com" && request.auth.token.email_verified == true) ||
+          (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') );
     }
 
     function isValidEmail(email) {
@@ -91,6 +100,7 @@ service cloud.firestore {
              isValidEmail(data.email) &&
              (!('fullName' in data) || (data.fullName is string && data.fullName.size() < 100)) &&
              (!('phoneNumber' in data) || (data.phoneNumber is string && data.phoneNumber.size() < 20)) &&
+             (!('photoURL' in data) || isValidUrl(data.photoURL)) &&
              (!('createdAt' in data) || isValidDateString(data.createdAt));
     }
 

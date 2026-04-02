@@ -23,6 +23,11 @@
           "type": "string",
           "description": "The user's phone number."
         },
+        "photoURL": {
+          "type": "string",
+          "format": "uri",
+          "description": "The user's profile picture URL."
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time",

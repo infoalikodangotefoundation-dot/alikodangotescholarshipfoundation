@@ -12,7 +12,10 @@ import AdminDashboard from './pages/AdminDashboard';
 import ApplicationForm from './pages/ApplicationForm';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+import ForgotPassword from './pages/ForgotPassword';
+import ApplicationSelection from './pages/ApplicationSelection';
 import Profile from './pages/Profile';
+import ResetPassword from './pages/ResetPassword';
 import ApplicationStatus from './pages/ApplicationStatus';
 import Notifications from './pages/Notifications';
 import Legal from './pages/Legal';
@@ -40,9 +43,12 @@ export default function App() {
               <Route path="benefits" element={<Benefits />} />
               <Route path="university/:id" element={<UniversityDetail />} />
               <Route path="admin" element={<AdminDashboard />} />
+              <Route path="apply-selection" element={<ApplicationSelection />} />
               <Route path="apply" element={<ApplicationForm />} />
               <Route path="login" element={<Login />} />
               <Route path="signup" element={<SignUp />} />
+              <Route path="forgot-password" element={<ForgotPassword />} />
+              <Route path="reset-password" element={<ResetPassword />} />
               <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="status" element={<ProtectedRoute><ApplicationStatus /></ProtectedRoute>} />
               <Route path="notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />

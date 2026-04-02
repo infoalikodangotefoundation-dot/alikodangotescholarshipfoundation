@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 
 export interface ApplicationData {
   // Step 1
+  applyingFor: string;
   fullName: string;
   dob: string;
   gender: string;
@@ -32,6 +33,23 @@ export interface ApplicationData {
   personalStatement: string;
   
   // Step 5
+  annualIncome: string;
+  sourceOfFunds: string;
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+
+  // Step 6
+  referee1Name: string;
+  referee1Email: string;
+  referee1Phone: string;
+  referee1Relationship: string;
+  referee2Name: string;
+  referee2Email: string;
+  referee2Phone: string;
+  referee2Relationship: string;
+
+  // Step 7
   declaration: boolean;
 }
 
@@ -49,6 +67,7 @@ export const useApplicationStore = create<ApplicationState>()(
   persist(
     (set) => ({
       data: {
+        applyingFor: '',
         fullName: '',
         dob: '',
         gender: '',
@@ -70,15 +89,29 @@ export const useApplicationStore = create<ApplicationState>()(
         academicCertUrl: '',
         recommendationUrl: '',
         personalStatement: '',
+        annualIncome: '',
+        sourceOfFunds: '',
+        bankName: '',
+        accountNumber: '',
+        accountName: '',
+        referee1Name: '',
+        referee1Email: '',
+        referee1Phone: '',
+        referee1Relationship: '',
+        referee2Name: '',
+        referee2Email: '',
+        referee2Phone: '',
+        referee2Relationship: '',
         declaration: false,
       },
       step: 1,
       updateData: (newData) => set((state) => ({ data: { ...state.data, ...newData } })),
       setStep: (step) => set({ step }),
-      nextStep: () => set((state) => ({ step: Math.min(state.step + 1, 5) })),
+      nextStep: () => set((state) => ({ step: Math.min(state.step + 1, 7) })),
       prevStep: () => set((state) => ({ step: Math.max(state.step - 1, 1) })),
       reset: () => set({ 
         data: { 
+          applyingFor: '',
           fullName: '',
           dob: '',
           gender: '',
@@ -100,6 +133,19 @@ export const useApplicationStore = create<ApplicationState>()(
           academicCertUrl: '',
           recommendationUrl: '',
           personalStatement: '',
+          annualIncome: '',
+          sourceOfFunds: '',
+          bankName: '',
+          accountNumber: '',
+          accountName: '',
+          referee1Name: '',
+          referee1Email: '',
+          referee1Phone: '',
+          referee1Relationship: '',
+          referee2Name: '',
+          referee2Email: '',
+          referee2Phone: '',
+          referee2Relationship: '',
           declaration: false,
         }, 
         step: 1 

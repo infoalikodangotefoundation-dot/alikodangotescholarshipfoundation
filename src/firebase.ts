@@ -77,20 +77,23 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
 }
 
 async function testConnection() {
-  const path = 'test/connection';
   try {
     // Attempt to fetch a document to verify connection
+    // We use a path that we've explicitly allowed in firestore.rules
     await getDocFromServer(doc(db, 'test', 'connection'));
     console.log("Firebase connection test: Success");
   } catch (error: any) {
-    // Log the full error for debugging
-    console.error("Firebase connection test failed:", error);
-    
-    if (error.message?.includes('the client is offline')) {
-      console.error("Please check your Firebase configuration. The client is offline.");
-    } else if (error.message?.includes('permission-denied') || error.message?.includes('Missing or insufficient permissions')) {
-      console.log("Firebase connection test: Connected (but permission denied, which is expected if 'test/connection' is private)");
-      // We don't throw here to avoid crashing the app on startup if it's just a connection test
+    const isPermissionError = error.message?.includes('permission-denied') || 
+                             error.message?.includes('Missing or insufficient permissions');
+    const isOfflineError = error.message?.includes('the client is offline');
+
+    if (isPermissionError) {
+      // If we get a permission error, it still means we connected to Firebase
+      console.log("Firebase connection test: Connected (but permission denied, which is fine for a connection test)");
+    } else if (isOfflineError) {
+      console.error("Firebase connection test failed: The client is offline. Please check your Firebase configuration.");
+    } else {
+      console.error("Firebase connection test failed with unexpected error:", error);
     }
   }
 }

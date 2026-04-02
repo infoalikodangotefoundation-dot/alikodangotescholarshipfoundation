@@ -114,7 +114,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-3xl xl:text-4xl font-bold tracking-tight mb-3 text-white drop-shadow-lg whitespace-nowrap"
+              className="text-2xl xl:text-3xl font-bold tracking-tight mb-3 text-white drop-shadow-lg whitespace-nowrap"
             >
               {t('home.title')}
             </motion.h1>
@@ -134,7 +134,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="w-full flex justify-center px-4"
             >
-              <Link to="/apply" className="w-full max-w-[50vw] flex justify-center">
+              <Link to="/apply-selection" className="w-full max-w-[50vw] flex justify-center">
                 <Button size="lg" className="w-full bg-[#ff0000] hover:bg-[#cc0000] text-white font-bold h-12 text-lg rounded-full shadow-2xl hover:scale-[1.02] transition-all duration-300 border-2 border-white/30">
                   {t('home.apply_now')}
                 </Button>

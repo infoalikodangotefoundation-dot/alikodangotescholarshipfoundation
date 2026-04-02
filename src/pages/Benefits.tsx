@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BackButton } from '../components/BackButton';
 import { 
@@ -11,10 +11,12 @@ import {
   Briefcase, 
   Globe, 
   LifeBuoy,
-  ArrowRight
+  ArrowRight,
+  ChevronDown,
+  HelpCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 
 const benefits = [
   {
@@ -109,7 +111,36 @@ const benefits = [
   }
 ];
 
+const faqs = [
+  {
+    question: "Who is eligible for the Aliko Dangote Foundation Scholarship?",
+    answer: "The scholarship is open to high-achieving Nigerian students who have gained admission or are applying to our partner global universities. We support both Undergraduate and Postgraduate (Masters/PhD) studies across various fields of study."
+  },
+  {
+    question: "What does the scholarship cover?",
+    answer: "Our scholarship is comprehensive. It covers 100% of tuition fees, a monthly stipend of $150 for living expenses, fully-funded accommodation, international health insurance, and round-trip flight tickets for the duration of the program."
+  },
+  {
+    question: "How do I apply for the scholarship?",
+    answer: "The application process is entirely online. Create an account on this portal, complete the multi-step application form with your personal, academic, and financial details, and submit it for review."
+  },
+  {
+    question: "Is there an application fee?",
+    answer: "Yes, a non-refundable processing fee of ₦5,000 is required to submit your application. This fee helps us maintain the platform and ensure that only serious candidates apply."
+  },
+  {
+    question: "What documents are required for the application?",
+    answer: "While some documents are now optional for the initial stage to facilitate faster processing, we strongly recommend uploading your Passport Photograph, Academic Certificates, and a Recommendation Letter. These will be mandatory for the final selection phase."
+  },
+  {
+    question: "How are scholars selected?",
+    answer: "Selection is based on a combination of academic excellence, leadership potential, and demonstrated financial need. Our selection committee reviews each application thoroughly to identify the most deserving candidates."
+  }
+];
+
 export default function Benefits() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
   return (
     <div className="flex flex-col w-full bg-slate-50">
       <BackButton />
@@ -175,8 +206,61 @@ export default function Benefits() {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <section className="py-20 bg-slate-100 border-y border-slate-200">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-bold mb-4 uppercase tracking-wider">
+              <HelpCircle className="w-4 h-4" />
+              Frequently Asked Questions
+            </div>
+            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4">Got Questions? We Have Answers</h2>
+            <p className="text-slate-600 text-lg">Everything you need to know about the scholarship program and application process.</p>
+          </div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <motion.div 
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05 }}
+                className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all"
+              >
+                <button 
+                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                  className="w-full p-6 text-left flex items-center justify-between gap-4 group"
+                >
+                  <span className="text-lg font-bold text-slate-800 group-hover:text-green-700 transition-colors">
+                    {faq.question}
+                  </span>
+                  <div className={`p-2 rounded-full bg-slate-50 group-hover:bg-green-50 transition-colors ${openFaq === index ? 'rotate-180 bg-green-50 text-green-700' : 'text-slate-400'}`}>
+                    <ChevronDown className="w-5 h-5" />
+                  </div>
+                </button>
+                <AnimatePresence>
+                  {openFaq === index && (
+                    <motion.div 
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <div className="px-6 pb-6 text-slate-600 leading-relaxed border-t border-slate-50 pt-4">
+                        {faq.answer}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
-      <section className="py-20 bg-white border-t border-slate-200">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-8 text-slate-900">Ready to Start Your Journey?</h2>
           <p className="text-lg text-slate-600 mb-10 max-w-2xl mx-auto">
@@ -193,3 +277,4 @@ export default function Benefits() {
     </div>
   );
 }
+
