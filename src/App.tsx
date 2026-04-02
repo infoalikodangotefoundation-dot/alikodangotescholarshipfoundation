@@ -7,6 +7,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Benefits from './pages/Benefits';
+import FAQ from './pages/FAQ';
+import HowToApply from './pages/HowToApply';
 import UniversityDetail from './pages/UniversityDetail';
 import AdminDashboard from './pages/AdminDashboard';
 import ApplicationForm from './pages/ApplicationForm';
@@ -41,6 +43,8 @@ export default function App() {
               <Route index element={<Navigate to="/home" replace />} />
               <Route path="home" element={<Home />} />
               <Route path="benefits" element={<Benefits />} />
+              <Route path="faq" element={<FAQ />} />
+              <Route path="how-to-apply" element={<HowToApply />} />
               <Route path="university/:id" element={<UniversityDetail />} />
               <Route path="admin" element={<AdminDashboard />} />
               <Route path="apply-selection" element={<ApplicationSelection />} />

@@ -21,7 +21,7 @@ import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { handleFirestoreError, OperationType } from '../lib/firestore-errors';
-import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
+import { Check, ChevronsUpDown, Loader2, Award, Copy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
@@ -34,10 +34,14 @@ const step1Schema = z.object({
   fullName: z.preprocess((val) => val ?? '', z.string().min(3, 'Full name is required')),
   dob: z.preprocess((val) => val ?? '', z.string().min(1, 'Date of birth is required')),
   gender: z.preprocess((val) => val ?? '', z.string().min(1, 'Gender is required')),
-  phone: z.preprocess((val) => val ?? '', z.string().regex(/^\+234\d{10}$/, 'Phone must start with +234 followed by 10 digits')),
+  phone: z.preprocess((val) => val ?? '', z.string().refine((val) => {
+    const intlRegex = /^\+234\d{10}$/;
+    const localRegex = /^0(80|90|91)\d{8}$/;
+    return intlRegex.test(val) || localRegex.test(val);
+  }, 'Invalid phone format. Use +234 (10 digits) or 080/090/091 (11 digits total)')),
   email: z.preprocess((val) => val ?? '', z.string().email('Invalid email address')),
   stateOfOrigin: z.preprocess((val) => val ?? '', z.string().min(1, 'State of origin is required')),
-  nin: z.preprocess((val) => val ?? '', z.string().length(11, 'NIN must be exactly 11 digits')),
+  nin: z.preprocess((val) => val ?? '', z.string().regex(/^\d{11}$/, 'NIN must be exactly 11 digits')),
   nationality: z.literal('Nigerian').default('Nigerian'),
 });
 
@@ -67,22 +71,32 @@ const step5Schema = z.object({
   annualIncome: z.preprocess((val) => val ?? '', z.string().min(1, 'Annual income is required')),
   sourceOfFunds: z.preprocess((val) => val ?? '', z.string().min(1, 'Source of funds is required')),
   bankName: z.preprocess((val) => val ?? '', z.string().min(1, 'Bank name is required')),
-  accountNumber: z.preprocess((val) => val ?? '', z.string().length(10, 'Account number must be 10 digits')),
+  accountNumber: z.preprocess((val) => val ?? '', z.string().regex(/^\d{10}$/, 'Account number must be exactly 10 digits')),
   accountName: z.preprocess((val) => val ?? '', z.string().min(3, 'Account name is required')),
 });
 
 const step6Schema = z.object({
   referee1Name: z.preprocess((val) => val ?? '', z.string().min(3, 'Referee 1 name is required')),
   referee1Email: z.preprocess((val) => val ?? '', z.string().email('Invalid email for referee 1')),
-  referee1Phone: z.preprocess((val) => val ?? '', z.string().min(10, 'Referee 1 phone is required')),
+  referee1Phone: z.preprocess((val) => val ?? '', z.string().refine((val) => {
+    const intlRegex = /^\+234\d{10}$/;
+    const localRegex = /^0(80|90|91)\d{8}$/;
+    return intlRegex.test(val) || localRegex.test(val);
+  }, 'Invalid phone format. Use +234 (10 digits) or 080/090/091 (11 digits total)')),
   referee1Relationship: z.preprocess((val) => val ?? '', z.string().min(1, 'Referee 1 relationship is required')),
   referee2Name: z.preprocess((val) => val ?? '', z.string().min(3, 'Referee 2 name is required')),
   referee2Email: z.preprocess((val) => val ?? '', z.string().email('Invalid email for referee 2')),
-  referee2Phone: z.preprocess((val) => val ?? '', z.string().min(10, 'Referee 2 phone is required')),
+  referee2Phone: z.preprocess((val) => val ?? '', z.string().refine((val) => {
+    const intlRegex = /^\+234\d{10}$/;
+    const localRegex = /^0(80|90|91)\d{8}$/;
+    return intlRegex.test(val) || localRegex.test(val);
+  }, 'Invalid phone format. Use +234 (10 digits) or 080/090/091 (11 digits total)')),
   referee2Relationship: z.preprocess((val) => val ?? '', z.string().min(1, 'Referee 2 relationship is required')),
 });
 
 const step7Schema = z.object({
+  paymentProofUrl: z.preprocess((val) => val ?? '', z.string().optional().or(z.literal(''))),
+  paymentConfirmed: z.boolean().optional().default(false),
   declaration: z.boolean().refine((val) => val === true, {
     message: 'You must agree to the declaration',
   }),
@@ -128,6 +142,109 @@ const NIGERIAN_STATES = [
   { value: "FCT (Abuja)", label: "FCT (Abuja)" }
 ];
 
+const INCOME_SOURCES = [
+  "Salary/Wages",
+  "Business/Entrepreneurship",
+  "Freelancing",
+  "Agriculture/Farming",
+  "Engineering",
+  "Trading",
+  "Tech",
+  "Automation",
+  "Content Creator",
+  "Investments (Stocks, Crypto, Real Estate)",
+  "Artisan/Skilled Work",
+  "Government Benefits",
+  "Pension",
+  "Remittances",
+  "Others"
+];
+
+const RELATIONSHIP_OPTIONS = [
+  "Mother",
+  "Brother or sister",
+  "Friend",
+  "Relative",
+  "Others"
+];
+
+const NIGERIAN_BANKS = [
+  "Access Bank Plc",
+  "Zenith Bank Plc",
+  "First Bank of Nigeria Limited",
+  "Guaranty Trust Bank Plc",
+  "United Bank for Africa Plc",
+  "Fidelity Bank Plc",
+  "Ecobank Nigeria Limited",
+  "Stanbic IBTC Bank Limited",
+  "Wema Bank Plc",
+  "Sterling Bank Plc",
+  "Union Bank of Nigeria Plc",
+  "Polaris Bank Limited",
+  "Keystone Bank Limited",
+  "Unity Bank Plc",
+  "First City Monument Bank Limited",
+  "Citibank Nigeria Limited",
+  "Standard Chartered Bank Nigeria",
+  "Globus Bank Limited",
+  "Titan Trust Bank Limited",
+  "Suntrust Bank Nigeria Limited",
+  "Providus Bank Limited",
+  "Parallex Bank Limited",
+  "Signature Bank Limited",
+  "Optimus Bank Limited",
+  "Premium Trust Bank",
+  "Alpha Morgan Bank Limited",
+  "Lotus Bank Limited",
+  "Heritage Bank Plc",
+  "Taj Bank Limited",
+  "Jaiz Bank Plc",
+  "ALAT by Wema",
+  "Kuda Bank",
+  "OPay",
+  "PalmPay",
+  "Moniepoint",
+  "V Bank",
+  "Sparkle",
+  "Rubies Bank",
+  "Carbon",
+  "Paga",
+  "FairMoney",
+  "PiggyVest",
+  "Cowrywise",
+  "Interswitch",
+  "Flutterwave",
+  "Paystack",
+  "Branch",
+  "Trove",
+  "Renmoney",
+  "Eyowo",
+  "OneBank",
+  "Mint",
+  "Risevest",
+  "Busha",
+  "Quidax",
+  "Bundle",
+  "Paylater",
+  "Korapay",
+  "NowNow",
+  "GTBank Mobile",
+  "Access Mobile",
+  "Zenith Mobile",
+  "Fidelity Mobile",
+  "UBA Mobile",
+  "Sterling Mobile",
+  "Union Mobile",
+  "Polaris Mobile",
+  "Keystone Mobile",
+  "Unity Mobile",
+  "FCMB Mobile",
+  "Stanbic IBTC Mobile",
+  "Ecobank Mobile",
+  "Wema Mobile",
+  "Jaiz Mobile"
+];
+
 export default function ApplicationForm() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -140,10 +257,10 @@ export default function ApplicationForm() {
 
   const currentSchema = [step1Schema, step2Schema, step3Schema, step4Schema, step5Schema, step6Schema, step7Schema][step - 1];
 
-    const { register, handleSubmit, formState: { errors }, setValue, watch, trigger, reset: resetForm } = useForm<any>({
+    const { register, handleSubmit, formState: { errors, touchedFields }, setValue, watch, trigger, reset: resetForm } = useForm<any>({
     resolver: zodResolver(currentSchema),
     values: data,
-    mode: 'onSubmit',
+    mode: 'all',
   });
 
   useEffect(() => {
@@ -152,22 +269,36 @@ export default function ApplicationForm() {
       navigate('/login');
     }
 
-    // Handle pre-filled university and applyingFor from location.state
+    // Handle pre-filled university and applyingFor from location.state or sessionStorage
     const state = location.state as { selectedUniversity?: string, applyingFor?: string };
+    const storedApplyingFor = sessionStorage.getItem('applyingFor');
+
     if (state?.selectedUniversity) {
       updateData({ preferredUniversity: state.selectedUniversity });
       setValue('preferredUniversity', state.selectedUniversity);
     }
-    if (state?.applyingFor) {
-      updateData({ applyingFor: state.applyingFor });
-      setValue('applyingFor', state.applyingFor);
+    
+    const applyingForValue = state?.applyingFor || storedApplyingFor;
+    if (applyingForValue) {
+      updateData({ applyingFor: applyingForValue });
+      setValue('applyingFor', applyingForValue);
     }
     
     if (state?.selectedUniversity || state?.applyingFor) {
       // Clear state to prevent re-applying on every render
       window.history.replaceState({}, document.title);
     }
-  }, [navigate, currentUser, location.state, data.preferredUniversity, data.applyingFor, updateData, setValue]);
+  }, [navigate, currentUser, location.state, updateData, setValue]);
+
+  const getFieldState = (name: string) => {
+    const value = watch(name);
+    const isDirty = touchedFields[name];
+    
+    if (!value && !isDirty) return "border-slate-200";
+    if (errors[name]) return "border-red-500 focus-visible:ring-red-500";
+    if (value && !errors[name]) return "border-green-500 focus-visible:ring-green-500";
+    return "border-slate-200";
+  };
 
   const onSubmit = async (formData: any) => {
     updateData(formData);
@@ -229,7 +360,7 @@ export default function ApplicationForm() {
         <Label htmlFor="applyingFor">Who Are You Applying For?</Label>
         <input type="hidden" {...register('applyingFor')} />
         <Select onValueChange={(val) => setValue('applyingFor', val, { shouldValidate: true })} value={watch('applyingFor')}>
-          <SelectTrigger>
+          <SelectTrigger className={cn(getFieldState('applyingFor'))}>
             <SelectValue placeholder="Select Relationship" />
           </SelectTrigger>
           <SelectContent>
@@ -246,19 +377,28 @@ export default function ApplicationForm() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="fullName">{t('form.fullname')}</Label>
-          <Input id="fullName" {...register('fullName')} />
+          <Input 
+            id="fullName" 
+            {...register('fullName')} 
+            className={cn(getFieldState('fullName'))}
+          />
           {errors.fullName && <p className="text-sm text-red-500">{errors.fullName.message as string}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="dob">{t('form.dob')}</Label>
-          <Input id="dob" type="date" {...register('dob')} />
+          <Input 
+            id="dob" 
+            type="date" 
+            {...register('dob')} 
+            className={cn(getFieldState('dob'))}
+          />
           {errors.dob && <p className="text-sm text-red-500">{errors.dob.message as string}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="gender">{t('form.gender')}</Label>
           <input type="hidden" {...register('gender')} />
           <Select onValueChange={(val) => setValue('gender', val, { shouldValidate: true })} value={watch('gender')}>
-            <SelectTrigger>
+            <SelectTrigger className={cn(getFieldState('gender'))}>
               <SelectValue placeholder="Select Gender" />
             </SelectTrigger>
             <SelectContent>
@@ -270,12 +410,43 @@ export default function ApplicationForm() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="phone">{t('form.phone')}</Label>
-          <Input id="phone" placeholder="+234..." {...register('phone')} />
+          <Input 
+            id="phone" 
+            type="tel"
+            placeholder="+234... or 080..." 
+            {...register('phone')} 
+            className={cn(getFieldState('phone'))}
+            onInput={(e: any) => {
+              let val = e.target.value;
+              if (val.startsWith('+')) {
+                val = '+' + val.slice(1).replace(/\D/g, '').slice(0, 13);
+              } else {
+                val = val.replace(/\D/g, '').slice(0, 11);
+              }
+              e.target.value = val;
+            }}
+            onPaste={(e: any) => {
+              e.preventDefault();
+              const paste = e.clipboardData.getData('text');
+              let sanitized = paste.replace(/[^\d+]/g, '');
+              if (sanitized.startsWith('+')) {
+                sanitized = '+' + sanitized.slice(1).replace(/\D/g, '').slice(0, 13);
+              } else {
+                sanitized = sanitized.replace(/\D/g, '').slice(0, 11);
+              }
+              setValue('phone', sanitized, { shouldValidate: true });
+            }}
+          />
           {errors.phone && <p className="text-sm text-red-500">{errors.phone.message as string}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="email">{t('form.email')}</Label>
-          <Input id="email" type="email" {...register('email')} />
+          <Input 
+            id="email" 
+            type="email" 
+            {...register('email')} 
+            className={cn(getFieldState('email'))}
+          />
           {errors.email && <p className="text-sm text-red-500">{errors.email.message as string}</p>}
         </div>
         <div className="space-y-2 flex flex-col">
@@ -290,6 +461,7 @@ export default function ApplicationForm() {
                   aria-expanded={stateOpen}
                   className={cn(
                     "w-full justify-between font-normal",
+                    getFieldState('stateOfOrigin'),
                     !watch('stateOfOrigin') && "text-muted-foreground"
                   )}
                 />
@@ -333,7 +505,22 @@ export default function ApplicationForm() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="nin">{t('form.nin')}</Label>
-          <Input id="nin" placeholder="11 digits" {...register('nin')} />
+          <Input 
+            id="nin" 
+            type="tel"
+            placeholder="11 digits" 
+            {...register('nin')} 
+            className={cn(getFieldState('nin'))}
+            onInput={(e: any) => {
+              e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
+            }}
+            onPaste={(e: any) => {
+              e.preventDefault();
+              const paste = e.clipboardData.getData('text');
+              const sanitized = paste.replace(/\D/g, '').slice(0, 11);
+              setValue('nin', sanitized, { shouldValidate: true });
+            }}
+          />
           {errors.nin && <p className="text-sm text-red-500">{errors.nin.message as string}</p>}
         </div>
         <div className="space-y-2">
@@ -349,7 +536,12 @@ export default function ApplicationForm() {
     <div className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="secondarySchool">Secondary School Name</Label>
-        <Input id="secondarySchool" {...register('secondarySchool')} placeholder="Enter your secondary school name" />
+        <Input 
+          id="secondarySchool" 
+          {...register('secondarySchool')} 
+          placeholder="Enter your secondary school name" 
+          className={cn(getFieldState('secondarySchool'))}
+        />
         {errors.secondarySchool && <p className="text-sm text-red-500">{errors.secondarySchool.message as string}</p>}
       </div>
       
@@ -358,6 +550,7 @@ export default function ApplicationForm() {
           <input type="hidden" {...register('waecResultUrl')} />
           <FileUpload 
             label="WAEC Result (Optional)" 
+            className={cn(getFieldState('waecResultUrl'))}
             onUploadStart={() => setActiveUploads(prev => prev + 1)}
             onUploadError={() => setActiveUploads(prev => Math.max(0, prev - 1))}
             onUploadSuccess={(url) => {
@@ -375,6 +568,7 @@ export default function ApplicationForm() {
           <input type="hidden" {...register('necoResultUrl')} />
           <FileUpload 
             label="NECO Result (Optional)" 
+            className={cn(getFieldState('necoResultUrl'))}
             onUploadStart={() => setActiveUploads(prev => prev + 1)}
             onUploadError={() => setActiveUploads(prev => Math.max(0, prev - 1))}
             onUploadSuccess={(url) => {
@@ -392,62 +586,107 @@ export default function ApplicationForm() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="undergradDegree">Undergraduate Degree (Optional)</Label>
-          <Input id="undergradDegree" {...register('undergradDegree')} placeholder="e.g. B.Sc. Computer Science" />
+          <Input 
+            id="undergradDegree" 
+            {...register('undergradDegree')} 
+            placeholder="e.g. B.Sc. Computer Science" 
+            className={cn(getFieldState('undergradDegree'))}
+          />
         </div>
         <div className="space-y-2">
           <Label htmlFor="gpa">GPA (Optional)</Label>
-          <Input id="gpa" {...register('gpa')} placeholder="e.g. 4.5/5.0" />
+          <Input 
+            id="gpa" 
+            {...register('gpa')} 
+            placeholder="e.g. 4.5/5.0" 
+            className={cn(getFieldState('gpa'))}
+          />
         </div>
       </div>
       <div className="space-y-2">
         <Label htmlFor="fieldOfStudy">Field of Study</Label>
-        <Input id="fieldOfStudy" {...register('fieldOfStudy')} placeholder="Enter your intended field of study" />
+        <Input 
+          id="fieldOfStudy" 
+          {...register('fieldOfStudy')} 
+          placeholder="Enter your intended field of study" 
+          className={cn(getFieldState('fieldOfStudy'))}
+        />
         {errors.fieldOfStudy && <p className="text-sm text-red-500">{errors.fieldOfStudy.message as string}</p>}
       </div>
     </div>
   );
 
-  const renderStep3 = () => (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="preferredUniversity">Preferred University</Label>
-        <input type="hidden" {...register('preferredUniversity')} />
-        <Select onValueChange={(val) => setValue('preferredUniversity', val, { shouldValidate: true })} value={watch('preferredUniversity')}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select University" />
-          </SelectTrigger>
-          <SelectContent>
-            {universities.map((uni) => (
-              <SelectItem key={uni.id} value={uni.name}>
-                {uni.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {errors.preferredUniversity && <p className="text-sm text-red-500">{errors.preferredUniversity.message as string}</p>}
+  const renderStep3 = () => {
+    const selectedUniName = watch('preferredUniversity');
+    const selectedUni = universities.find(u => u.name === selectedUniName);
+    const availableCourses = selectedUni 
+      ? selectedUni.programs.flatMap(p => p.courses)
+      : [];
+
+    return (
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="preferredUniversity">Preferred University</Label>
+          <input type="hidden" {...register('preferredUniversity')} />
+          <Select 
+            onValueChange={(val) => {
+              setValue('preferredUniversity', val, { shouldValidate: true });
+              setValue('courseOfInterest', '', { shouldValidate: false }); // Reset course when uni changes
+            }} 
+            value={watch('preferredUniversity')}
+          >
+            <SelectTrigger className={cn(getFieldState('preferredUniversity'))}>
+              <SelectValue placeholder="Select University" />
+            </SelectTrigger>
+            <SelectContent>
+              {universities.map((uni) => (
+                <SelectItem key={uni.id} value={uni.name}>
+                  {uni.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.preferredUniversity && <p className="text-sm text-red-500">{errors.preferredUniversity.message as string}</p>}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="courseOfInterest">Course of Interest</Label>
+          <input type="hidden" {...register('courseOfInterest')} />
+          <Select 
+            onValueChange={(val) => setValue('courseOfInterest', val, { shouldValidate: true })} 
+            value={watch('courseOfInterest')}
+            disabled={!selectedUniName}
+          >
+            <SelectTrigger className={cn(getFieldState('courseOfInterest'))}>
+              <SelectValue placeholder={selectedUniName ? "Select Course" : "Select University First"} />
+            </SelectTrigger>
+            <SelectContent>
+              {availableCourses.sort().map((course) => (
+                <SelectItem key={course} value={course}>
+                  {course}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.courseOfInterest && <p className="text-sm text-red-500">{errors.courseOfInterest.message as string}</p>}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="degreeLevel">Degree Level</Label>
+          <input type="hidden" {...register('degreeLevel')} />
+          <Select onValueChange={(val) => setValue('degreeLevel', val, { shouldValidate: true })} value={watch('degreeLevel')}>
+            <SelectTrigger className={cn(getFieldState('degreeLevel'))}>
+              <SelectValue placeholder="Select Degree Level" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Undergraduate">Undergraduate</SelectItem>
+              <SelectItem value="Masters">Masters</SelectItem>
+              <SelectItem value="PhD">PhD</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.degreeLevel && <p className="text-sm text-red-500">{errors.degreeLevel.message as string}</p>}
+        </div>
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="courseOfInterest">Course of Interest</Label>
-        <Input id="courseOfInterest" {...register('courseOfInterest')} />
-        {errors.courseOfInterest && <p className="text-sm text-red-500">{errors.courseOfInterest.message as string}</p>}
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="degreeLevel">Degree Level</Label>
-        <input type="hidden" {...register('degreeLevel')} />
-        <Select onValueChange={(val) => setValue('degreeLevel', val, { shouldValidate: true })} value={watch('degreeLevel')}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select Degree Level" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Undergraduate">Undergraduate</SelectItem>
-            <SelectItem value="Masters">Masters</SelectItem>
-            <SelectItem value="PhD">PhD</SelectItem>
-          </SelectContent>
-        </Select>
-        {errors.degreeLevel && <p className="text-sm text-red-500">{errors.degreeLevel.message as string}</p>}
-      </div>
-    </div>
-  );
+    );
+  };
 
   const renderStep4 = () => (
     <div className="space-y-4">
@@ -456,6 +695,7 @@ export default function ApplicationForm() {
         <FileUpload 
           label="Passport Photograph (Optional)" 
           accept="image/*"
+          className={cn(getFieldState('passportUrl'))}
           onUploadStart={() => setActiveUploads(prev => prev + 1)}
           onUploadError={() => setActiveUploads(prev => Math.max(0, prev - 1))}
           onUploadSuccess={(url) => {
@@ -472,6 +712,7 @@ export default function ApplicationForm() {
         <input type="hidden" {...register('academicCertUrl')} />
         <FileUpload 
           label="Academic Certificates (Optional)" 
+          className={cn(getFieldState('academicCertUrl'))}
           onUploadStart={() => setActiveUploads(prev => prev + 1)}
           onUploadError={() => setActiveUploads(prev => Math.max(0, prev - 1))}
           onUploadSuccess={(url) => {
@@ -488,6 +729,7 @@ export default function ApplicationForm() {
         <input type="hidden" {...register('recommendationUrl')} />
         <FileUpload 
           label="Recommendation Letter (Optional)" 
+          className={cn(getFieldState('recommendationUrl'))}
           onUploadStart={() => setActiveUploads(prev => prev + 1)}
           onUploadError={() => setActiveUploads(prev => Math.max(0, prev - 1))}
           onUploadSuccess={(url) => {
@@ -507,6 +749,7 @@ export default function ApplicationForm() {
           rows={6} 
           {...register('personalStatement')} 
           placeholder="Write your personal statement here..."
+          className={cn(getFieldState('personalStatement'))}
           onChange={(e) => {
             register('personalStatement').onChange(e);
             updateData({ personalStatement: e.target.value });
@@ -521,29 +764,82 @@ export default function ApplicationForm() {
     <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="annualIncome">Annual Household Income (NGN)</Label>
-        <Input id="annualIncome" type="number" {...register('annualIncome')} placeholder="e.g. 500000" />
+        <Input 
+          id="annualIncome" 
+          type="tel" 
+          {...register('annualIncome')} 
+          placeholder="e.g. 500000" 
+          className={cn(getFieldState('annualIncome'))}
+          onInput={(e: any) => {
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 15);
+          }}
+          onPaste={(e: any) => {
+            e.preventDefault();
+            const paste = e.clipboardData.getData('text');
+            const sanitized = paste.replace(/\D/g, '').slice(0, 15);
+            setValue('annualIncome', sanitized, { shouldValidate: true });
+          }}
+        />
         {errors.annualIncome && <p className="text-sm text-red-500">{errors.annualIncome.message as string}</p>}
       </div>
       <div className="space-y-2">
         <Label htmlFor="sourceOfFunds">Source of Funds</Label>
-        <Input id="sourceOfFunds" {...register('sourceOfFunds')} placeholder="e.g. Salary, Business, Parents" />
+        <input type="hidden" {...register('sourceOfFunds')} />
+        <Select onValueChange={(val) => setValue('sourceOfFunds', val, { shouldValidate: true })} value={watch('sourceOfFunds')}>
+          <SelectTrigger className={cn(getFieldState('sourceOfFunds'))}>
+            <SelectValue placeholder="Select Source" />
+          </SelectTrigger>
+          <SelectContent>
+            {INCOME_SOURCES.map(source => (
+              <SelectItem key={source} value={source}>{source}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         {errors.sourceOfFunds && <p className="text-sm text-red-500">{errors.sourceOfFunds.message as string}</p>}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="bankName">Bank Name</Label>
-          <Input id="bankName" {...register('bankName')} />
+          <input type="hidden" {...register('bankName')} />
+          <Select onValueChange={(val) => setValue('bankName', val, { shouldValidate: true })} value={watch('bankName')}>
+            <SelectTrigger className={cn(getFieldState('bankName'))}>
+              <SelectValue placeholder="Select Bank" />
+            </SelectTrigger>
+            <SelectContent>
+              {NIGERIAN_BANKS.map(bank => (
+                <SelectItem key={bank} value={bank}>{bank}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           {errors.bankName && <p className="text-sm text-red-500">{errors.bankName.message as string}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="accountNumber">Account Number</Label>
-          <Input id="accountNumber" {...register('accountNumber')} maxLength={10} />
+          <Input 
+            id="accountNumber" 
+            type="tel"
+            {...register('accountNumber')} 
+            className={cn(getFieldState('accountNumber'))}
+            onInput={(e: any) => {
+              e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+            }}
+            onPaste={(e: any) => {
+              e.preventDefault();
+              const paste = e.clipboardData.getData('text');
+              const sanitized = paste.replace(/\D/g, '').slice(0, 10);
+              setValue('accountNumber', sanitized, { shouldValidate: true });
+            }}
+          />
           {errors.accountNumber && <p className="text-sm text-red-500">{errors.accountNumber.message as string}</p>}
         </div>
       </div>
       <div className="space-y-2">
         <Label htmlFor="accountName">Account Name</Label>
-        <Input id="accountName" {...register('accountName')} />
+        <Input 
+          id="accountName" 
+          {...register('accountName')} 
+          className={cn(getFieldState('accountName'))}
+        />
         {errors.accountName && <p className="text-sm text-red-500">{errors.accountName.message as string}</p>}
       </div>
     </div>
@@ -556,22 +852,67 @@ export default function ApplicationForm() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="referee1Name">Full Name</Label>
-            <Input id="referee1Name" {...register('referee1Name')} />
+            <Input 
+              id="referee1Name" 
+              {...register('referee1Name')} 
+              className={cn(getFieldState('referee1Name'))}
+            />
             {errors.referee1Name && <p className="text-sm text-red-500">{errors.referee1Name.message as string}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="referee1Email">Email Address</Label>
-            <Input id="referee1Email" type="email" {...register('referee1Email')} />
+            <Input 
+              id="referee1Email" 
+              type="email" 
+              {...register('referee1Email')} 
+              className={cn(getFieldState('referee1Email'))}
+            />
             {errors.referee1Email && <p className="text-sm text-red-500">{errors.referee1Email.message as string}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="referee1Phone">Phone Number</Label>
-            <Input id="referee1Phone" {...register('referee1Phone')} />
+            <Input 
+              id="referee1Phone" 
+              type="tel"
+              {...register('referee1Phone')} 
+              placeholder="+234... or 080..."
+              className={cn(getFieldState('referee1Phone'))}
+              onInput={(e: any) => {
+                let val = e.target.value;
+                if (val.startsWith('+')) {
+                  val = '+' + val.slice(1).replace(/\D/g, '').slice(0, 13);
+                } else {
+                  val = val.replace(/\D/g, '').slice(0, 11);
+                }
+                e.target.value = val;
+              }}
+              onPaste={(e: any) => {
+                e.preventDefault();
+                const paste = e.clipboardData.getData('text');
+                let sanitized = paste.replace(/[^\d+]/g, '');
+                if (sanitized.startsWith('+')) {
+                  sanitized = '+' + sanitized.slice(1).replace(/\D/g, '').slice(0, 13);
+                } else {
+                  sanitized = sanitized.replace(/\D/g, '').slice(0, 11);
+                }
+                setValue('referee1Phone', sanitized, { shouldValidate: true });
+              }}
+            />
             {errors.referee1Phone && <p className="text-sm text-red-500">{errors.referee1Phone.message as string}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="referee1Relationship">Relationship</Label>
-            <Input id="referee1Relationship" {...register('referee1Relationship')} placeholder="e.g. Lecturer, Employer" />
+            <input type="hidden" {...register('referee1Relationship')} />
+            <Select onValueChange={(val) => setValue('referee1Relationship', val, { shouldValidate: true })} value={watch('referee1Relationship')}>
+              <SelectTrigger className={cn(getFieldState('referee1Relationship'))}>
+                <SelectValue placeholder="Select Relationship" />
+              </SelectTrigger>
+              <SelectContent>
+                {RELATIONSHIP_OPTIONS.map(option => (
+                  <SelectItem key={option} value={option}>{option}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {errors.referee1Relationship && <p className="text-sm text-red-500">{errors.referee1Relationship.message as string}</p>}
           </div>
         </div>
@@ -582,22 +923,67 @@ export default function ApplicationForm() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="referee2Name">Full Name</Label>
-            <Input id="referee2Name" {...register('referee2Name')} />
+            <Input 
+              id="referee2Name" 
+              {...register('referee2Name')} 
+              className={cn(getFieldState('referee2Name'))}
+            />
             {errors.referee2Name && <p className="text-sm text-red-500">{errors.referee2Name.message as string}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="referee2Email">Email Address</Label>
-            <Input id="referee2Email" type="email" {...register('referee2Email')} />
+            <Input 
+              id="referee2Email" 
+              type="email" 
+              {...register('referee2Email')} 
+              className={cn(getFieldState('referee2Email'))}
+            />
             {errors.referee2Email && <p className="text-sm text-red-500">{errors.referee2Email.message as string}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="referee2Phone">Phone Number</Label>
-            <Input id="referee2Phone" {...register('referee2Phone')} />
+            <Input 
+              id="referee2Phone" 
+              type="tel"
+              {...register('referee2Phone')} 
+              placeholder="+234... or 080..."
+              className={cn(getFieldState('referee2Phone'))}
+              onInput={(e: any) => {
+                let val = e.target.value;
+                if (val.startsWith('+')) {
+                  val = '+' + val.slice(1).replace(/\D/g, '').slice(0, 13);
+                } else {
+                  val = val.replace(/\D/g, '').slice(0, 11);
+                }
+                e.target.value = val;
+              }}
+              onPaste={(e: any) => {
+                e.preventDefault();
+                const paste = e.clipboardData.getData('text');
+                let sanitized = paste.replace(/[^\d+]/g, '');
+                if (sanitized.startsWith('+')) {
+                  sanitized = '+' + sanitized.slice(1).replace(/\D/g, '').slice(0, 13);
+                } else {
+                  sanitized = sanitized.replace(/\D/g, '').slice(0, 11);
+                }
+                setValue('referee2Phone', sanitized, { shouldValidate: true });
+              }}
+            />
             {errors.referee2Phone && <p className="text-sm text-red-500">{errors.referee2Phone.message as string}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="referee2Relationship">Relationship</Label>
-            <Input id="referee2Relationship" {...register('referee2Relationship')} placeholder="e.g. Mentor, Family Friend" />
+            <input type="hidden" {...register('referee2Relationship')} />
+            <Select onValueChange={(val) => setValue('referee2Relationship', val, { shouldValidate: true })} value={watch('referee2Relationship')}>
+              <SelectTrigger className={cn(getFieldState('referee2Relationship'))}>
+                <SelectValue placeholder="Select Relationship" />
+              </SelectTrigger>
+              <SelectContent>
+                {RELATIONSHIP_OPTIONS.map(option => (
+                  <SelectItem key={option} value={option}>{option}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {errors.referee2Relationship && <p className="text-sm text-red-500">{errors.referee2Relationship.message as string}</p>}
           </div>
         </div>
@@ -698,6 +1084,71 @@ export default function ApplicationForm() {
           </div>
         </div>
 
+        {/* Payment Section */}
+        <div className="bg-green-50 p-6 rounded-xl border border-green-200 space-y-4">
+          <h3 className="font-bold text-green-800 flex items-center gap-2">
+            <Award className="w-5 h-5" />
+            Application Fee Payment
+          </h3>
+          <div className="bg-white p-4 rounded-lg border border-green-100 text-sm space-y-2">
+            <p className="text-slate-600">Please pay the application fee of <span className="font-bold text-green-700">₦5,000</span> to the account below:</p>
+            <div className="grid grid-cols-2 gap-2 pt-2">
+              <span className="text-slate-500">Bank:</span>
+              <span className="font-bold">Opay</span>
+              <span className="text-slate-500">Account Name:</span>
+              <span className="font-bold">Aliko Dangote Scholarship Foundation</span>
+              <span className="text-slate-500">Account Number:</span>
+              <div className="flex items-center gap-2">
+                <span className="font-bold">1234567890</span>
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6 text-green-600 hover:text-green-700 hover:bg-green-100"
+                  onClick={() => {
+                    navigator.clipboard.writeText('1234567890');
+                    toast.success('Account number copied to clipboard');
+                  }}
+                >
+                  <Copy className="w-3 h-3" />
+                </Button>
+              </div>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <input type="hidden" {...register('paymentProofUrl')} />
+            <FileUpload 
+              label="Upload Payment Screenshot (Optional)" 
+              accept="image/*"
+              onUploadStart={() => setActiveUploads(prev => prev + 1)}
+              onUploadError={() => setActiveUploads(prev => Math.max(0, prev - 1))}
+              onUploadSuccess={(url) => {
+                setActiveUploads(prev => Math.max(0, prev - 1));
+                setValue('paymentProofUrl', url, { shouldValidate: true });
+                updateData({ paymentProofUrl: url });
+              }} 
+              value={watch('paymentProofUrl')}
+            />
+            <p className="text-xs text-slate-500 italic">You can submit your application now and upload proof of payment later if needed.</p>
+            {errors.paymentProofUrl && <p className="text-sm text-red-500">{errors.paymentProofUrl.message as string}</p>}
+          </div>
+
+          <div className="flex items-start space-x-3 pt-2">
+            <Checkbox 
+              id="paymentConfirmed" 
+              checked={watch('paymentConfirmed')}
+              onCheckedChange={(checked) => setValue('paymentConfirmed', checked as boolean, { shouldValidate: true })}
+            />
+            <div className="grid gap-1.5 leading-none">
+              <Label htmlFor="paymentConfirmed" className="font-medium cursor-pointer text-sm text-green-800">
+                I understand that my application will only be processed after payment of ₦5,000 is verified.
+              </Label>
+              {errors.paymentConfirmed && <p className="text-sm text-red-500">{errors.paymentConfirmed.message as string}</p>}
+            </div>
+          </div>
+        </div>
+
         <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
           <h4 className="font-semibold text-yellow-800 mb-2">Final Declaration</h4>
           <p className="text-yellow-700 text-sm">Please review all information above. By submitting, you certify that all information is true and correct to the best of your knowledge.</p>
@@ -783,34 +1234,35 @@ export default function ApplicationForm() {
             </motion.div>
           </AnimatePresence>
 
-          <div className="flex flex-col sm:flex-row justify-between mt-8 pt-6 border-t border-slate-100 gap-4">
+        <div className="flex flex-col sm:flex-row justify-between mt-8 pt-6 border-t border-slate-100 gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full sm:w-auto order-2 sm:order-1"
+            onClick={() => {
+              updateData(watch());
+              prevStep();
+            }}
+            disabled={step === 1 || loading}
+          >
+            {t('form.prev')}
+          </Button>
+          
+          <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 order-1 sm:order-2">
             <Button
               type="button"
-              variant="outline"
-              className="w-full sm:w-auto order-2 sm:order-1"
+              variant="ghost"
+              className="w-full sm:w-auto"
               onClick={() => {
                 updateData(watch());
-                prevStep();
+                toast.success('Progress saved locally!');
               }}
-              disabled={step === 1 || loading}
+              disabled={loading}
             >
-              {t('form.prev')}
+              {t('form.save')}
             </Button>
             
-            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 order-1 sm:order-2">
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-full sm:w-auto"
-                onClick={() => {
-                  updateData(watch());
-                  toast.success('Progress saved locally!');
-                }}
-                disabled={loading}
-              >
-                {t('form.save')}
-              </Button>
-              
+            {step === 7 ? (
               <Button 
                 type="submit" 
                 className="w-full sm:w-auto bg-green-700 hover:bg-green-800" 
@@ -821,10 +1273,24 @@ export default function ApplicationForm() {
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Uploading...
                   </>
-                ) : loading ? 'Processing...' : step === 7 ? 'Submit Application' : t('form.next')}
+                ) : loading ? 'Processing...' : 'Submit Application'}
               </Button>
-            </div>
+            ) : (
+              <Button 
+                type="submit" 
+                className="w-full sm:w-auto bg-green-700 hover:bg-green-800" 
+                disabled={loading || activeUploads > 0}
+              >
+                {activeUploads > 0 ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Uploading...
+                  </>
+                ) : loading ? 'Processing...' : t('form.next')}
+              </Button>
+            )}
           </div>
+        </div>
         </form>
       </div>
     </div>

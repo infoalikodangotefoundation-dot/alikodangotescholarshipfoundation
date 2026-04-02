@@ -51,6 +51,8 @@ export interface ApplicationData {
 
   // Step 7
   declaration: boolean;
+  paymentProofUrl?: string;
+  paymentConfirmed?: boolean;
 }
 
 interface ApplicationState {

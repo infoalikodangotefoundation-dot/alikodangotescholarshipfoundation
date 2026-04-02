@@ -101,6 +101,12 @@ export default function Layout() {
               <Link to="/benefits" onClick={() => handleNavClick('/benefits')} className={`font-medium px-3 py-2 rounded-md transition-colors ${location.pathname === '/benefits' ? 'text-green-700 bg-green-50' : 'text-gray-700 hover:text-green-700'}`}>
                 {t('nav.benefits')}
               </Link>
+              <Link to="/faq" onClick={() => handleNavClick('/faq')} className={`font-medium px-3 py-2 rounded-md transition-colors ${location.pathname === '/faq' ? 'text-green-700 bg-green-50' : 'text-gray-700 hover:text-green-700'}`}>
+                {t('nav.faq')}
+              </Link>
+              <Link to="/how-to-apply" onClick={() => handleNavClick('/how-to-apply')} className={`font-medium px-3 py-2 rounded-md transition-colors ${location.pathname === '/how-to-apply' ? 'text-green-700 bg-green-50' : 'text-gray-700 hover:text-green-700'}`}>
+                {t('nav.how_to_apply')}
+              </Link>
 
               {currentUser ? (
                 <>
@@ -174,6 +180,8 @@ export default function Layout() {
               <ul className="space-y-2 text-sm">
                 <li><Link to="/home" className="hover:text-white transition-colors">{t('nav.home')}</Link></li>
                 <li><Link to="/benefits" className="hover:text-white transition-colors">{t('nav.benefits')}</Link></li>
+                <li><Link to="/faq" className="hover:text-white transition-colors">{t('nav.faq')}</Link></li>
+                <li><Link to="/how-to-apply" className="hover:text-white transition-colors">{t('nav.how_to_apply')}</Link></li>
                 <li><Link to="/apply-selection" className="hover:text-white transition-colors">{t('home.apply_now')}</Link></li>
               </ul>
             </div>

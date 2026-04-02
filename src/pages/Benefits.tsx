@@ -13,7 +13,12 @@ import {
   LifeBuoy,
   ArrowRight,
   ChevronDown,
-  HelpCircle
+  HelpCircle,
+  UserPlus,
+  FileText,
+  Upload,
+  CreditCard,
+  Send
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'motion/react';
@@ -138,6 +143,39 @@ const faqs = [
   }
 ];
 
+const applicationSteps = [
+  {
+    title: "Create Account",
+    icon: <UserPlus className="w-6 h-6 text-green-600" />,
+    description: "Register on our portal with your basic details to get started."
+  },
+  {
+    title: "Select Application",
+    icon: <BookOpen className="w-6 h-6 text-green-600" />,
+    description: "Choose whether you are applying for yourself or on behalf of someone else."
+  },
+  {
+    title: "Fill Information",
+    icon: <FileText className="w-6 h-6 text-green-600" />,
+    description: "Complete the multi-step form with accurate personal and academic details."
+  },
+  {
+    title: "Upload Documents",
+    icon: <Upload className="w-6 h-6 text-green-600" />,
+    description: "Upload your passport, academic certificates, and recommendation letters."
+  },
+  {
+    title: "Pay Processing Fee",
+    icon: <CreditCard className="w-6 h-6 text-green-600" />,
+    description: "Pay the non-refundable ₦5,000 processing fee to finalize your application."
+  },
+  {
+    title: "Submit & Track",
+    icon: <Send className="w-6 h-6 text-green-600" />,
+    description: "Submit your application and use your unique Ticket ID to track its status."
+  }
+];
+
 export default function Benefits() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -166,11 +204,35 @@ export default function Benefits() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-xl md:text-2xl text-green-50 max-w-3xl mx-auto leading-relaxed"
+            className="text-xl md:text-2xl text-green-50 max-w-3xl mx-auto leading-relaxed mb-10"
           >
             The Aliko Dangote Foundation Scholarship offers full, comprehensive support to exceptional Nigerian students, 
             ensuring that financial barriers never stand in the way of world-class education and global leadership.
           </motion.p>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            <Button 
+              size="lg" 
+              className="bg-white text-green-900 hover:bg-green-50 px-8 h-14 rounded-full font-bold text-lg shadow-lg group"
+              onClick={() => document.getElementById('how-to-apply')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              How to Apply
+              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+            <Link to="/apply-selection">
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="border-2 border-white text-white hover:bg-white/10 px-8 h-14 rounded-full font-bold text-lg"
+              >
+                Start Application
+              </Button>
+            </Link>
+          </motion.div>
         </div>
       </section>
 
@@ -203,6 +265,51 @@ export default function Benefits() {
               </ul>
             </motion.div>
           ))}
+        </div>
+      </section>
+
+      {/* How to Apply Section */}
+      <section id="how-to-apply" className="py-24 bg-white border-t border-slate-200 scroll-mt-20">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4">How to Apply</h2>
+            <p className="text-slate-600 text-lg max-w-2xl mx-auto">
+              Follow these simple steps to complete your application for the Aliko Dangote Foundation Scholarship.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {applicationSteps.map((step, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="relative p-8 rounded-3xl bg-slate-50 border border-slate-200 group hover:bg-white hover:shadow-xl hover:border-green-200 transition-all duration-300"
+              >
+                <div className="absolute -top-4 -left-4 w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center font-bold shadow-lg z-10">
+                  {index + 1}
+                </div>
+                <div className="mb-6 bg-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm group-hover:bg-green-50 transition-colors">
+                  {step.icon}
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-slate-900">{step.title}</h3>
+                <p className="text-slate-600 leading-relaxed">
+                  {step.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="mt-16 text-center">
+            <Link to="/apply-selection">
+              <Button size="lg" className="bg-green-700 hover:bg-green-800 text-white px-10 h-14 rounded-full shadow-lg group">
+                Begin Your Application
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 

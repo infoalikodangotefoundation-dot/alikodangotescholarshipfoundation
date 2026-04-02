@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 import { UploadCloud, CheckCircle2, XCircle, FileText, FileImage, File as FileIcon, Trash2, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -17,6 +18,7 @@ interface FileUploadProps {
   accept?: string;
   maxSizeMB?: number;
   value?: string;
+  className?: string;
 }
 
 export function FileUpload({ 
@@ -26,7 +28,8 @@ export function FileUpload({
   onUploadError,
   accept = "image/*,.pdf", 
   maxSizeMB = 5, 
-  value 
+  value,
+  className
 }: FileUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -168,7 +171,7 @@ export function FileUpload({
   };
 
   return (
-    <div className="space-y-3 border-2 border-dashed p-4 rounded-lg bg-slate-50/50 transition-colors hover:bg-slate-50">
+    <div className={cn("space-y-3 border-2 border-dashed p-4 rounded-lg bg-slate-50/50 transition-colors hover:bg-slate-50", className)}>
       <div className="flex items-center justify-between">
         <Label className="text-sm font-semibold text-slate-700">{label}</Label>
         {value && <CheckCircle2 className="w-5 h-5 text-green-500" />}

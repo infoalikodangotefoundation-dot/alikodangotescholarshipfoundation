@@ -51,6 +51,9 @@ export default function ApplicationSelection() {
   const universityState = location.state as { selectedUniversity?: string };
 
   const handleSelection = (optionId: string) => {
+    // Persist selection in sessionStorage
+    sessionStorage.setItem('applyingFor', optionId);
+    
     navigate('/apply', { 
       state: { 
         ...universityState,
