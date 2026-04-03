@@ -477,55 +477,70 @@ export default function ApplicationForm() {
         <div className="space-y-2 flex flex-col">
           <Label htmlFor="stateOfOrigin" className="mb-1">{t('form.state')}</Label>
           <input type="hidden" {...register('stateOfOrigin')} />
-          <Popover open={stateOpen} onOpenChange={setStateOpen}>
-            <PopoverTrigger 
-              render={
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={stateOpen}
-                  className={cn(
-                    "w-full justify-between font-normal",
-                    getFieldState('stateOfOrigin'),
-                    !watch('stateOfOrigin') && "text-muted-foreground"
-                  )}
-                />
-              }
+          <Dialog open={stateOpen} onOpenChange={setStateOpen}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setStateOpen(true)}
+              className={cn(
+                "w-full justify-between font-normal h-10 px-3",
+                getFieldState('stateOfOrigin'),
+                !watch('stateOfOrigin') && "text-muted-foreground"
+              )}
             >
-              {watch('stateOfOrigin')
-                ? NIGERIAN_STATES.find((state) => state.value === watch('stateOfOrigin'))?.label
-                : "Select State"}
+              <span className="truncate">
+                {watch('stateOfOrigin')
+                  ? NIGERIAN_STATES.find((state) => state.value === watch('stateOfOrigin'))?.label
+                  : "Select State of Origin"}
+              </span>
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </PopoverTrigger>
-            <PopoverContent className="w-[calc(100vw-2.5rem)] sm:w-[350px] p-0" align="start">
-              <Command>
-                <CommandInput placeholder="Search state..." />
-                <CommandList>
-                  <CommandEmpty>No state found.</CommandEmpty>
-                  <CommandGroup>
-                    {NIGERIAN_STATES.map((state) => (
-                      <CommandItem
-                        key={state.value}
-                        value={state.value}
-                        onSelect={() => {
-                          setValue('stateOfOrigin', state.value, { shouldValidate: true });
-                          setStateOpen(false);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            watch('stateOfOrigin') === state.value ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        {state.label}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+            </Button>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col p-0 gap-0">
+              <DialogHeader className="p-6 pb-2">
+                <DialogTitle>Select State of Origin</DialogTitle>
+                <DialogDescription>
+                  Choose your state of origin from the list below.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex-1 overflow-y-auto p-6 pt-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {NIGERIAN_STATES.map((state) => (
+                    <Button
+                      key={state.value}
+                      type="button"
+                      variant={watch('stateOfOrigin') === state.value ? "default" : "outline"}
+                      className={cn(
+                        "justify-start h-auto py-3 px-4 text-sm font-medium transition-all",
+                        watch('stateOfOrigin') === state.value 
+                          ? "bg-primary-700 text-white border-primary-700 shadow-md scale-[1.02]" 
+                          : "hover:border-primary-500 hover:text-primary-700 hover:bg-primary-50"
+                      )}
+                      onClick={() => {
+                        setValue('stateOfOrigin', state.value, { shouldValidate: true });
+                        setStateOpen(false);
+                      }}
+                    >
+                      <div className="flex items-center w-full">
+                        <div className={cn(
+                          "w-2 h-2 rounded-full mr-2 shrink-0 transition-colors",
+                          watch('stateOfOrigin') === state.value ? "bg-white" : "bg-slate-300"
+                        )} />
+                        <span className="truncate">{state.label}</span>
+                        {watch('stateOfOrigin') === state.value && (
+                          <Check className="ml-auto h-4 w-4 shrink-0" />
+                        )}
+                      </div>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              <DialogFooter className="p-4 border-t bg-slate-50">
+                <Button type="button" variant="ghost" onClick={() => setStateOpen(false)}>
+                  Cancel
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
           {errors.stateOfOrigin && <p className="text-sm text-red-500">{errors.stateOfOrigin.message as string}</p>}
         </div>
         <div className="space-y-2">

@@ -333,74 +333,61 @@ export default function FloatingChatbot() {
   };
 
   return (
-    <div className="fixed z-[100] bottom-20 md:bottom-8 right-4 md:right-8 flex flex-col items-end">
+    <div className="fixed z-[100] bottom-20 md:bottom-8 right-4 md:right-8 flex flex-col items-end pointer-events-none">
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            drag
+            dragConstraints={{ left: -300, right: 0, top: -500, bottom: 0 }}
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             className={`${
-              isExpanded ? 'fixed inset-4 md:inset-auto md:bottom-24 md:right-8 md:w-[500px] md:h-[700px]' : 'w-[90vw] md:w-[400px] h-[500px] md:h-[600px]'
-            } bg-white rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden mb-4`}
+              isExpanded ? 'fixed inset-4 md:inset-auto md:bottom-24 md:right-8 md:w-[500px] md:h-[700px]' : 'w-[80vw] sm:w-[350px] md:w-[400px] h-[450px] md:h-[600px]'
+            } bg-white rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden mb-4 pointer-events-auto touch-none cursor-grab active:cursor-grabbing`}
           >
             {/* Header */}
-            <div className="bg-[#ff0000] p-4 text-white flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                  {activeMode === 'call' ? <Phone className="w-6 h-6 animate-pulse" /> : <Sparkles className="w-6 h-6" />}
+            <div className="bg-[#ff0000] p-3 md:p-4 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-white/20 rounded-full flex items-center justify-center">
+                  {activeMode === 'call' ? <Phone className="w-5 h-5 md:w-6 md:h-6 animate-pulse" /> : <Sparkles className="w-5 h-5 md:w-6 md:h-6" />}
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm md:text-base">
-                    {activeMode === 'call' ? 'Voice Assistant' : 'Dangote AI Assistant'}
+                  <h3 className="font-bold text-xs md:text-base">
+                    {activeMode === 'call' ? 'Voice Assistant' : 'Dangote AI'}
                   </h3>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 bg-primary-400 rounded-full animate-pulse" />
-                    <span className="text-[10px] text-white/80 uppercase tracking-wider font-medium">
+                  <div className="flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 bg-primary-400 rounded-full animate-pulse" />
+                    <span className="text-[8px] md:text-[10px] text-white/80 uppercase tracking-wider font-medium">
                       {activeMode === 'call' ? 'On Call' : 'Online'}
                     </span>
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-0.5 md:gap-1">
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className={`text-white hover:bg-white/10 ${activeMode === 'call' ? 'bg-white/20' : ''}`}
+                  className={`text-white hover:bg-white/10 h-8 w-8 md:h-9 md:w-9 ${activeMode === 'call' ? 'bg-white/20' : ''}`}
                   onClick={() => setActiveMode(activeMode === 'chat' ? 'call' : 'chat')}
-                  title={activeMode === 'chat' ? 'Switch to Voice Call' : 'Switch to Chat'}
                 >
-                  {activeMode === 'chat' ? <Phone className="w-4 h-4" /> : <MessageCircle className="w-4 h-4" />}
+                  {activeMode === 'chat' ? <Phone className="w-3.5 h-3.5 md:w-4 md:h-4" /> : <MessageCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />}
                 </Button>
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="text-white hover:bg-white/10"
-                  onClick={() => {
-                    if (isSpeaking) {
-                      stopSpeaking();
-                    } else {
-                      setIsMuted(!isMuted);
-                    }
-                  }}
-                >
-                  {isSpeaking ? <Volume2 className="w-4 h-4 animate-pulse" /> : (isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />)}
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="text-white hover:bg-white/10"
+                  className="text-white hover:bg-white/10 h-8 w-8 md:h-9 md:w-9"
                   onClick={() => setIsExpanded(!isExpanded)}
                 >
-                  {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                  {isExpanded ? <Minimize2 className="w-3.5 h-3.5 md:w-4 md:h-4" /> : <Maximize2 className="w-3.5 h-3.5 md:w-4 md:h-4" />}
                 </Button>
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="text-white hover:bg-white/10"
+                  className="text-white hover:bg-white/10 h-8 w-8 md:h-9 md:w-9"
                   onClick={() => setIsOpen(false)}
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4 md:w-5 md:h-5" />
                 </Button>
               </div>
             </div>
@@ -408,25 +395,26 @@ export default function FloatingChatbot() {
             {/* Messages */}
             <div 
               ref={scrollRef}
-              className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50"
+              className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4 bg-slate-50"
             >
               {activeMode === 'call' && messages.length === 1 && (
-                <div className="flex flex-col items-center justify-center h-full text-center space-y-6">
-                  <div className="w-24 h-24 bg-[#ff0000]/10 rounded-full flex items-center justify-center animate-pulse">
-                    <Phone className="w-12 h-12 text-[#ff0000]" />
+                <div className="flex flex-col items-center justify-center h-full text-center space-y-4 md:space-y-6">
+                  <div className="w-16 h-16 md:w-24 md:h-24 bg-[#ff0000]/10 rounded-full flex items-center justify-center animate-pulse">
+                    <Phone className="w-8 h-8 md:w-12 md:h-12 text-[#ff0000]" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-slate-800">Voice Call Mode</h4>
-                    <p className="text-sm text-slate-500 max-w-[200px] mx-auto mt-2">
-                      Hold the microphone button to speak. I will listen and respond with voice.
+                    <h4 className="text-base md:text-lg font-bold text-slate-800">Voice Mode</h4>
+                    <p className="text-[10px] md:text-sm text-slate-500 max-w-[180px] mx-auto mt-1 md:mt-2">
+                      Hold the mic to speak.
                     </p>
                   </div>
                   <Button 
                     onClick={() => setActiveMode('chat')}
                     variant="outline"
-                    className="rounded-full border-[#ff0000] text-[#ff0000] hover:bg-[#ff0000] hover:text-white"
+                    size="sm"
+                    className="rounded-full border-[#ff0000] text-[#ff0000] hover:bg-[#ff0000] hover:text-white text-xs"
                   >
-                    Switch to Text Chat
+                    Switch to Chat
                   </Button>
                 </div>
               )}
@@ -436,22 +424,13 @@ export default function FloatingChatbot() {
                   key={m.id}
                   className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`max-w-[85%] p-3 rounded-2xl text-sm relative group ${
+                  <div className={`max-w-[85%] p-2.5 md:p-3 rounded-2xl text-[13px] md:text-sm relative group ${
                     m.role === 'user' 
                       ? 'bg-[#ff0000] text-white rounded-tr-none' 
                       : 'bg-white text-slate-700 shadow-sm border border-slate-100 rounded-tl-none'
                   }`}>
                     {m.text}
-                    {m.role === 'model' && (
-                      <button 
-                        onClick={() => speak(m.text)}
-                        className="absolute -right-8 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-[#ff0000] opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Read aloud"
-                      >
-                        <Volume2 className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                    <div className={`text-[10px] mt-1 opacity-60 ${m.role === 'user' ? 'text-right' : 'text-left'}`}>
+                    <div className={`text-[9px] md:text-[10px] mt-1 opacity-60 ${m.role === 'user' ? 'text-right' : 'text-left'}`}>
                       {m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
@@ -463,14 +442,14 @@ export default function FloatingChatbot() {
                   key={m.id}
                   className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`max-w-[85%] p-4 rounded-2xl text-base ${
+                  <div className={`max-w-[85%] p-3 md:p-4 rounded-2xl text-sm md:text-base ${
                     m.role === 'user' 
                       ? 'bg-[#ff0000]/10 text-[#ff0000] border border-[#ff0000]/20' 
                       : 'bg-white text-slate-700 shadow-md border border-slate-100'
                   }`}>
-                    <div className="flex items-center gap-2 mb-1">
-                      {m.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-                      <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">
+                    <div className="flex items-center gap-1.5 md:gap-2 mb-1">
+                      {m.role === 'user' ? <User className="w-3 h-3 md:w-4 md:h-4" /> : <Bot className="w-3 h-3 md:w-4 md:h-4" />}
+                      <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest opacity-50">
                         {m.role === 'user' ? 'You' : 'Assistant'}
                       </span>
                     </div>
@@ -480,9 +459,9 @@ export default function FloatingChatbot() {
               ))}
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin text-[#ff0000]" />
-                    <span className="text-xs text-slate-500">Thinking...</span>
+                  <div className="bg-white p-2 md:p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 flex items-center gap-2">
+                    <Loader2 className="w-3 h-3 md:w-4 md:h-4 animate-spin text-[#ff0000]" />
+                    <span className="text-[10px] md:text-xs text-slate-500">Thinking...</span>
                   </div>
                 </div>
               )}
@@ -490,12 +469,12 @@ export default function FloatingChatbot() {
 
             {/* Suggestions */}
             {messages.length < 3 && !isLoading && (
-              <div className="px-4 py-2 bg-slate-50 flex flex-wrap gap-2">
+              <div className="px-3 md:px-4 py-1.5 md:py-2 bg-slate-50 flex flex-wrap gap-1.5 md:gap-2">
                 {SUGGESTIONS.map((s, i) => (
                   <button
                     key={i}
                     onClick={() => handleSend(s)}
-                    className="text-[10px] md:text-xs bg-white border border-slate-200 px-3 py-1.5 rounded-full hover:border-[#ff0000] hover:text-[#ff0000] transition-colors shadow-sm"
+                    className="text-[9px] md:text-xs bg-white border border-slate-200 px-2.5 py-1 rounded-full hover:border-[#ff0000] hover:text-[#ff0000] transition-colors shadow-sm"
                   >
                     {s}
                   </button>
@@ -504,39 +483,18 @@ export default function FloatingChatbot() {
             )}
 
             {/* Input */}
-            <div className="p-4 bg-white border-t border-slate-100">
-              {messages.length === 1 && activeMode === 'chat' && (
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  <Button 
-                    variant="outline" 
-                    className="text-xs py-6 flex flex-col gap-1 border-slate-200 hover:border-[#ff0000] hover:text-[#ff0000]"
-                    onClick={() => inputRef.current?.focus()}
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    Type Message
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="text-xs py-6 flex flex-col gap-1 border-slate-200 hover:border-[#ff0000] hover:text-[#ff0000]"
-                    onClick={() => setActiveMode('call')}
-                  >
-                    <Phone className="w-4 h-4" />
-                    Call Assistant
-                  </Button>
-                </div>
-              )}
-              
+            <div className="p-3 md:p-4 bg-white border-t border-slate-100">
               <div className="flex items-center gap-2">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className={`rounded-full w-12 h-12 ${isRecording ? 'text-white bg-[#ff0000] animate-pulse' : 'text-slate-400 hover:text-[#ff0000] bg-slate-100'}`}
+                  className={`rounded-full w-10 h-10 md:w-12 md:h-12 shrink-0 ${isRecording ? 'text-white bg-[#ff0000] animate-pulse' : 'text-slate-400 hover:text-[#ff0000] bg-slate-100'}`}
                   onMouseDown={startRecording}
                   onMouseUp={stopRecording}
                   onTouchStart={startRecording}
                   onTouchEnd={stopRecording}
                 >
-                  {isRecording ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
+                  {isRecording ? <MicOff className="w-5 h-5 md:w-6 md:h-6" /> : <Mic className="w-5 h-5 md:w-6 md:h-6" />}
                 </Button>
                 <div className="flex-1 relative">
                   <input
@@ -545,24 +503,21 @@ export default function FloatingChatbot() {
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                    placeholder={activeMode === 'call' ? "Hold mic to speak..." : "Type your message..."}
+                    placeholder={activeMode === 'call' ? "Hold mic..." : "Type..."}
                     disabled={activeMode === 'call'}
-                    className="w-full pl-4 pr-10 py-3 bg-slate-100 border-none rounded-2xl text-sm focus:ring-2 focus:ring-[#ff0000]/20 transition-all outline-none disabled:opacity-50"
+                    className="w-full pl-3 pr-8 py-2 md:py-3 bg-slate-100 border-none rounded-xl md:rounded-2xl text-[13px] md:text-sm focus:ring-2 focus:ring-[#ff0000]/20 transition-all outline-none disabled:opacity-50"
                   />
                   {activeMode === 'chat' && (
                     <button
                       onClick={() => handleSend()}
                       disabled={!inputText.trim() || isLoading}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-[#ff0000] disabled:opacity-30 transition-opacity"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[#ff0000] disabled:opacity-30 transition-opacity"
                     >
-                      <Send className="w-4 h-4" />
+                      <Send className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     </button>
                   )}
                 </div>
               </div>
-              <p className="text-[10px] text-center text-slate-400 mt-2">
-                Powered by Aliko Dangote Foundation AI
-              </p>
             </div>
           </motion.div>
         )}
@@ -572,19 +527,21 @@ export default function FloatingChatbot() {
       <AnimatePresence>
         {isVisible && (
           <motion.div
+            drag
+            dragConstraints={{ left: -300, right: 0, top: -600, bottom: 0 }}
             initial={{ opacity: 0, scale: 0.5, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.5, y: 20 }}
-            className="flex flex-col items-end gap-3"
+            className="flex flex-col items-end gap-3 pointer-events-auto"
           >
             {!isOpen && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="bg-white px-4 py-2 rounded-2xl shadow-xl border border-slate-100 text-sm font-medium text-slate-700 mb-2 flex items-center gap-2"
+                className="bg-white px-3 py-1.5 md:px-4 md:py-2 rounded-2xl shadow-xl border border-slate-100 text-[11px] md:text-sm font-medium text-slate-700 mb-1 md:mb-2 flex items-center gap-2 whitespace-nowrap"
               >
-                <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse" />
-                Need help? Ask me anything!
+                <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-primary-500 rounded-full animate-pulse" />
+                Need help?
               </motion.div>
             )}
             <Button
@@ -592,11 +549,11 @@ export default function FloatingChatbot() {
                 setIsOpen(!isOpen);
                 if (!isOpen) setIsVisible(true);
               }}
-              className={`w-14 h-14 md:w-16 md:h-16 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 ${
+              className={`w-12 h-12 md:w-16 md:h-16 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 cursor-grab active:cursor-grabbing ${
                 isOpen ? 'bg-slate-900 rotate-90' : 'bg-[#ff0000] hover:scale-110'
               }`}
             >
-              {isOpen ? <X className="w-6 h-6 md:w-8 md:h-8" /> : <MessageCircle className="w-6 h-6 md:w-8 md:h-8" />}
+              {isOpen ? <X className="w-5 h-5 md:w-8 md:h-8" /> : <MessageCircle className="w-5 h-5 md:w-8 md:h-8" />}
             </Button>
           </motion.div>
         )}
