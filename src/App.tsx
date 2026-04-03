@@ -42,14 +42,14 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<Navigate to="/home" replace />} />
-              <Route path="home" element={<Home />} />
-              <Route path="benefits" element={<Benefits />} />
-              <Route path="faq" element={<FAQ />} />
-              <Route path="how-to-apply" element={<HowToApply />} />
-              <Route path="university/:id" element={<UniversityDetail />} />
-              <Route path="admin" element={<AdminDashboard />} />
-              <Route path="apply-selection" element={<ApplicationSelection />} />
-              <Route path="apply" element={<ApplicationForm />} />
+              <Route path="home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+              <Route path="benefits" element={<ProtectedRoute><Benefits /></ProtectedRoute>} />
+              <Route path="faq" element={<ProtectedRoute><FAQ /></ProtectedRoute>} />
+              <Route path="how-to-apply" element={<ProtectedRoute><HowToApply /></ProtectedRoute>} />
+              <Route path="university/:id" element={<ProtectedRoute><UniversityDetail /></ProtectedRoute>} />
+              <Route path="admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+              <Route path="apply-selection" element={<ProtectedRoute><ApplicationSelection /></ProtectedRoute>} />
+              <Route path="apply" element={<ProtectedRoute><ApplicationForm /></ProtectedRoute>} />
               <Route path="login" element={<Login />} />
               <Route path="signup" element={<SignUp />} />
               <Route path="forgot-password" element={<ForgotPassword />} />
@@ -57,10 +57,10 @@ export default function App() {
               <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="status" element={<ProtectedRoute><ApplicationStatus /></ProtectedRoute>} />
               <Route path="notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-              <Route path="privacy" element={<Legal type="privacy" />} />
-              <Route path="terms" element={<Legal type="terms" />} />
-              <Route path="refund" element={<Legal type="refund" />} />
-              <Route path="support" element={<Support />} />
+              <Route path="privacy" element={<ProtectedRoute><Legal type="privacy" /></ProtectedRoute>} />
+              <Route path="terms" element={<ProtectedRoute><Legal type="terms" /></ProtectedRoute>} />
+              <Route path="refund" element={<ProtectedRoute><Legal type="refund" /></ProtectedRoute>} />
+              <Route path="support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
             </Route>
           </Routes>
         </Router>
