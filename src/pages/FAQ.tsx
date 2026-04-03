@@ -229,7 +229,13 @@ export default function FAQ() {
               </div>
               <h3 className="font-bold mb-2">Live Chat</h3>
               <p className="text-sm text-slate-500 mb-4">Chat with our support team in real-time.</p>
-              <Button variant="outline" className="rounded-full border-green-600 text-green-700 hover:bg-green-50">Start Chat</Button>
+              <Button 
+                variant="outline" 
+                className="rounded-full border-green-600 text-green-700 hover:bg-green-50"
+                onClick={() => window.dispatchEvent(new CustomEvent('open-chatbot'))}
+              >
+                Start Chat
+              </Button>
             </div>
             
             <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 flex flex-col items-center">
@@ -238,7 +244,12 @@ export default function FAQ() {
               </div>
               <h3 className="font-bold mb-2">Email Support</h3>
               <p className="text-sm text-slate-500 mb-4">Send us an email and we'll get back to you.</p>
-              <Button variant="outline" className="rounded-full border-green-600 text-green-700 hover:bg-green-50">Send Email</Button>
+              <a 
+                href="mailto:info.alikodangotefoundation@gmail.com"
+                className="inline-flex items-center justify-center rounded-full border border-green-600 text-green-700 hover:bg-green-50 px-6 py-2 text-sm font-medium transition-colors"
+              >
+                Send Email
+              </a>
             </div>
             
             <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 flex flex-col items-center">
@@ -247,7 +258,12 @@ export default function FAQ() {
               </div>
               <h3 className="font-bold mb-2">Phone Support</h3>
               <p className="text-sm text-slate-500 mb-4">Call us directly for urgent inquiries.</p>
-              <Button variant="outline" className="rounded-full border-green-600 text-green-700 hover:bg-green-50">Call Now</Button>
+              <a 
+                href="tel:+234800DANGOTE"
+                className="inline-flex items-center justify-center rounded-full border border-green-600 text-green-700 hover:bg-green-50 px-6 py-2 text-sm font-medium transition-colors"
+              >
+                Call Now
+              </a>
             </div>
           </div>
         </div>

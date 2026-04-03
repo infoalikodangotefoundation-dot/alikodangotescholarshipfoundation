@@ -19,6 +19,7 @@ const steps = [
   {
     title: "Create Your Account",
     icon: <UserPlus className="w-8 h-8 text-green-600" />,
+    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=800",
     description: "Start by creating a secure account on our scholarship portal. You'll need a valid email address and a strong password.",
     details: [
       "Verify your email address to activate your account",
@@ -29,6 +30,7 @@ const steps = [
   {
     title: "Select Application Type",
     icon: <BookOpen className="w-8 h-8 text-green-600" />,
+    image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=800",
     description: "Choose whether you are applying for yourself or on behalf of a dependent/student.",
     details: [
       "Self-application for students",
@@ -39,6 +41,7 @@ const steps = [
   {
     title: "Complete Application Form",
     icon: <FileText className="w-8 h-8 text-green-600" />,
+    image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=800",
     description: "Fill in your personal, academic, and financial information accurately across the 7-step form.",
     details: [
       "Personal details and contact information",
@@ -49,6 +52,7 @@ const steps = [
   {
     title: "Upload Required Documents",
     icon: <Upload className="w-8 h-8 text-green-600" />,
+    image: "https://images.unsplash.com/photo-1618044733300-9472154094ee?auto=format&fit=crop&q=80&w=800",
     description: "Provide high-quality scans of your necessary documents to support your application.",
     details: [
       "Passport photograph (clear and recent)",
@@ -59,6 +63,7 @@ const steps = [
   {
     title: "Pay Processing Fee",
     icon: <CreditCard className="w-8 h-8 text-green-600" />,
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=80&w=800",
     description: "Pay the non-refundable processing fee of ₦5,000 to the designated foundation account.",
     details: [
       "Use the provided Opay account details",
@@ -69,6 +74,7 @@ const steps = [
   {
     title: "Submit and Track",
     icon: <Send className="w-8 h-8 text-green-600" />,
+    image: "https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&q=80&w=800",
     description: "Review your information one last time and submit. You'll receive a unique Ticket ID.",
     details: [
       "Receive instant confirmation via email",
@@ -148,8 +154,13 @@ export default function HowToApply() {
                   </div>
                 </div>
                 <div className="flex-1 hidden md:block">
-                  <div className="aspect-video bg-slate-200 rounded-3xl overflow-hidden shadow-inner flex items-center justify-center text-slate-400">
-                    <Info className="w-12 h-12 opacity-20" />
+                  <div className="aspect-video rounded-3xl overflow-hidden shadow-xl">
+                    <img 
+                      src={step.image} 
+                      alt={step.title} 
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                      referrerPolicy="no-referrer"
+                    />
                   </div>
                 </div>
               </motion.div>

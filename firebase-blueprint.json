@@ -79,6 +79,22 @@
         "declaration", "paymentReference", "paymentStatus", "status", "submittedAt", "userId",
         "applicationId", "hasBeenEdited", "amountPaid"
       ]
+    },
+    "SupportTicket": {
+      "title": "SupportTicket",
+      "description": "A support ticket submitted by a user.",
+      "type": "object",
+      "properties": {
+        "ticketId": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "subject": { "type": "string" },
+        "message": { "type": "string" },
+        "userId": { "type": "string" },
+        "status": { "type": "string", "enum": ["open", "in-progress", "closed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ticketId", "name", "email", "subject", "message", "userId", "status", "createdAt"]
     }
   },
   "firestore": {
@@ -89,6 +105,10 @@
     "/applications/{applicationId}": {
       "schema": { "$ref": "#/entities/Application" },
       "description": "Stores scholarship applications."
+    },
+    "/support_tickets/{ticketId}": {
+      "schema": { "$ref": "#/entities/SupportTicket" },
+      "description": "Stores support tickets submitted by users."
     }
   }
 }

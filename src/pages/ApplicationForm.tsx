@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useTranslation } from 'react-i18next';
 import { db, storage } from '../firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useApplicationStore } from '../store/useStore';
 import { BackButton } from '../components/BackButton';
@@ -293,10 +293,11 @@ export default function ApplicationForm() {
   const getFieldState = (name: string) => {
     const value = watch(name);
     const isDirty = touchedFields[name];
+    const hasError = !!errors[name];
     
-    if (!value && !isDirty) return "border-slate-200";
-    if (errors[name]) return "border-red-500 focus-visible:ring-red-500";
-    if (value && !errors[name]) return "border-green-500 focus-visible:ring-green-500";
+    if (!isDirty && !value) return "border-slate-200";
+    if (hasError) return "border-red-500 focus-visible:ring-red-500";
+    if (value && !hasError) return "border-green-500 focus-visible:ring-green-500";
     return "border-slate-200";
   };
 
@@ -315,6 +316,23 @@ export default function ApplicationForm() {
       if (!currentUser) throw new Error('Not authenticated');
 
       const finalData = { ...data, ...watch() };
+
+      // Check for duplicate application
+      const duplicateQuery = query(
+        collection(db, 'applications'),
+        where('userId', '==', currentUser.uid),
+        where('fullName', '==', finalData.fullName),
+        where('nin', '==', finalData.nin),
+        where('applyingFor', '==', finalData.applyingFor),
+        where('preferredUniversity', '==', finalData.preferredUniversity)
+      );
+      
+      const duplicateSnapshot = await getDocs(duplicateQuery);
+      if (!duplicateSnapshot.empty) {
+        toast.error('You have already submitted an application with these details.');
+        setLoading(false);
+        return;
+      }
 
       const generateAppId = () => {
         const randomNum = Math.floor(100000 + Math.random() * 900000);
@@ -336,12 +354,19 @@ export default function ApplicationForm() {
 
       await setDoc(doc(db, 'applications', appId), applicationData);
       
+      // Clear all form data and reset to step 1
       const { reset } = useApplicationStore.getState();
       reset();
-      resetForm();
+      
+      // Clear session storage items that might pre-fill the form
+      sessionStorage.removeItem('applyingFor');
+      sessionStorage.removeItem('selectedUniversity');
+      
+      // Reset the react-hook-form state
+      resetForm({});
       
       toast.success('Application submitted successfully!');
-      navigate('/application-status');
+      navigate('/home');
       
     } catch (error: any) {
       if (error.message?.includes('Missing or insufficient permissions')) {

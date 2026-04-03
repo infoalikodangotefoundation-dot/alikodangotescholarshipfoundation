@@ -125,6 +125,16 @@ export default function FloatingChatbot() {
     setHasScrolled(false);
   }, [location.pathname]);
 
+  // Listen for external open event
+  useEffect(() => {
+    const handleOpen = () => {
+      setIsOpen(true);
+      setIsVisible(true);
+    };
+    window.addEventListener('open-chatbot', handleOpen);
+    return () => window.removeEventListener('open-chatbot', handleOpen);
+  }, []);
+
   const startAutoHideTimer = () => {
     if (autoHideTimerRef.current) clearTimeout(autoHideTimerRef.current);
     autoHideTimerRef.current = setTimeout(() => {

@@ -21,6 +21,7 @@ import ResetPassword from './pages/ResetPassword';
 import ApplicationStatus from './pages/ApplicationStatus';
 import Notifications from './pages/Notifications';
 import Legal from './pages/Legal';
+import Support from './pages/Support';
 import { Toaster } from 'sonner';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -59,6 +60,7 @@ export default function App() {
               <Route path="privacy" element={<Legal type="privacy" />} />
               <Route path="terms" element={<Legal type="terms" />} />
               <Route path="refund" element={<Legal type="refund" />} />
+              <Route path="support" element={<Support />} />
             </Route>
           </Routes>
         </Router>
