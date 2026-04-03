@@ -21,7 +21,7 @@ import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { handleFirestoreError, OperationType } from '../lib/firestore-errors';
-import { Check, ChevronsUpDown, Loader2, Award, Copy } from 'lucide-react';
+import { Check, ChevronsUpDown, Loader2, Award, Copy, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
@@ -253,7 +253,25 @@ export default function ApplicationForm() {
   const { data, step, updateData, setStep, nextStep, prevStep } = useApplicationStore();
   const [loading, setLoading] = useState(false);
   const [stateOpen, setStateOpen] = useState(false);
+  const [sourceOpen, setSourceOpen] = useState(false);
+  const [bankOpen, setBankOpen] = useState(false);
+  const [stateSearch, setStateSearch] = useState('');
+  const [sourceSearch, setSourceSearch] = useState('');
+  const [bankSearch, setBankSearch] = useState('');
   const [activeUploads, setActiveUploads] = useState(0);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [countdown, setCountdown] = useState(10);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (showSuccessPopup && countdown > 0) {
+      timer = setTimeout(() => setCountdown(prev => prev - 1), 1000);
+    } else if (showSuccessPopup && countdown === 0) {
+      setShowSuccessPopup(false);
+      navigate('/status');
+    }
+    return () => clearTimeout(timer);
+  }, [showSuccessPopup, countdown, navigate]);
 
   const currentSchema = [step1Schema, step2Schema, step3Schema, step4Schema, step5Schema, step6Schema, step7Schema][step - 1];
 
@@ -365,8 +383,8 @@ export default function ApplicationForm() {
       // Reset the react-hook-form state
       resetForm({});
       
-      toast.success('Application submitted successfully!');
-      navigate('/home');
+      setShowSuccessPopup(true);
+      setCountdown(10);
       
     } catch (error: any) {
       if (error.message?.includes('Missing or insufficient permissions')) {
@@ -477,7 +495,10 @@ export default function ApplicationForm() {
         <div className="space-y-2 flex flex-col">
           <Label htmlFor="stateOfOrigin" className="mb-1">{t('form.state')}</Label>
           <input type="hidden" {...register('stateOfOrigin')} />
-          <Dialog open={stateOpen} onOpenChange={setStateOpen}>
+          <Dialog open={stateOpen} onOpenChange={(open) => {
+            setStateOpen(open);
+            if (!open) setStateSearch('');
+          }}>
             <Button
               type="button"
               variant="outline"
@@ -501,10 +522,19 @@ export default function ApplicationForm() {
                 <DialogDescription>
                   Choose your state of origin from the list below.
                 </DialogDescription>
+                <div className="mt-4 relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input 
+                    placeholder="Search your state" 
+                    className="pl-9"
+                    value={stateSearch}
+                    onChange={(e) => setStateSearch(e.target.value)}
+                  />
+                </div>
               </DialogHeader>
               <div className="flex-1 overflow-y-auto p-6 pt-2">
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {NIGERIAN_STATES.map((state) => (
+                  {NIGERIAN_STATES.filter(s => s.label.toLowerCase().includes(stateSearch.toLowerCase())).map((state) => (
                     <Button
                       key={state.value}
                       type="button"
@@ -518,6 +548,7 @@ export default function ApplicationForm() {
                       onClick={() => {
                         setValue('stateOfOrigin', state.value, { shouldValidate: true });
                         setStateOpen(false);
+                        setStateSearch('');
                       }}
                     >
                       <div className="flex items-center w-full">
@@ -532,10 +563,18 @@ export default function ApplicationForm() {
                       </div>
                     </Button>
                   ))}
+                  {NIGERIAN_STATES.filter(s => s.label.toLowerCase().includes(stateSearch.toLowerCase())).length === 0 && (
+                    <div className="col-span-full py-10 text-center text-slate-500">
+                      No state found matching "{stateSearch}"
+                    </div>
+                  )}
                 </div>
               </div>
               <DialogFooter className="p-4 border-t bg-slate-50">
-                <Button type="button" variant="ghost" onClick={() => setStateOpen(false)}>
+                <Button type="button" variant="ghost" onClick={() => {
+                  setStateOpen(false);
+                  setStateSearch('');
+                }}>
                   Cancel
                 </Button>
               </DialogFooter>
@@ -825,32 +864,178 @@ export default function ApplicationForm() {
       <div className="space-y-2">
         <Label htmlFor="sourceOfFunds">Source of Funds</Label>
         <input type="hidden" {...register('sourceOfFunds')} />
-        <Select onValueChange={(val) => setValue('sourceOfFunds', val, { shouldValidate: true })} value={watch('sourceOfFunds')}>
-          <SelectTrigger className={cn(getFieldState('sourceOfFunds'))}>
-            <SelectValue placeholder="Select Source" />
-          </SelectTrigger>
-          <SelectContent>
-            {INCOME_SOURCES.map(source => (
-              <SelectItem key={source} value={source}>{source}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Dialog open={sourceOpen} onOpenChange={(open) => {
+          setSourceOpen(open);
+          if (!open) setSourceSearch('');
+        }}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setSourceOpen(true)}
+            className={cn(
+              "w-full justify-between font-normal h-10 px-3",
+              getFieldState('sourceOfFunds'),
+              !watch('sourceOfFunds') && "text-muted-foreground"
+            )}
+          >
+            <span className="truncate">
+              {watch('sourceOfFunds') || "Select Source of Funds"}
+            </span>
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col p-0 gap-0">
+            <DialogHeader className="p-6 pb-2">
+              <DialogTitle>Select Source of Funds</DialogTitle>
+              <DialogDescription>
+                Choose your primary source of funds from the list below.
+              </DialogDescription>
+              <div className="mt-4 relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input 
+                  placeholder="Search source..." 
+                  className="pl-9"
+                  value={sourceSearch}
+                  onChange={(e) => setSourceSearch(e.target.value)}
+                />
+              </div>
+            </DialogHeader>
+            <div className="flex-1 overflow-y-auto p-6 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {INCOME_SOURCES.filter(s => s.toLowerCase().includes(sourceSearch.toLowerCase())).map((source) => (
+                  <Button
+                    key={source}
+                    type="button"
+                    variant={watch('sourceOfFunds') === source ? "default" : "outline"}
+                    className={cn(
+                      "justify-start h-auto py-3 px-4 text-sm font-medium transition-all",
+                      watch('sourceOfFunds') === source 
+                        ? "bg-primary-700 text-white border-primary-700 shadow-md scale-[1.02]" 
+                        : "hover:border-primary-500 hover:text-primary-700 hover:bg-primary-50"
+                    )}
+                    onClick={() => {
+                      setValue('sourceOfFunds', source, { shouldValidate: true });
+                      setSourceOpen(false);
+                      setSourceSearch('');
+                    }}
+                  >
+                    <div className="flex items-center w-full">
+                      <div className={cn(
+                        "w-2 h-2 rounded-full mr-2 shrink-0 transition-colors",
+                        watch('sourceOfFunds') === source ? "bg-white" : "bg-slate-300"
+                      )} />
+                      <span className="truncate">{source}</span>
+                      {watch('sourceOfFunds') === source && (
+                        <Check className="ml-auto h-4 w-4 shrink-0" />
+                      )}
+                    </div>
+                  </Button>
+                ))}
+                {INCOME_SOURCES.filter(s => s.toLowerCase().includes(sourceSearch.toLowerCase())).length === 0 && (
+                  <div className="col-span-full py-10 text-center text-slate-500">
+                    No source found matching "{sourceSearch}"
+                  </div>
+                )}
+              </div>
+            </div>
+            <DialogFooter className="p-4 border-t bg-slate-50">
+              <Button type="button" variant="ghost" onClick={() => {
+                setSourceOpen(false);
+                setSourceSearch('');
+              }}>
+                Cancel
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         {errors.sourceOfFunds && <p className="text-sm text-red-500">{errors.sourceOfFunds.message as string}</p>}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="bankName">Bank Name</Label>
           <input type="hidden" {...register('bankName')} />
-          <Select onValueChange={(val) => setValue('bankName', val, { shouldValidate: true })} value={watch('bankName')}>
-            <SelectTrigger className={cn(getFieldState('bankName'))}>
-              <SelectValue placeholder="Select Bank" />
-            </SelectTrigger>
-            <SelectContent>
-              {NIGERIAN_BANKS.map(bank => (
-                <SelectItem key={bank} value={bank}>{bank}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Dialog open={bankOpen} onOpenChange={(open) => {
+            setBankOpen(open);
+            if (!open) setBankSearch('');
+          }}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setBankOpen(true)}
+              className={cn(
+                "w-full justify-between font-normal h-10 px-3",
+                getFieldState('bankName'),
+                !watch('bankName') && "text-muted-foreground"
+              )}
+            >
+              <span className="truncate">
+                {watch('bankName') || "Select Bank"}
+              </span>
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col p-0 gap-0">
+              <DialogHeader className="p-6 pb-2">
+                <DialogTitle>Select Bank</DialogTitle>
+                <DialogDescription>
+                  Choose your bank from the list below.
+                </DialogDescription>
+                <div className="mt-4 relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input 
+                    placeholder="Search bank..." 
+                    className="pl-9"
+                    value={bankSearch}
+                    onChange={(e) => setBankSearch(e.target.value)}
+                  />
+                </div>
+              </DialogHeader>
+              <div className="flex-1 overflow-y-auto p-6 pt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {NIGERIAN_BANKS.filter(b => b.toLowerCase().includes(bankSearch.toLowerCase())).map((bank) => (
+                    <Button
+                      key={bank}
+                      type="button"
+                      variant={watch('bankName') === bank ? "default" : "outline"}
+                      className={cn(
+                        "justify-start h-auto py-3 px-4 text-sm font-medium transition-all",
+                        watch('bankName') === bank 
+                          ? "bg-primary-700 text-white border-primary-700 shadow-md scale-[1.02]" 
+                          : "hover:border-primary-500 hover:text-primary-700 hover:bg-primary-50"
+                      )}
+                      onClick={() => {
+                        setValue('bankName', bank, { shouldValidate: true });
+                        setBankOpen(false);
+                        setBankSearch('');
+                      }}
+                    >
+                      <div className="flex items-center w-full">
+                        <div className={cn(
+                          "w-2 h-2 rounded-full mr-2 shrink-0 transition-colors",
+                          watch('bankName') === bank ? "bg-white" : "bg-slate-300"
+                        )} />
+                        <span className="truncate">{bank}</span>
+                        {watch('bankName') === bank && (
+                          <Check className="ml-auto h-4 w-4 shrink-0" />
+                        )}
+                      </div>
+                    </Button>
+                  ))}
+                  {NIGERIAN_BANKS.filter(b => b.toLowerCase().includes(bankSearch.toLowerCase())).length === 0 && (
+                    <div className="col-span-full py-10 text-center text-slate-500">
+                      No bank found matching "{bankSearch}"
+                    </div>
+                  )}
+                </div>
+              </div>
+              <DialogFooter className="p-4 border-t bg-slate-50">
+                <Button type="button" variant="ghost" onClick={() => {
+                  setBankOpen(false);
+                  setBankSearch('');
+                }}>
+                  Cancel
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
           {errors.bankName && <p className="text-sm text-red-500">{errors.bankName.message as string}</p>}
         </div>
         <div className="space-y-2">
@@ -1333,6 +1518,35 @@ export default function ApplicationForm() {
         </div>
         </form>
       </div>
+
+      <Dialog open={showSuccessPopup} onOpenChange={() => {}}>
+        <DialogContent className="sm:max-w-md text-center p-8">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-2">
+              <Check className="w-8 h-8 text-green-600" />
+            </div>
+            <DialogTitle className="text-xl font-bold text-slate-900">Application Received!</DialogTitle>
+            <DialogDescription className="text-slate-600 text-base leading-relaxed">
+              We have received your application and it is currently under review, you'll receive email confirmation shortly.
+            </DialogDescription>
+            <div className="mt-4 flex flex-col items-center gap-2">
+              <p className="text-sm text-slate-500">Redirecting to Status page in</p>
+              <div className="w-10 h-10 rounded-full border-2 border-primary-700 flex items-center justify-center font-bold text-primary-700">
+                {countdown}
+              </div>
+            </div>
+            <Button 
+              onClick={() => {
+                setShowSuccessPopup(false);
+                navigate('/status');
+              }}
+              className="mt-4 w-full bg-primary-700 hover:bg-primary-800"
+            >
+              Go to Status Now
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
