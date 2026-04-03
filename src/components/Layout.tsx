@@ -71,7 +71,7 @@ export default function Layout() {
     <div className="min-h-screen flex flex-col bg-slate-50 font-sans">
       <header className="bg-white shadow-sm sticky top-0 z-50">
         {/* Global Marquee */}
-        <div className="bg-green-700 text-white overflow-hidden py-2 flex items-center relative w-full">
+        <div className="bg-primary-700 text-white overflow-hidden py-2 flex items-center relative w-full">
           <div className="whitespace-nowrap animate-marquee text-sm font-medium inline-flex items-center" style={{ animationDuration: '150s' }}>
             <span>Through the <strong>Aliko Dangote Foundation Scholarship Program</strong>, you have the opportunity to study at some of the world’s top universities across different countries, including:</span>
             {topUniversities.map((uni, idx) => (
@@ -88,39 +88,37 @@ export default function Layout() {
         <div className="hidden md:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex-shrink-0 flex items-center">
-              <Link to="/home" onClick={() => handleNavClick('/home')} className="text-xl font-bold text-green-700 flex items-center gap-2">
-                <div className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center text-white font-bold">D</div>
+              <Link to="/home" onClick={() => handleNavClick('/home')} className="text-xl font-bold text-primary-700 flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary-700 rounded-full flex items-center justify-center text-white font-bold">D</div>
                 <span>Dangote Scholarship</span>
               </Link>
-            </div>            <div className="flex items-center space-x-2 lg:space-x-4">
-              <Link to="/home" onClick={() => handleNavClick('/home')} className={`font-medium px-3 py-2 rounded-md transition-colors ${location.pathname === '/home' ? 'text-green-700 bg-green-50' : 'text-gray-700 hover:text-green-700'}`}>
+            </div>            <div className="flex items-center space-x-1 lg:space-x-2">
+              <Link to="/home" onClick={() => handleNavClick('/home')} className={`font-medium px-2 py-2 rounded-md transition-colors text-sm ${location.pathname === '/home' ? 'text-primary-700 bg-primary-50' : 'text-gray-700 hover:text-primary-700'}`}>
                 {t('nav.home')}
               </Link>
-              <Link to="/benefits" onClick={() => handleNavClick('/benefits')} className={`font-medium px-3 py-2 rounded-md transition-colors ${location.pathname === '/benefits' ? 'text-green-700 bg-green-50' : 'text-gray-700 hover:text-green-700'}`}>
+              <Link to="/benefits" onClick={() => handleNavClick('/benefits')} className={`font-medium px-2 py-2 rounded-md transition-colors text-sm ${location.pathname === '/benefits' ? 'text-primary-700 bg-primary-50' : 'text-gray-700 hover:text-primary-700'}`}>
                 {t('nav.benefits')}
               </Link>
-              <Link to="/how-to-apply" onClick={() => handleNavClick('/how-to-apply')} className={`font-medium px-3 py-2 rounded-md transition-colors ${location.pathname === '/how-to-apply' ? 'text-green-700 bg-green-50' : 'text-gray-700 hover:text-green-700'}`}>
+              <Link to="/how-to-apply" onClick={() => handleNavClick('/how-to-apply')} className={`font-medium px-2 py-2 rounded-md transition-colors text-sm ${location.pathname === '/how-to-apply' ? 'text-primary-700 bg-primary-50' : 'text-gray-700 hover:text-primary-700'}`}>
                 {t('nav.how_to_apply')}
               </Link>
               
-              {currentUser && (
-                <Link to="/status" onClick={() => handleNavClick('/status')} className={`font-medium px-3 py-2 rounded-md transition-colors ${location.pathname === '/status' ? 'text-green-700 bg-green-50' : 'text-gray-700 hover:text-green-700'}`}>
-                  {t('nav.status') || 'Status'}
-                </Link>
-              )}
+              <Link to="/status" onClick={() => handleNavClick('/status')} className={`font-medium px-2 py-2 rounded-md transition-colors text-sm ${location.pathname === '/status' ? 'text-primary-700 bg-primary-50' : 'text-gray-700 hover:text-primary-700'}`}>
+                {t('nav.status') || 'Status'}
+              </Link>
 
-              <Link to="/faq" onClick={() => handleNavClick('/faq')} className={`font-medium px-3 py-2 rounded-md transition-colors ${location.pathname === '/faq' ? 'text-green-700 bg-green-50' : 'text-gray-700 hover:text-green-700'}`}>
+              <Link to="/faq" onClick={() => handleNavClick('/faq')} className={`font-medium px-2 py-2 rounded-md transition-colors text-sm ${location.pathname === '/faq' ? 'text-primary-700 bg-primary-50' : 'text-gray-700 hover:text-primary-700'}`}>
                 {t('nav.faq')}
               </Link>
               
-              <Link to="/support" onClick={() => handleNavClick('/support')} className={`font-medium px-3 py-2 rounded-md transition-colors ${location.pathname === '/support' ? 'text-green-700 bg-green-50' : 'text-gray-700 hover:text-green-700'}`}>
+              <Link to="/support" onClick={() => handleNavClick('/support')} className={`font-medium px-2 py-2 rounded-md transition-colors text-sm ${location.pathname === '/support' ? 'text-primary-700 bg-primary-50' : 'text-gray-700 hover:text-primary-700'}`}>
                 Support
               </Link>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9">
-                    <Globe className="h-4 w-4" />
+                  <Button variant="ghost" size="icon" className="rounded-full h-9 w-9 text-gray-700 hover:text-primary-700">
+                    <Globe className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -131,26 +129,18 @@ export default function Layout() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
+              <Link to="/notifications" onClick={() => handleNavClick('/notifications')} className={`font-medium p-2 rounded-full transition-colors ${location.pathname === '/notifications' ? 'text-primary-700 bg-primary-50' : 'text-gray-700 hover:text-primary-700'}`}>
+                <Bell className="w-5 h-5" />
+              </Link>
+
               {currentUser ? (
-                <>
-                  <Link to="/notifications" onClick={() => handleNavClick('/notifications')} className={`font-medium p-2 rounded-full transition-colors ${location.pathname === '/notifications' ? 'text-green-700 bg-green-50' : 'text-gray-700 hover:text-green-700'}`}>
-                    <Bell className="w-5 h-5" />
-                  </Link>
-                  <Link to="/profile" onClick={() => handleNavClick('/profile')} className={`font-medium p-2 rounded-full transition-colors ${location.pathname === '/profile' ? 'text-green-700 bg-green-50' : 'text-gray-700 hover:text-green-700'}`}>
-                    <User className="w-5 h-5" />
-                  </Link>
-                </>
+                <Link to="/profile" onClick={() => handleNavClick('/profile')} className={`font-medium p-2 rounded-full transition-colors ${location.pathname === '/profile' ? 'text-primary-700 bg-primary-50' : 'text-gray-700 hover:text-primary-700'}`}>
+                  <User className="w-5 h-5" />
+                </Link>
               ) : (
-                <div className="flex items-center space-x-2">
-                  <Link to="/login" className="text-gray-700 hover:text-green-700 font-medium px-3 py-2">
-                    {t('nav.login') || 'Sign In'}
-                  </Link>
-                  <Link to="/signup">
-                    <Button className="bg-green-700 hover:bg-green-800 h-9">
-                      {t('nav.signup') || 'Sign Up'}
-                    </Button>
-                  </Link>
-                </div>
+                <Link to="/login" onClick={() => handleNavClick('/login')} className={`font-medium p-2 rounded-full transition-colors ${location.pathname === '/login' ? 'text-primary-700 bg-primary-50' : 'text-gray-700 hover:text-primary-700'}`}>
+                  <User className="w-5 h-5" />
+                </Link>
               )}
             </div>
           </div>
@@ -159,24 +149,31 @@ export default function Layout() {
         {/* Mobile Header */}
         <div className="md:hidden flex flex-col w-full bg-white shadow-sm">
           <div className="px-4 py-3 flex items-center justify-between">
-            <Link to="/home" onClick={() => handleNavClick('/home')} className="text-lg font-bold text-green-700 flex items-center gap-2">
-              <div className="w-7 h-7 bg-green-700 rounded-full flex items-center justify-center text-white font-bold text-sm">D</div>
+            <Link to="/home" onClick={() => handleNavClick('/home')} className="text-lg font-bold text-primary-700 flex items-center gap-2">
+              <div className="w-7 h-7 bg-primary-700 rounded-full flex items-center justify-center text-white font-bold text-sm">D</div>
               <span className="text-sm">Dangote Scholarship</span>
             </Link>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-green-700">
+                <Button variant="ghost" size="icon" className="text-primary-700">
                   <Menu className="h-6 w-6" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem onClick={() => navigate('/home')}>Home</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/benefits')}>Benefits</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/benefits')}>Scholarship Benefits</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/how-to-apply')}>How to Apply</DropdownMenuItem>
-                {currentUser && <DropdownMenuItem onClick={() => navigate('/status')}>Status</DropdownMenuItem>}
+                <DropdownMenuItem onClick={() => navigate('/status')}>Status</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/faq')}>FAQ</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/support')}>Support</DropdownMenuItem>
+                <div className="border-t border-gray-100 my-1"></div>
+                <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Language</div>
+                <DropdownMenuItem onClick={() => changeLanguage('en')}>English</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeLanguage('fr')}>Français</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeLanguage('zh')}>中文</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeLanguage('ar')}>العربية</DropdownMenuItem>
+                <div className="border-t border-gray-100 my-1"></div>
                 <DropdownMenuItem onClick={() => navigate('/notifications')}>Notifications</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/profile')}>Profile</DropdownMenuItem>
                 {!currentUser && (
@@ -185,17 +182,11 @@ export default function Layout() {
                     <DropdownMenuItem onClick={() => navigate('/signup')}>Sign Up</DropdownMenuItem>
                   </>
                 )}
-                <div className="border-t border-gray-100 my-1"></div>
-                <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Language</div>
-                <DropdownMenuItem onClick={() => changeLanguage('en')}>English</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => changeLanguage('fr')}>Français</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => changeLanguage('zh')}>中文</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => changeLanguage('ar')}>العربية</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="px-2 py-1 text-center overflow-hidden bg-green-50 border-t border-green-100">
-            <h1 className="text-green-700 font-bold text-[10px] whitespace-nowrap">
+          <div className="px-2 py-1 text-center overflow-hidden bg-primary-50 border-t border-primary-100">
+            <h1 className="text-primary-700 font-bold text-[10px] whitespace-nowrap">
               Aliko Dangote Scholarship Foundation Portal
             </h1>
           </div>
@@ -221,19 +212,19 @@ export default function Layout() {
                   href="https://web.facebook.com/profile.php?id=61586630617393" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-green-700 hover:text-white transition-all"
+                  className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-primary-700 hover:text-white transition-all"
                 >
                   <Facebook className="w-5 h-5" />
                 </a>
                 <a 
                   href="#" 
-                  className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-green-700 hover:text-white transition-all"
+                  className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-primary-700 hover:text-white transition-all"
                 >
                   <Twitter className="w-5 h-5" />
                 </a>
                 <a 
                   href="#" 
-                  className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-green-700 hover:text-white transition-all"
+                  className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-primary-700 hover:text-white transition-all"
                 >
                   <Instagram className="w-5 h-5" />
                 </a>
@@ -250,7 +241,7 @@ export default function Layout() {
                 <li>
                   <button 
                     onClick={() => window.dispatchEvent(new CustomEvent('open-chatbot'))}
-                    className="hover:text-white transition-colors flex items-center gap-2 font-bold text-green-500 text-left"
+                    className="hover:text-white transition-colors flex items-center gap-2 font-bold text-primary-500 text-left"
                   >
                     <MessageSquare className="w-4 h-4" />
                     Support & Help
@@ -263,19 +254,19 @@ export default function Layout() {
               <h3 className="text-white text-lg font-bold mb-6">Contact Us</h3>
               <ul className="space-y-4 text-sm">
                 <li className="flex items-start gap-3">
-                  <Mail className="w-5 h-5 text-green-500 shrink-0" />
+                  <Mail className="w-5 h-5 text-primary-500 shrink-0" />
                   <a href="mailto:info.alikodangotefoundation@gmail.com" className="text-slate-400 hover:text-white transition-colors break-all">
                     info.alikodangotefoundation@gmail.com
                   </a>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Phone className="w-5 h-5 text-green-500 shrink-0" />
+                  <Phone className="w-5 h-5 text-primary-500 shrink-0" />
                   <a href="tel:+234800DANGOTE" className="text-slate-400 hover:text-white transition-colors">
                     +234 800 DANGOTE
                   </a>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-5 h-5 text-green-500 shrink-0 flex items-center justify-center font-bold text-xs">HQ</div>
+                  <div className="w-5 h-5 text-primary-500 shrink-0 flex items-center justify-center font-bold text-xs">HQ</div>
                   <span className="text-slate-400">Lagos, Nigeria</span>
                 </li>
               </ul>
@@ -304,12 +295,12 @@ export default function Layout() {
       {/* Mobile Bottom Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-50 pb-safe">
         <div className="flex justify-around items-center h-16 px-4 relative">
-          <Link to="/home" onClick={() => handleNavClick('/home')} className={`flex flex-col items-center justify-center w-16 transition-colors ${location.pathname === '/home' ? 'text-green-700' : 'text-gray-500 hover:text-green-700'}`}>
+          <Link to="/home" onClick={() => handleNavClick('/home')} className={`flex flex-col items-center justify-center w-16 transition-colors ${location.pathname === '/home' ? 'text-primary-700' : 'text-gray-500 hover:text-primary-700'}`}>
             <Home className="w-6 h-6 mb-1" />
             <span className="text-[10px] font-medium">Home</span>
           </Link>
           
-          <Link to="/status" onClick={() => handleNavClick('/status')} className={`flex flex-col items-center justify-center w-16 transition-colors ${location.pathname === '/status' ? 'text-green-700' : 'text-gray-500 hover:text-green-700'}`}>
+          <Link to="/status" onClick={() => handleNavClick('/status')} className={`flex flex-col items-center justify-center w-16 transition-colors ${location.pathname === '/status' ? 'text-primary-700' : 'text-gray-500 hover:text-primary-700'}`}>
             <ClipboardList className="w-6 h-6 mb-1" />
             <span className="text-[10px] font-medium">Status</span>
           </Link>
@@ -319,7 +310,7 @@ export default function Layout() {
             <Link to="/apply-selection" onClick={handleApplyClick}>
               <div className="relative">
                 {!isApplying && (
-                  <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-75 duration-1000"></div>
+                  <div className="absolute inset-0 bg-primary-500 rounded-full animate-ping opacity-75 duration-1000"></div>
                 )}
                 <motion.div 
                   animate={!isApplying ? {
@@ -335,7 +326,7 @@ export default function Layout() {
                   }}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="relative flex items-center justify-center w-14 h-14 bg-green-700 rounded-full shadow-lg border-4 border-white text-white"
+                  className="relative flex items-center justify-center w-14 h-14 bg-primary-700 rounded-full shadow-lg border-4 border-white text-white"
                 >
                   <GraduationCap className="w-6 h-6" />
                 </motion.div>
@@ -343,12 +334,12 @@ export default function Layout() {
             </Link>
           </div>
 
-          <Link to="/support" onClick={() => handleNavClick('/support')} className={`flex flex-col items-center justify-center w-16 transition-colors ${location.pathname === '/support' ? 'text-green-700' : 'text-gray-500 hover:text-green-700'}`}>
+          <Link to="/support" onClick={() => handleNavClick('/support')} className={`flex flex-col items-center justify-center w-16 transition-colors ${location.pathname === '/support' ? 'text-primary-700' : 'text-gray-500 hover:text-primary-700'}`}>
             <MessageSquare className="w-6 h-6 mb-1" />
             <span className="text-[10px] font-medium">Support</span>
           </Link>
 
-          <Link to="/profile" onClick={() => handleNavClick('/profile')} className={`flex flex-col items-center justify-center w-16 transition-colors ${location.pathname === '/profile' ? 'text-green-700' : 'text-gray-500 hover:text-green-700'}`}>
+          <Link to="/profile" onClick={() => handleNavClick('/profile')} className={`flex flex-col items-center justify-center w-16 transition-colors ${location.pathname === '/profile' ? 'text-primary-700' : 'text-gray-500 hover:text-primary-700'}`}>
             <User className="w-6 h-6 mb-1" />
             <span className="text-[10px] font-medium">Profile</span>
           </Link>

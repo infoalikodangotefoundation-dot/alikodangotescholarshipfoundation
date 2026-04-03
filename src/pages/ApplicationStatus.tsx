@@ -144,8 +144,8 @@ export default function ApplicationStatus() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <div className="flex items-center gap-3 mb-8">
-        <div className="p-2 bg-green-100 rounded-xl">
-          <ClipboardList className="w-6 h-6 text-green-700" />
+        <div className="p-2 bg-primary-100 rounded-xl">
+          <ClipboardList className="w-6 h-6 text-primary-700" />
         </div>
         <h1 className="text-3xl font-bold text-slate-900">Status Dashboard</h1>
       </div>
@@ -153,7 +153,7 @@ export default function ApplicationStatus() {
       {/* Scholarship Applications Section */}
       <div className="mb-12">
         <div className="flex items-center gap-2 mb-6">
-          <GraduationCap className="w-5 h-5 text-green-700" />
+          <GraduationCap className="w-5 h-5 text-primary-700" />
           <h2 className="text-xl font-bold text-slate-800">Scholarship Applications</h2>
         </div>
 
@@ -161,7 +161,7 @@ export default function ApplicationStatus() {
           <Card className="border-slate-100 shadow-sm p-8 text-center bg-white">
             <p className="text-slate-500 mb-4">No scholarship applications yet.</p>
             <Link to="/apply">
-              <Button variant="outline" className="border-green-600 text-green-700 hover:bg-green-50">
+              <Button variant="outline" className="border-primary-600 text-primary-700 hover:bg-primary-50">
                 Apply Now
               </Button>
             </Link>
@@ -181,7 +181,7 @@ export default function ApplicationStatus() {
                       <div className="flex items-center gap-3">
                         <div className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${
                           app.status === 'Submitted' ? 'bg-blue-100 text-blue-700' :
-                          app.status === 'Approved' ? 'bg-green-100 text-green-700' :
+                          app.status === 'Approved' ? 'bg-primary-100 text-primary-700' :
                           'bg-yellow-100 text-yellow-700'
                         }`}>
                           {app.status}
@@ -191,7 +191,7 @@ export default function ApplicationStatus() {
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              className="h-7 text-[10px] gap-1 px-2 border-green-200 text-green-700 hover:bg-green-50"
+                              className="h-7 text-[10px] gap-1 px-2 border-primary-200 text-primary-700 hover:bg-primary-50"
                               onClick={() => handleEdit(app)}
                             >
                               <Edit3 className="w-3 h-3" />
@@ -223,7 +223,7 @@ export default function ApplicationStatus() {
                         </div>
                         <div className="space-y-1">
                           <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Fee Paid</p>
-                          <p className="text-sm font-bold text-green-700">{app.amountPaid || '₦5,000'}</p>
+                          <p className="text-sm font-bold text-primary-700">{app.amountPaid || '₦5,000'}</p>
                         </div>
                         <div className="space-y-1">
                           <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Date</p>
@@ -234,7 +234,7 @@ export default function ApplicationStatus() {
                         <div>
                           <div className="flex justify-between text-xs mb-2">
                             <span className="text-slate-500 font-medium">Progress</span>
-                            <span className="font-bold text-green-700">
+                            <span className="font-bold text-primary-700">
                               {app.status === 'Submitted' ? '60%' : app.status === 'Approved' ? '100%' : '40%'}
                             </span>
                           </div>
@@ -256,7 +256,7 @@ export default function ApplicationStatus() {
       {/* Support Tickets Section */}
       <div>
         <div className="flex items-center gap-2 mb-6">
-          <MessageSquare className="w-5 h-5 text-green-700" />
+          <MessageSquare className="w-5 h-5 text-primary-700" />
           <h2 className="text-xl font-bold text-slate-800">Support Tickets</h2>
         </div>
 
@@ -264,7 +264,7 @@ export default function ApplicationStatus() {
           <Card className="border-slate-100 shadow-sm p-8 text-center bg-white">
             <p className="text-slate-500 mb-4">No support tickets yet.</p>
             <Link to="/support">
-              <Button variant="outline" className="border-green-600 text-green-700 hover:bg-green-50">
+              <Button variant="outline" className="border-primary-600 text-primary-700 hover:bg-primary-50">
                 Contact Support
               </Button>
             </Link>
@@ -282,7 +282,7 @@ export default function ApplicationStatus() {
                     </div>
                     <div className="flex items-center gap-3">
                       <div className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${
-                        ticket.status === 'open' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'
+                        ticket.status === 'open' ? 'bg-yellow-100 text-yellow-700' : 'bg-primary-100 text-primary-700'
                       }`}>
                         {ticket.status}
                       </div>

@@ -174,7 +174,7 @@ export function FileUpload({
     <div className={cn("space-y-3 border-2 border-dashed p-4 rounded-lg bg-slate-50/50 transition-colors hover:bg-slate-50", className)}>
       <div className="flex items-center justify-between">
         <Label className="text-sm font-semibold text-slate-700">{label}</Label>
-        {value && <CheckCircle2 className="w-5 h-5 text-green-500" />}
+        {value && <CheckCircle2 className="w-5 h-5 text-primary-500" />}
       </div>
       
       {!value && !selectedFile && (
@@ -232,17 +232,17 @@ export function FileUpload({
       )}
       
       {value && (
-        <div className="flex items-center gap-3 bg-green-50 p-3 rounded-lg border border-green-200">
-          <div className="w-10 h-10 rounded bg-green-100 flex items-center justify-center">
-            <CheckCircle2 className="w-6 h-6 text-green-600" />
+        <div className="flex items-center gap-3 bg-primary-50 p-3 rounded-lg border border-primary-200">
+          <div className="w-10 h-10 rounded bg-primary-100 flex items-center justify-center">
+            <CheckCircle2 className="w-6 h-6 text-primary-600" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-green-800">File uploaded successfully</p>
+            <p className="text-sm font-medium text-primary-800">File uploaded successfully</p>
             <a 
               href={value} 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="text-xs text-green-600 hover:underline truncate block"
+              className="text-xs text-primary-600 hover:underline truncate block"
             >
               View uploaded file
             </a>

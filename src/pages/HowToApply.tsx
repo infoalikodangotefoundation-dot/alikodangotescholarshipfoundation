@@ -18,7 +18,7 @@ import { BackButton } from '../components/BackButton';
 const steps = [
   {
     title: "Create Your Account",
-    icon: <UserPlus className="w-8 h-8 text-green-600" />,
+    icon: <UserPlus className="w-8 h-8 text-primary-600" />,
     image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=800",
     description: "Start by creating a secure account on our scholarship portal. You'll need a valid email address and a strong password.",
     details: [
@@ -29,7 +29,7 @@ const steps = [
   },
   {
     title: "Select Application Type",
-    icon: <BookOpen className="w-8 h-8 text-green-600" />,
+    icon: <BookOpen className="w-8 h-8 text-primary-600" />,
     image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=800",
     description: "Choose whether you are applying for yourself or on behalf of a dependent/student.",
     details: [
@@ -40,7 +40,7 @@ const steps = [
   },
   {
     title: "Complete Application Form",
-    icon: <FileText className="w-8 h-8 text-green-600" />,
+    icon: <FileText className="w-8 h-8 text-primary-600" />,
     image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=800",
     description: "Fill in your personal, academic, and financial information accurately across the 7-step form.",
     details: [
@@ -51,7 +51,7 @@ const steps = [
   },
   {
     title: "Upload Required Documents",
-    icon: <Upload className="w-8 h-8 text-green-600" />,
+    icon: <Upload className="w-8 h-8 text-primary-600" />,
     image: "https://images.unsplash.com/photo-1618044733300-9472154094ee?auto=format&fit=crop&q=80&w=800",
     description: "Provide high-quality scans of your necessary documents to support your application.",
     details: [
@@ -62,7 +62,7 @@ const steps = [
   },
   {
     title: "Pay Processing Fee",
-    icon: <CreditCard className="w-8 h-8 text-green-600" />,
+    icon: <CreditCard className="w-8 h-8 text-primary-600" />,
     image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=80&w=800",
     description: "Pay the non-refundable processing fee of ₦5,000 to the designated foundation account.",
     details: [
@@ -73,7 +73,7 @@ const steps = [
   },
   {
     title: "Submit and Track",
-    icon: <Send className="w-8 h-8 text-green-600" />,
+    icon: <Send className="w-8 h-8 text-primary-600" />,
     image: "https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&q=80&w=800",
     description: "Review your information one last time and submit. You'll receive a unique Ticket ID.",
     details: [
@@ -90,7 +90,7 @@ export default function HowToApply() {
       <BackButton />
       
       {/* Hero Section */}
-      <section className="relative py-20 bg-green-900 text-white overflow-hidden">
+      <section className="relative py-20 bg-primary-900 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <img 
             src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=2000" 
@@ -111,7 +111,7 @@ export default function HowToApply() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-xl text-green-50 max-w-3xl mx-auto leading-relaxed"
+            className="text-xl text-primary-50 max-w-3xl mx-auto leading-relaxed"
           >
             Your guide to a successful application for the Aliko Dangote Foundation Scholarship. 
             Follow our step-by-step process to join the next generation of global leaders.
@@ -133,10 +133,10 @@ export default function HowToApply() {
               >
                 <div className="flex-1 w-full">
                   <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 relative">
-                    <div className="absolute -top-6 -left-6 w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-xl shadow-xl">
+                    <div className="absolute -top-6 -left-6 w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-xl shadow-xl">
                       {index + 1}
                     </div>
-                    <div className="mb-6 bg-green-50 w-16 h-16 rounded-2xl flex items-center justify-center">
+                    <div className="mb-6 bg-primary-50 w-16 h-16 rounded-2xl flex items-center justify-center">
                       {step.icon}
                     </div>
                     <h3 className="text-2xl font-bold mb-4 text-slate-900">{step.title}</h3>
@@ -146,7 +146,7 @@ export default function HowToApply() {
                     <ul className="space-y-3">
                       {step.details.map((detail, dIdx) => (
                         <li key={dIdx} className="flex items-start gap-3 text-sm text-slate-700">
-                          <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
+                          <CheckCircle2 className="w-5 h-5 text-primary-500 shrink-0 mt-0.5" />
                           <span>{detail}</span>
                         </li>
                       ))}
@@ -198,13 +198,13 @@ export default function HowToApply() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/apply-selection">
-              <Button size="lg" className="bg-green-700 hover:bg-green-800 text-white px-12 h-16 text-xl rounded-full shadow-xl hover:shadow-2xl transition-all group">
+              <Button size="lg" className="bg-primary-700 hover:bg-primary-800 text-white px-12 h-16 text-xl rounded-full shadow-xl hover:shadow-2xl transition-all group">
                 Start Application
                 <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
             <Link to="/benefits">
-              <Button size="lg" variant="outline" className="border-2 border-green-700 text-green-700 hover:bg-green-50 px-12 h-16 text-xl rounded-full">
+              <Button size="lg" variant="outline" className="border-2 border-primary-700 text-primary-700 hover:bg-primary-50 px-12 h-16 text-xl rounded-full">
                 View Benefits
               </Button>
             </Link>

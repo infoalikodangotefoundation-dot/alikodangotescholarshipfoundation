@@ -34,27 +34,27 @@ import { universities } from '../data/universities';
 const benefitHighlights = [
   {
     title: "Full Tuition Coverage",
-    icon: <CheckCircle2 className="w-8 h-8 text-green-600" />,
+    icon: <CheckCircle2 className="w-8 h-8 text-primary-600" />,
     description: "100% of your academic fees are covered directly by the foundation."
   },
   {
     title: "Monthly Allowance",
-    icon: <DollarSign className="w-8 h-8 text-green-600" />,
+    icon: <DollarSign className="w-8 h-8 text-primary-600" />,
     description: "Receive a $150 monthly stipend for feeding and personal expenses."
   },
   {
     title: "Free Accommodation",
-    icon: <HomeIcon className="w-8 h-8 text-green-600" />,
+    icon: <HomeIcon className="w-8 h-8 text-primary-600" />,
     description: "Safe and fully-funded housing provided throughout your study period."
   },
   {
     title: "Free Medical Care",
-    icon: <Stethoscope className="w-8 h-8 text-green-600" />,
+    icon: <Stethoscope className="w-8 h-8 text-primary-600" />,
     description: "Comprehensive health insurance and medical services included."
   },
   {
     title: "Travel Support",
-    icon: <Plane className="w-8 h-8 text-green-600" />,
+    icon: <Plane className="w-8 h-8 text-primary-600" />,
     description: "All flight tickets and travel logistics are fully covered."
   }
 ];
@@ -101,7 +101,7 @@ export default function Home() {
             className="lg:hidden flex flex-col items-center w-full h-full md:h-auto justify-start space-y-6 md:space-y-4"
           >
             <div className="flex flex-col items-center space-y-4">
-              <div className="inline-flex items-center rounded-full bg-green-600/80 backdrop-blur-sm px-4 py-1.5 text-xs sm:text-sm font-medium text-white mb-2 sm:mb-4 border border-green-500/30">
+              <div className="inline-flex items-center rounded-full bg-primary-600/80 backdrop-blur-sm px-4 py-1.5 text-xs sm:text-sm font-medium text-white mb-2 sm:mb-4 border border-primary-500/30">
                 <GraduationCap className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                 2026/2027 Applications Now Open
               </div>
@@ -135,7 +135,7 @@ export default function Home() {
               className="w-full flex justify-center px-4"
             >
               <Link to="/apply-selection" className="w-full max-w-[50vw] flex justify-center">
-                <Button size="lg" className="w-full bg-[#ff0000] hover:bg-[#cc0000] text-white font-bold h-12 text-lg rounded-full shadow-2xl hover:scale-[1.02] transition-all duration-300 border-2 border-white/30">
+                <Button size="lg" className="w-full bg-primary-700 hover:bg-primary-800 text-white font-bold h-12 text-lg rounded-full shadow-2xl hover:scale-[1.02] transition-all duration-300 border-2 border-white/30">
                   {t('home.apply_now')}
                 </Button>
               </Link>
@@ -181,7 +181,7 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="p-3 sm:p-8 flex flex-col flex-grow">
-                    <h3 className="text-sm sm:text-2xl font-bold mb-1 sm:mb-3 text-slate-900 group-hover:text-green-700 transition-colors line-clamp-1 sm:line-clamp-none leading-tight">
+                    <h3 className="text-sm sm:text-2xl font-bold mb-1 sm:mb-3 text-slate-900 group-hover:text-primary-700 transition-colors line-clamp-1 sm:line-clamp-none leading-tight">
                       {uni.name}
                     </h3>
                     <p className="text-slate-600 text-[10px] sm:text-sm mb-3 sm:mb-6 leading-relaxed line-clamp-2">
@@ -189,8 +189,8 @@ export default function Home() {
                     </p>
                     <div className="mt-auto space-y-2 sm:space-y-4">
                       <div className="flex items-center justify-between">
-                        <p className="text-[8px] sm:text-xs font-bold text-green-700 uppercase tracking-widest">Programs</p>
-                        <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-green-700 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                        <p className="text-[8px] sm:text-xs font-bold text-primary-700 uppercase tracking-widest">Programs</p>
+                        <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-primary-700 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                       </div>
                       <div className="flex flex-wrap gap-1 sm:gap-2">
                         {uni.programs.slice(0, 2).map((cat, pIdx) => (
@@ -227,7 +227,7 @@ export default function Home() {
                 transition={{ delay: index * 0.1 }}
                 className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-center flex flex-col items-center"
               >
-                <div className="mb-4 bg-green-50 w-14 h-14 rounded-2xl flex items-center justify-center">
+                <div className="mb-4 bg-primary-50 w-14 h-14 rounded-2xl flex items-center justify-center">
                   {benefit.icon}
                 </div>
                 <h3 className="text-base font-bold mb-2 text-slate-900">{benefit.title}</h3>
@@ -239,7 +239,7 @@ export default function Home() {
           </div>
           <div className="text-center">
             <Link to="/benefits">
-              <Button size="lg" className="bg-green-700 hover:bg-green-800 text-white px-8 h-14 rounded-full shadow-lg group">
+              <Button size="lg" className="bg-primary-700 hover:bg-primary-800 text-white px-8 h-14 rounded-full shadow-lg group">
                 View Full Scholarship Benefits
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -252,21 +252,21 @@ export default function Home() {
       <section className="w-full py-24 px-4 relative z-10 bg-white border-t border-slate-200">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           <div className="flex flex-col items-center text-center p-8 bg-slate-50 rounded-3xl shadow-sm border border-slate-100">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6 text-green-700">
+            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mb-6 text-primary-700">
               <Globe2 className="h-8 w-8" />
             </div>
             <h3 className="text-xl font-bold mb-3">Global Universities</h3>
             <p className="text-slate-600">Study at Cambridge, Harvard, Oxford, or top universities in China.</p>
           </div>
           <div className="flex flex-col items-center text-center p-8 bg-slate-50 rounded-3xl shadow-sm border border-slate-100">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6 text-green-700">
+            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mb-6 text-primary-700">
               <BookOpen className="h-8 w-8" />
             </div>
             <h3 className="text-xl font-bold mb-3">Full Coverage</h3>
             <p className="text-slate-600">Comprehensive scholarship covering tuition, accommodation, and stipends.</p>
           </div>
           <div className="flex flex-col items-center text-center p-8 bg-slate-50 rounded-3xl shadow-sm border border-slate-100">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6 text-green-700">
+            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mb-6 text-primary-700">
               <GraduationCap className="h-8 w-8" />
             </div>
             <h3 className="text-xl font-bold mb-3">All Degree Levels</h3>

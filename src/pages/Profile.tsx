@@ -177,7 +177,7 @@ export default function Profile() {
         {/* Profile Sidebar */}
         <div className="w-full md:w-1/3 space-y-6">
           <Card className="border-slate-100 shadow-sm overflow-hidden">
-            <div className="h-24 bg-green-700" />
+            <div className="h-24 bg-primary-700" />
             <CardContent className="pt-0 -mt-12 text-center">
               <div className="relative inline-block group">
                 <div className="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full border-4 border-white shadow-lg mb-4 overflow-hidden">
@@ -203,14 +203,14 @@ export default function Profile() {
                 <div className="absolute bottom-4 right-0 flex gap-1">
                   <button 
                     onClick={() => fileInputRef.current?.click()}
-                    className="p-1.5 bg-white rounded-full shadow-md border border-slate-100 text-slate-600 hover:text-green-700 transition-colors"
+                    className="p-1.5 bg-white rounded-full shadow-md border border-slate-100 text-slate-600 hover:text-primary-700 transition-colors"
                     title="Upload Photo"
                   >
                     <Upload className="w-3.5 h-3.5" />
                   </button>
                   <button 
                     onClick={startCamera}
-                    className="p-1.5 bg-white rounded-full shadow-md border border-slate-100 text-slate-600 hover:text-green-700 transition-colors"
+                    className="p-1.5 bg-white rounded-full shadow-md border border-slate-100 text-slate-600 hover:text-primary-700 transition-colors"
                     title="Take Photo"
                   >
                     <Camera className="w-3.5 h-3.5" />
@@ -244,7 +244,7 @@ export default function Profile() {
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <CardTitle className="text-lg font-bold">Personal Information</CardTitle>
               {!isEditing ? (
-                <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)} className="text-green-700 hover:text-green-800 hover:bg-green-50">
+                <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)} className="text-primary-700 hover:text-primary-800 hover:bg-primary-50">
                   <Edit2 className="w-4 h-4 mr-2" />
                   Edit Profile
                 </Button>
@@ -254,7 +254,7 @@ export default function Profile() {
                     <X className="w-4 h-4 mr-2" />
                     Cancel
                   </Button>
-                  <Button size="sm" onClick={handleSave} disabled={isSaving} className="bg-green-700 hover:bg-green-800">
+                  <Button size="sm" onClick={handleSave} disabled={isSaving} className="bg-primary-700 hover:bg-primary-800">
                     {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                     Save
                   </Button>
@@ -331,7 +331,7 @@ export default function Profile() {
                     </p>
                   </div>
                 </div>
-                <div className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${currentUser.emailVerified ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                <div className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${currentUser.emailVerified ? 'bg-primary-100 text-primary-700' : 'bg-yellow-100 text-yellow-700'}`}>
                   {currentUser.emailVerified ? 'Verified' : 'Pending'}
                 </div>
               </div>
@@ -349,7 +349,7 @@ export default function Profile() {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="text-green-700 border-green-100 hover:bg-green-50"
+                  className="text-primary-700 border-primary-100 hover:bg-primary-50"
                   onClick={handlePasswordReset}
                   disabled={isSendingReset}
                 >
@@ -383,7 +383,7 @@ export default function Profile() {
                   <div className="p-4 flex justify-center gap-4">
                     <Button variant="outline" onClick={stopCamera}>Cancel</Button>
                     <Button 
-                      className="bg-green-700 hover:bg-green-800"
+                      className="bg-primary-700 hover:bg-primary-800"
                       onClick={capturePhoto}
                       disabled={isUploading}
                     >

@@ -42,8 +42,8 @@ export default function ForgotPassword() {
         className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl border border-slate-100"
       >
         <div className="text-center">
-          <div className="mx-auto h-12 w-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-            <GraduationCap className="h-6 w-6 text-green-700" />
+          <div className="mx-auto h-12 w-12 bg-primary-100 rounded-full flex items-center justify-center mb-4">
+            <GraduationCap className="h-6 w-6 text-primary-700" />
           </div>
           <h2 className="text-3xl font-bold text-slate-900">Reset Password</h2>
           <p className="mt-2 text-sm text-slate-600">
@@ -76,7 +76,7 @@ export default function ForgotPassword() {
 
             <Button
               type="submit"
-              className="w-full bg-green-700 hover:bg-green-800 h-11 text-base font-semibold"
+              className="w-full bg-primary-700 hover:bg-primary-800 h-11 text-base font-semibold"
               disabled={loading}
             >
               {loading ? (
@@ -93,14 +93,14 @@ export default function ForgotPassword() {
             </Button>
           </form>
         ) : (
-          <div className="mt-8 p-4 bg-green-50 border border-green-100 rounded-xl text-center">
-            <p className="text-green-800 text-sm font-medium">
+          <div className="mt-8 p-4 bg-primary-50 border border-primary-100 rounded-xl text-center">
+            <p className="text-primary-800 text-sm font-medium">
               We've sent a password reset link to <span className="font-bold">{email}</span>. 
               Please follow the instructions in the email to reset your password.
             </p>
             <Button 
               variant="outline" 
-              className="mt-6 w-full border-green-200 text-green-700 hover:bg-green-100"
+              className="mt-6 w-full border-primary-200 text-primary-700 hover:bg-primary-100"
               onClick={() => setSubmitted(false)}
             >
               Didn't receive it? Try again
@@ -111,7 +111,7 @@ export default function ForgotPassword() {
         <div className="text-center mt-6">
           <Link 
             to="/login" 
-            className="inline-flex items-center text-sm font-semibold text-green-700 hover:text-green-800 transition-colors"
+            className="inline-flex items-center text-sm font-semibold text-primary-700 hover:text-primary-800 transition-colors"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Login

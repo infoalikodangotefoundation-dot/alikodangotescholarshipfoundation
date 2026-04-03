@@ -13,35 +13,35 @@ const options = [
     title: 'Myself',
     description: 'Apply for your own scholarship',
     icon: User,
-    color: 'bg-red-50 text-red-600',
+    color: 'bg-primary-50 text-primary-600',
   },
   {
     id: 'family',
     title: 'Family Member',
     description: 'Apply for a sibling, child, or spouse',
     icon: Users,
-    color: 'bg-red-50 text-red-600',
+    color: 'bg-primary-50 text-primary-600',
   },
   {
     id: 'relative',
     title: 'My Relative',
     description: 'Apply for a cousin, aunt, uncle, etc.',
     icon: Heart,
-    color: 'bg-red-50 text-red-600',
+    color: 'bg-primary-50 text-primary-600',
   },
   {
     id: 'friend',
     title: 'Friend',
     description: 'Help a friend with their application',
     icon: UserPlus,
-    color: 'bg-red-50 text-red-600',
+    color: 'bg-primary-50 text-primary-600',
   },
   {
     id: 'others',
     title: 'Others',
     description: 'Apply for someone else not listed',
     icon: HelpCircle,
-    color: 'bg-red-50 text-red-600',
+    color: 'bg-primary-50 text-primary-600',
   },
 ];
 
@@ -63,7 +63,7 @@ export default function ApplicationSelection() {
   };
 
   return (
-    <div className="min-h-screen bg-green-700 py-12 sm:py-20 px-4">
+    <div className="min-h-screen bg-primary-700 py-12 sm:py-20 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <BackButton className="text-white hover:bg-white/10" />
@@ -112,17 +112,17 @@ export default function ApplicationSelection() {
                 onClick={() => handleSelection(option.id)}
               >
                 <CardContent className="p-2.5 sm:p-6 flex flex-col items-center sm:items-start justify-center sm:justify-start text-center sm:text-left h-full">
-                  <div className={`w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-green-50 text-green-700 flex items-center justify-center mb-2 sm:mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                  <div className={`w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-primary-50 text-primary-700 flex items-center justify-center mb-2 sm:mb-4 group-hover:scale-110 transition-transform duration-300`}>
                     <option.icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
-                  <h3 className="text-[13px] sm:text-xl font-bold text-green-800 mb-1 sm:mb-2 transition-colors leading-tight">
+                  <h3 className="text-[13px] sm:text-xl font-bold text-primary-800 mb-1 sm:mb-2 transition-colors leading-tight">
                     {option.title}
                   </h3>
                   <p className="text-slate-500 text-[10px] sm:text-sm mb-2 sm:mb-6 flex-grow leading-tight">
                     {option.description}
                   </p>
                   <div className="flex items-center justify-center sm:justify-start w-full mt-auto">
-                    <div className="flex items-center bg-green-700 sm:bg-transparent text-white sm:text-green-700 px-2.5 py-1 sm:p-0 rounded-full sm:rounded-none font-bold text-[9px] sm:text-sm group-hover:translate-x-1 transition-all">
+                    <div className="flex items-center bg-primary-700 sm:bg-transparent text-white sm:text-primary-700 px-2.5 py-1 sm:p-0 rounded-full sm:rounded-none font-bold text-[9px] sm:text-sm group-hover:translate-x-1 transition-all">
                       <span className="sm:inline">Continue</span> <ArrowRight className="ml-1 sm:ml-2 w-3 h-3 sm:w-4 sm:h-4" />
                     </div>
                   </div>
@@ -140,7 +140,7 @@ export default function ApplicationSelection() {
         >
           <Button
             onClick={() => navigate('/benefits')}
-            className="bg-white text-green-700 hover:bg-green-50 font-bold px-8 py-6 rounded-2xl shadow-xl shadow-black/20 hover:scale-105 transition-all group"
+            className="bg-white text-primary-700 hover:bg-primary-50 font-bold px-8 py-6 rounded-2xl shadow-xl shadow-black/20 hover:scale-105 transition-all group"
           >
             <Award className="mr-2 w-6 h-6 group-hover:rotate-12 transition-transform" />
             Scholarship Benefits

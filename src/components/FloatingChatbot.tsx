@@ -355,7 +355,7 @@ export default function FloatingChatbot() {
                     {activeMode === 'call' ? 'Voice Assistant' : 'Dangote AI Assistant'}
                   </h3>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                    <div className="w-2 h-2 bg-primary-400 rounded-full animate-pulse" />
                     <span className="text-[10px] text-white/80 uppercase tracking-wider font-medium">
                       {activeMode === 'call' ? 'On Call' : 'Online'}
                     </span>
@@ -583,7 +583,7 @@ export default function FloatingChatbot() {
                 animate={{ opacity: 1, x: 0 }}
                 className="bg-white px-4 py-2 rounded-2xl shadow-xl border border-slate-100 text-sm font-medium text-slate-700 mb-2 flex items-center gap-2"
               >
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse" />
                 Need help? Ask me anything!
               </motion.div>
             )}

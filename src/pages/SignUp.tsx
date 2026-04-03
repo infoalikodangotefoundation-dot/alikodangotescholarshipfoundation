@@ -34,8 +34,8 @@ export default function SignUp() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-12">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl border border-slate-100">
         <div className="text-center">
-          <div className="mx-auto h-12 w-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-            <GraduationCap className="h-6 w-6 text-green-700" />
+          <div className="mx-auto h-12 w-12 bg-primary-100 rounded-full flex items-center justify-center mb-4">
+            <GraduationCap className="h-6 w-6 text-primary-700" />
           </div>
           <h2 className="text-3xl font-bold text-slate-900">Create Account</h2>
           <p className="mt-2 text-sm text-slate-600">
@@ -112,7 +112,7 @@ export default function SignUp() {
 
           <Button
             type="submit"
-            className="w-full bg-green-700 hover:bg-green-800 h-11 text-base font-semibold"
+            className="w-full bg-primary-700 hover:bg-primary-800 h-11 text-base font-semibold"
             disabled={loading}
           >
             {loading ? 'Creating account...' : 'Create Account'}
@@ -122,7 +122,7 @@ export default function SignUp() {
 
         <p className="text-center text-sm text-slate-600">
           Already have an account?{' '}
-          <Link to="/login" className="font-semibold text-green-700 hover:text-green-800">
+          <Link to="/login" className="font-semibold text-primary-700 hover:text-primary-800">
             Sign in
           </Link>
         </p>

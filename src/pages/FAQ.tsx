@@ -93,7 +93,7 @@ export default function FAQ() {
       <BackButton />
       
       {/* Hero Section */}
-      <section className="relative py-20 bg-green-900 text-white overflow-hidden">
+      <section className="relative py-20 bg-primary-900 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
         </div>
@@ -101,7 +101,7 @@ export default function FAQ() {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-green-800/50 rounded-full text-sm font-bold mb-6 border border-green-700"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary-800/50 rounded-full text-sm font-bold mb-6 border border-primary-700"
           >
             <HelpCircle className="w-4 h-4" />
             Support Center
@@ -118,7 +118,7 @@ export default function FAQ() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-xl text-green-50 max-w-2xl mx-auto mb-10"
+            className="text-xl text-primary-50 max-w-2xl mx-auto mb-10"
           >
             Find answers to common questions about the Aliko Dangote Foundation Scholarship program.
           </motion.p>
@@ -133,7 +133,7 @@ export default function FAQ() {
             <Input 
               type="text"
               placeholder="Search for questions..."
-              className="w-full h-14 pl-12 pr-4 rounded-full bg-white text-slate-900 border-none shadow-xl focus-visible:ring-2 focus-visible:ring-green-500"
+              className="w-full h-14 pl-12 pr-4 rounded-full bg-white text-slate-900 border-none shadow-xl focus-visible:ring-2 focus-visible:ring-primary-500"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -148,7 +148,7 @@ export default function FAQ() {
             {filteredFaqs.map((category, catIndex) => (
               <div key={catIndex}>
                 <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-                  <span className="w-8 h-8 bg-green-100 text-green-700 rounded-lg flex items-center justify-center text-sm">
+                  <span className="w-8 h-8 bg-primary-100 text-primary-700 rounded-lg flex items-center justify-center text-sm">
                     {catIndex + 1}
                   </span>
                   {category.category}
@@ -168,10 +168,10 @@ export default function FAQ() {
                           onClick={() => setOpenFaq(openFaq === faqId ? null : faqId)}
                           className="w-full p-6 text-left flex items-center justify-between gap-4 group"
                         >
-                          <span className="text-lg font-bold text-slate-800 group-hover:text-green-700 transition-colors">
+                          <span className="text-lg font-bold text-slate-800 group-hover:text-primary-700 transition-colors">
                             {faq.question}
                           </span>
-                          <div className={`p-2 rounded-full bg-slate-50 group-hover:bg-green-50 transition-colors ${openFaq === faqId ? 'rotate-180 bg-green-50 text-green-700' : 'text-slate-400'}`}>
+                          <div className={`p-2 rounded-full bg-slate-50 group-hover:bg-primary-50 transition-colors ${openFaq === faqId ? 'rotate-180 bg-primary-50 text-primary-700' : 'text-slate-400'}`}>
                             <ChevronDown className="w-5 h-5" />
                           </div>
                         </button>
@@ -205,7 +205,7 @@ export default function FAQ() {
             <p className="text-slate-600">We couldn't find any questions matching "{searchQuery}".</p>
             <Button 
               variant="link" 
-              className="mt-4 text-green-700 font-bold"
+              className="mt-4 text-primary-700 font-bold"
               onClick={() => setSearchQuery("")}
             >
               Clear search
@@ -224,14 +224,14 @@ export default function FAQ() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 flex flex-col items-center">
-              <div className="w-12 h-12 bg-green-100 text-green-700 rounded-full flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center mb-4">
                 <MessageSquare className="w-6 h-6" />
               </div>
               <h3 className="font-bold mb-2">Live Chat</h3>
               <p className="text-sm text-slate-500 mb-4">Chat with our support team in real-time.</p>
               <Button 
                 variant="outline" 
-                className="rounded-full border-green-600 text-green-700 hover:bg-green-50"
+                className="rounded-full border-primary-600 text-primary-700 hover:bg-primary-50"
                 onClick={() => window.dispatchEvent(new CustomEvent('open-chatbot'))}
               >
                 Start Chat
@@ -239,28 +239,28 @@ export default function FAQ() {
             </div>
             
             <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 flex flex-col items-center">
-              <div className="w-12 h-12 bg-green-100 text-green-700 rounded-full flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center mb-4">
                 <Mail className="w-6 h-6" />
               </div>
               <h3 className="font-bold mb-2">Email Support</h3>
               <p className="text-sm text-slate-500 mb-4">Send us an email and we'll get back to you.</p>
               <a 
                 href="mailto:info.alikodangotefoundation@gmail.com"
-                className="inline-flex items-center justify-center rounded-full border border-green-600 text-green-700 hover:bg-green-50 px-6 py-2 text-sm font-medium transition-colors"
+                className="inline-flex items-center justify-center rounded-full border border-primary-600 text-primary-700 hover:bg-primary-50 px-6 py-2 text-sm font-medium transition-colors"
               >
                 Send Email
               </a>
             </div>
             
             <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 flex flex-col items-center">
-              <div className="w-12 h-12 bg-green-100 text-green-700 rounded-full flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center mb-4">
                 <Phone className="w-6 h-6" />
               </div>
               <h3 className="font-bold mb-2">Phone Support</h3>
               <p className="text-sm text-slate-500 mb-4">Call us directly for urgent inquiries.</p>
               <a 
                 href="tel:+234800DANGOTE"
-                className="inline-flex items-center justify-center rounded-full border border-green-600 text-green-700 hover:bg-green-50 px-6 py-2 text-sm font-medium transition-colors"
+                className="inline-flex items-center justify-center rounded-full border border-primary-600 text-primary-700 hover:bg-primary-50 px-6 py-2 text-sm font-medium transition-colors"
               >
                 Call Now
               </a>

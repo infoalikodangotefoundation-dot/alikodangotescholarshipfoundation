@@ -297,7 +297,7 @@ export default function ApplicationForm() {
     
     if (!isDirty && !value) return "border-slate-200";
     if (hasError) return "border-red-500 focus-visible:ring-red-500";
-    if (value && !hasError) return "border-green-500 focus-visible:ring-green-500";
+    if (value && !hasError) return "border-primary-500 focus-visible:ring-primary-500";
     return "border-slate-200";
   };
 
@@ -1027,7 +1027,7 @@ export default function ApplicationForm() {
           <div className="space-y-8">
             {/* Personal Information */}
             <section>
-              <h4 className="font-bold text-green-800 text-sm uppercase tracking-wider mb-3">Personal Information</h4>
+              <h4 className="font-bold text-primary-800 text-sm uppercase tracking-wider mb-3">Personal Information</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8 text-xs sm:text-sm">
                 <div className="flex flex-col"><span className="font-semibold text-slate-500">Applying For:</span> <span className="capitalize">{allData.applyingFor}</span></div>
                 <div className="flex flex-col"><span className="font-semibold text-slate-500">Full Name:</span> <span>{allData.fullName}</span></div>
@@ -1042,7 +1042,7 @@ export default function ApplicationForm() {
 
             {/* Academic Background */}
             <section className="border-t pt-4">
-              <h4 className="font-bold text-green-800 text-sm uppercase tracking-wider mb-3">Academic Background</h4>
+              <h4 className="font-bold text-primary-800 text-sm uppercase tracking-wider mb-3">Academic Background</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8 text-xs sm:text-sm">
                 <div className="flex flex-col"><span className="font-semibold text-slate-500">Secondary School:</span> <span>{allData.secondarySchool}</span></div>
                 <div className="flex flex-col"><span className="font-semibold text-slate-500">Field of Study:</span> <span>{allData.fieldOfStudy}</span></div>
@@ -1053,7 +1053,7 @@ export default function ApplicationForm() {
 
             {/* Scholarship Selection */}
             <section className="border-t pt-4">
-              <h4 className="font-bold text-green-800 text-sm uppercase tracking-wider mb-3">Scholarship Selection</h4>
+              <h4 className="font-bold text-primary-800 text-sm uppercase tracking-wider mb-3">Scholarship Selection</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8 text-xs sm:text-sm">
                 <div className="flex flex-col"><span className="font-semibold text-slate-500">University:</span> <span>{allData.preferredUniversity}</span></div>
                 <div className="flex flex-col"><span className="font-semibold text-slate-500">Course:</span> <span>{allData.courseOfInterest}</span></div>
@@ -1063,11 +1063,11 @@ export default function ApplicationForm() {
 
             {/* Documents */}
             <section className="border-t pt-4">
-              <h4 className="font-bold text-green-800 text-sm uppercase tracking-wider mb-3">Documents & Statement</h4>
+              <h4 className="font-bold text-primary-800 text-sm uppercase tracking-wider mb-3">Documents & Statement</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8 text-xs sm:text-sm mb-4">
-                <div className="flex items-center gap-2"><Check className="w-4 h-4 text-green-600" /> <span className="font-semibold text-slate-500">Passport Photo</span></div>
-                <div className="flex items-center gap-2"><Check className="w-4 h-4 text-green-600" /> <span className="font-semibold text-slate-500">Academic Certificates</span></div>
-                <div className="flex items-center gap-2"><Check className="w-4 h-4 text-green-600" /> <span className="font-semibold text-slate-500">Recommendation Letter</span></div>
+                <div className="flex items-center gap-2"><Check className="w-4 h-4 text-primary-600" /> <span className="font-semibold text-slate-500">Passport Photo</span></div>
+                <div className="flex items-center gap-2"><Check className="w-4 h-4 text-primary-600" /> <span className="font-semibold text-slate-500">Academic Certificates</span></div>
+                <div className="flex items-center gap-2"><Check className="w-4 h-4 text-primary-600" /> <span className="font-semibold text-slate-500">Recommendation Letter</span></div>
               </div>
               <div className="flex flex-col text-xs sm:text-sm">
                 <span className="font-semibold text-slate-500 mb-1">Personal Statement:</span>
@@ -1079,7 +1079,7 @@ export default function ApplicationForm() {
 
             {/* Financial Information */}
             <section className="border-t pt-4">
-              <h4 className="font-bold text-green-800 text-sm uppercase tracking-wider mb-3">Financial Information</h4>
+              <h4 className="font-bold text-primary-800 text-sm uppercase tracking-wider mb-3">Financial Information</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8 text-xs sm:text-sm">
                 <div className="flex flex-col"><span className="font-semibold text-slate-500">Annual Income:</span> <span>₦{Number(allData.annualIncome).toLocaleString()}</span></div>
                 <div className="flex flex-col"><span className="font-semibold text-slate-500">Source of Funds:</span> <span>{allData.sourceOfFunds}</span></div>
@@ -1090,7 +1090,7 @@ export default function ApplicationForm() {
 
             {/* References */}
             <section className="border-t pt-4">
-              <h4 className="font-bold text-green-800 text-sm uppercase tracking-wider mb-3">References</h4>
+              <h4 className="font-bold text-primary-800 text-sm uppercase tracking-wider mb-3">References</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs sm:text-sm">
                 <div className="bg-white p-3 rounded border">
                   <p className="font-bold text-slate-700 mb-1">Referee 1</p>
@@ -1110,13 +1110,13 @@ export default function ApplicationForm() {
         </div>
 
         {/* Payment Section */}
-        <div className="bg-green-50 p-6 rounded-xl border border-green-200 space-y-4">
-          <h3 className="font-bold text-green-800 flex items-center gap-2">
+        <div className="bg-primary-50 p-6 rounded-xl border border-primary-200 space-y-4">
+          <h3 className="font-bold text-primary-800 flex items-center gap-2">
             <Award className="w-5 h-5" />
             Application Fee Payment
           </h3>
-          <div className="bg-white p-4 rounded-lg border border-green-100 text-sm space-y-2">
-            <p className="text-slate-600">Please pay the application fee of <span className="font-bold text-green-700">₦5,000</span> to the account below:</p>
+          <div className="bg-white p-4 rounded-lg border border-primary-100 text-sm space-y-2">
+            <p className="text-slate-600">Please pay the application fee of <span className="font-bold text-primary-700">₦5,000</span> to the account below:</p>
             <div className="grid grid-cols-2 gap-2 pt-2">
               <span className="text-slate-500">Bank:</span>
               <span className="font-bold">Opay</span>
@@ -1129,7 +1129,7 @@ export default function ApplicationForm() {
                   type="button" 
                   variant="ghost" 
                   size="icon" 
-                  className="h-6 w-6 text-green-600 hover:text-green-700 hover:bg-green-100"
+                  className="h-6 w-6 text-primary-600 hover:text-primary-700 hover:bg-primary-100"
                   onClick={() => {
                     navigator.clipboard.writeText('1234567890');
                     toast.success('Account number copied to clipboard');
@@ -1166,7 +1166,7 @@ export default function ApplicationForm() {
               onCheckedChange={(checked) => setValue('paymentConfirmed', checked as boolean, { shouldValidate: true })}
             />
             <div className="grid gap-1.5 leading-none">
-              <Label htmlFor="paymentConfirmed" className="font-medium cursor-pointer text-sm text-green-800">
+              <Label htmlFor="paymentConfirmed" className="font-medium cursor-pointer text-sm text-primary-800">
                 I understand that my application will only be processed after payment of ₦5,000 is verified.
               </Label>
               {errors.paymentConfirmed && <p className="text-sm text-red-500">{errors.paymentConfirmed.message as string}</p>}
@@ -1203,7 +1203,7 @@ export default function ApplicationForm() {
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
       <BackButton />
       <div className="mb-6 sm:mb-10 text-center sm:text-left">
-        <h1 className="text-2xl sm:text-3xl font-bold text-green-800 mb-2">Scholarship Application</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-primary-800 mb-2">Scholarship Application</h1>
         <p className="text-sm sm:text-base text-slate-600">Complete all steps to submit your application.</p>
       </div>
 
@@ -1214,15 +1214,15 @@ export default function ApplicationForm() {
               <div 
                 className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300",
-                  step === s ? "bg-green-700 text-white scale-110 ring-4 ring-green-100" : 
-                  step > s ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-400"
+                  step === s ? "bg-primary-700 text-white scale-110 ring-4 ring-primary-100" : 
+                  step > s ? "bg-primary-100 text-primary-700" : "bg-slate-100 text-slate-400"
                 )}
               >
                 {step > s ? <Check className="w-4 h-4" /> : s}
               </div>
               <span className={cn(
                 "text-[10px] font-medium hidden sm:block",
-                step === s ? "text-green-700" : "text-slate-400"
+                step === s ? "text-primary-700" : "text-slate-400"
               )}>
                 Step {s}
               </span>
@@ -1290,7 +1290,7 @@ export default function ApplicationForm() {
             {step === 7 ? (
               <Button 
                 type="submit" 
-                className="w-full sm:w-auto bg-green-700 hover:bg-green-800" 
+                className="w-full sm:w-auto bg-primary-700 hover:bg-primary-800" 
                 disabled={loading || activeUploads > 0}
               >
                 {activeUploads > 0 ? (
@@ -1303,7 +1303,7 @@ export default function ApplicationForm() {
             ) : (
               <Button 
                 type="submit" 
-                className="w-full sm:w-auto bg-green-700 hover:bg-green-800" 
+                className="w-full sm:w-auto bg-primary-700 hover:bg-primary-800" 
                 disabled={loading || activeUploads > 0}
               >
                 {activeUploads > 0 ? (

@@ -46,8 +46,8 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-12">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl border border-slate-100">
         <div className="text-center">
-          <div className="mx-auto h-12 w-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-            <GraduationCap className="h-6 w-6 text-green-700" />
+          <div className="mx-auto h-12 w-12 bg-primary-100 rounded-full flex items-center justify-center mb-4">
+            <GraduationCap className="h-6 w-6 text-primary-700" />
           </div>
           <h2 className="text-3xl font-bold text-slate-900">Welcome Back</h2>
           <p className="mt-2 text-sm text-slate-600">
@@ -76,7 +76,7 @@ export default function Login() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link to="/forgot-password" title="Forgot password?" className="text-xs text-green-600 hover:text-green-700">
+                <Link to="/forgot-password" title="Forgot password?" className="text-xs text-primary-600 hover:text-primary-700">
                   Forgot password?
                 </Link>
               </div>
@@ -97,7 +97,7 @@ export default function Login() {
 
           <Button
             type="submit"
-            className="w-full bg-green-700 hover:bg-green-800 h-11 text-base font-semibold"
+            className="w-full bg-primary-700 hover:bg-primary-800 h-11 text-base font-semibold"
             disabled={loading}
           >
             {loading ? 'Signing in...' : 'Sign In'}
@@ -126,7 +126,7 @@ export default function Login() {
 
         <p className="text-center text-sm text-slate-600">
           Don't have an account?{' '}
-          <Link to="/signup" className="font-semibold text-green-700 hover:text-green-800">
+          <Link to="/signup" className="font-semibold text-primary-700 hover:text-primary-800">
             Create an account
           </Link>
         </p>

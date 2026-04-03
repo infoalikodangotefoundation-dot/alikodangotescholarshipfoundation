@@ -60,7 +60,7 @@ export function AIAssistant({ onApplySuggestion, currentText }: AIAssistantProps
       
       {suggestion && (
         <div className="space-y-3">
-          <div className="p-3 bg-white border border-green-200 rounded-md text-sm text-slate-600 whitespace-pre-wrap">
+          <div className="p-3 bg-white border border-primary-200 rounded-md text-sm text-slate-600 whitespace-pre-wrap">
             {suggestion}
           </div>
           <div className="flex justify-end gap-2">

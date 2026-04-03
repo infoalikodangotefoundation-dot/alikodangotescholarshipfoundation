@@ -10,7 +10,7 @@ const mockNotifications = [
     time: "2 hours ago",
     type: "success",
     icon: CheckCircle2,
-    color: "text-green-600 bg-green-50"
+    color: "text-primary-600 bg-primary-50"
   },
   {
     id: 2,
@@ -36,8 +36,8 @@ export default function Notifications() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <div className="flex items-center gap-3 mb-8">
-        <div className="p-2 bg-green-100 rounded-xl">
-          <Bell className="w-6 h-6 text-green-700" />
+        <div className="p-2 bg-primary-100 rounded-xl">
+          <Bell className="w-6 h-6 text-primary-700" />
         </div>
         <h1 className="text-3xl font-bold text-slate-900">Notifications</h1>
       </div>

@@ -87,7 +87,7 @@ export function LegalModal({ isOpen, onClose, type }: LegalModalProps) {
         <div className="p-4 border-t border-slate-800 bg-slate-950/50 flex justify-end">
           <button 
             onClick={onClose}
-            className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors cursor-pointer"
+            className="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg transition-colors cursor-pointer"
           >
             Close
           </button>

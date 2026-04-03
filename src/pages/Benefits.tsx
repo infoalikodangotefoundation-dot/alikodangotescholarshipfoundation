@@ -26,7 +26,7 @@ import { motion, AnimatePresence } from 'motion/react';
 const benefits = [
   {
     title: "Financial Coverage",
-    icon: <CheckCircle2 className="w-8 h-8 text-green-600" />,
+    icon: <CheckCircle2 className="w-8 h-8 text-primary-600" />,
     description: "Experience complete peace of mind with our comprehensive financial support package.",
     points: [
       "100% Full tuition fees covered for the entire duration of your program",
@@ -36,7 +36,7 @@ const benefits = [
   },
   {
     title: "Monthly Allowance",
-    icon: <DollarSign className="w-8 h-8 text-green-600" />,
+    icon: <DollarSign className="w-8 h-8 text-primary-600" />,
     description: "We provide a consistent monthly stipend to ensure you can focus entirely on your studies.",
     points: [
       "$150 monthly stipend paid directly to your student account",
@@ -46,7 +46,7 @@ const benefits = [
   },
   {
     title: "Accommodation",
-    icon: <Home className="w-8 h-8 text-green-600" />,
+    icon: <Home className="w-8 h-8 text-primary-600" />,
     description: "Live in safe, comfortable, and conducive environments near your campus.",
     points: [
       "Fully funded on-campus or approved off-campus housing",
@@ -56,7 +56,7 @@ const benefits = [
   },
   {
     title: "Medical Support",
-    icon: <Stethoscope className="w-8 h-8 text-green-600" />,
+    icon: <Stethoscope className="w-8 h-8 text-primary-600" />,
     description: "Your health is our priority. We ensure you have access to the best medical care.",
     points: [
       "Comprehensive international health insurance coverage",
@@ -66,7 +66,7 @@ const benefits = [
   },
   {
     title: "Travel Support",
-    icon: <Plane className="w-8 h-8 text-green-600" />,
+    icon: <Plane className="w-8 h-8 text-primary-600" />,
     description: "We handle the logistics of getting you to your destination and back home.",
     points: [
       "Fully funded round-trip flight tickets (arrival and return)",
@@ -76,7 +76,7 @@ const benefits = [
   },
   {
     title: "Academic Support",
-    icon: <BookOpen className="w-8 h-8 text-green-600" />,
+    icon: <BookOpen className="w-8 h-8 text-primary-600" />,
     description: "Access the resources and mentorship you need to excel academically.",
     points: [
       "Access to world-class libraries and research facilities",
@@ -86,7 +86,7 @@ const benefits = [
   },
   {
     title: "Career Development",
-    icon: <Briefcase className="w-8 h-8 text-green-600" />,
+    icon: <Briefcase className="w-8 h-8 text-primary-600" />,
     description: "We prepare you for a successful global career after graduation.",
     points: [
       "Guaranteed internship opportunities at Dangote Group and partners",
@@ -96,7 +96,7 @@ const benefits = [
   },
   {
     title: "Global Exposure",
-    icon: <Globe className="w-8 h-8 text-green-600" />,
+    icon: <Globe className="w-8 h-8 text-primary-600" />,
     description: "Expand your horizons through international cultural and academic exchange.",
     points: [
       "Immersive study abroad experience in diverse cultures",
@@ -106,7 +106,7 @@ const benefits = [
   },
   {
     title: "Student Support",
-    icon: <LifeBuoy className="w-8 h-8 text-green-600" />,
+    icon: <LifeBuoy className="w-8 h-8 text-primary-600" />,
     description: "You are never alone. Our support team is available whenever you need help.",
     points: [
       "24/7 dedicated support system for all scholars",
@@ -146,32 +146,32 @@ const faqs = [
 const applicationSteps = [
   {
     title: "Create Account",
-    icon: <UserPlus className="w-6 h-6 text-green-600" />,
+    icon: <UserPlus className="w-6 h-6 text-primary-600" />,
     description: "Register on our portal with your basic details to get started."
   },
   {
     title: "Select Application",
-    icon: <BookOpen className="w-6 h-6 text-green-600" />,
+    icon: <BookOpen className="w-6 h-6 text-primary-600" />,
     description: "Choose whether you are applying for yourself or on behalf of someone else."
   },
   {
     title: "Fill Information",
-    icon: <FileText className="w-6 h-6 text-green-600" />,
+    icon: <FileText className="w-6 h-6 text-primary-600" />,
     description: "Complete the multi-step form with accurate personal and academic details."
   },
   {
     title: "Upload Documents",
-    icon: <Upload className="w-6 h-6 text-green-600" />,
+    icon: <Upload className="w-6 h-6 text-primary-600" />,
     description: "Upload your passport, academic certificates, and recommendation letters."
   },
   {
     title: "Pay Processing Fee",
-    icon: <CreditCard className="w-6 h-6 text-green-600" />,
+    icon: <CreditCard className="w-6 h-6 text-primary-600" />,
     description: "Pay the non-refundable ₦5,000 processing fee to finalize your application."
   },
   {
     title: "Submit & Track",
-    icon: <Send className="w-6 h-6 text-green-600" />,
+    icon: <Send className="w-6 h-6 text-primary-600" />,
     description: "Submit your application and use your unique Ticket ID to track its status."
   }
 ];
@@ -183,7 +183,7 @@ export default function Benefits() {
     <div className="flex flex-col w-full bg-slate-50">
       <BackButton />
       {/* Hero Section */}
-      <section className="relative py-20 bg-green-900 text-white overflow-hidden">
+      <section className="relative py-20 bg-primary-900 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <img 
             src="https://images.unsplash.com/photo-1523050853063-915894367ef7?auto=format&fit=crop&q=80&w=2000" 
@@ -204,7 +204,7 @@ export default function Benefits() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-xl md:text-2xl text-green-50 max-w-3xl mx-auto leading-relaxed mb-10"
+            className="text-xl md:text-2xl text-primary-50 max-w-3xl mx-auto leading-relaxed mb-10"
           >
             The Aliko Dangote Foundation Scholarship offers full, comprehensive support to exceptional Nigerian students, 
             ensuring that financial barriers never stand in the way of world-class education and global leadership.
@@ -217,7 +217,7 @@ export default function Benefits() {
           >
             <Button 
               size="lg" 
-              className="bg-white text-green-900 hover:bg-green-50 px-8 h-14 rounded-full font-bold text-lg shadow-lg group"
+              className="bg-white text-primary-900 hover:bg-primary-50 px-8 h-14 rounded-full font-bold text-lg shadow-lg group"
               onClick={() => document.getElementById('how-to-apply')?.scrollIntoView({ behavior: 'smooth' })}
             >
               How to Apply
@@ -248,7 +248,7 @@ export default function Benefits() {
               transition={{ delay: index * 0.1 }}
               className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow"
             >
-              <div className="mb-6 bg-green-50 w-16 h-16 rounded-2xl flex items-center justify-center">
+              <div className="mb-6 bg-primary-50 w-16 h-16 rounded-2xl flex items-center justify-center">
                 {benefit.icon}
               </div>
               <h3 className="text-2xl font-bold mb-4 text-slate-900">{benefit.title}</h3>
@@ -258,7 +258,7 @@ export default function Benefits() {
               <ul className="space-y-3">
                 {benefit.points.map((point, pIdx) => (
                   <li key={pIdx} className="flex items-start gap-3 text-sm text-slate-700">
-                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-5 h-5 text-primary-500 shrink-0 mt-0.5" />
                     <span>{point}</span>
                   </li>
                 ))}
@@ -286,12 +286,12 @@ export default function Benefits() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="relative p-8 rounded-3xl bg-slate-50 border border-slate-200 group hover:bg-white hover:shadow-xl hover:border-green-200 transition-all duration-300"
+                className="relative p-8 rounded-3xl bg-slate-50 border border-slate-200 group hover:bg-white hover:shadow-xl hover:border-primary-200 transition-all duration-300"
               >
-                <div className="absolute -top-4 -left-4 w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center font-bold shadow-lg z-10">
+                <div className="absolute -top-4 -left-4 w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold shadow-lg z-10">
                   {index + 1}
                 </div>
-                <div className="mb-6 bg-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm group-hover:bg-green-50 transition-colors">
+                <div className="mb-6 bg-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm group-hover:bg-primary-50 transition-colors">
                   {step.icon}
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-slate-900">{step.title}</h3>
@@ -304,7 +304,7 @@ export default function Benefits() {
 
           <div className="mt-16 text-center">
             <Link to="/apply-selection">
-              <Button size="lg" className="bg-green-700 hover:bg-green-800 text-white px-10 h-14 rounded-full shadow-lg group">
+              <Button size="lg" className="bg-primary-700 hover:bg-primary-800 text-white px-10 h-14 rounded-full shadow-lg group">
                 Begin Your Application
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -317,7 +317,7 @@ export default function Benefits() {
       <section className="py-20 bg-slate-100 border-y border-slate-200">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-bold mb-4 uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-100 text-primary-800 rounded-full text-sm font-bold mb-4 uppercase tracking-wider">
               <HelpCircle className="w-4 h-4" />
               Frequently Asked Questions
             </div>
@@ -339,10 +339,10 @@ export default function Benefits() {
                   onClick={() => setOpenFaq(openFaq === index ? null : index)}
                   className="w-full p-6 text-left flex items-center justify-between gap-4 group"
                 >
-                  <span className="text-lg font-bold text-slate-800 group-hover:text-green-700 transition-colors">
+                  <span className="text-lg font-bold text-slate-800 group-hover:text-primary-700 transition-colors">
                     {faq.question}
                   </span>
-                  <div className={`p-2 rounded-full bg-slate-50 group-hover:bg-green-50 transition-colors ${openFaq === index ? 'rotate-180 bg-green-50 text-green-700' : 'text-slate-400'}`}>
+                  <div className={`p-2 rounded-full bg-slate-50 group-hover:bg-primary-50 transition-colors ${openFaq === index ? 'rotate-180 bg-primary-50 text-primary-700' : 'text-slate-400'}`}>
                     <ChevronDown className="w-5 h-5" />
                   </div>
                 </button>
@@ -374,7 +374,7 @@ export default function Benefits() {
             Applications for the 2026/2027 academic year are now open. Join the next generation of global leaders.
           </p>
           <Link to="/apply">
-            <Button size="lg" className="bg-green-700 hover:bg-green-800 text-white px-12 h-16 text-xl rounded-full shadow-xl hover:shadow-2xl transition-all group">
+            <Button size="lg" className="bg-primary-700 hover:bg-primary-800 text-white px-12 h-16 text-xl rounded-full shadow-xl hover:shadow-2xl transition-all group">
               Apply Now
               <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </Button>

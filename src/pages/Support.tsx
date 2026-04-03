@@ -139,28 +139,28 @@ export default function Support() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-start gap-4">
-                <div className="p-2 bg-green-50 rounded-lg">
-                  <Mail className="w-5 h-5 text-green-700" />
+                <div className="p-2 bg-primary-50 rounded-lg">
+                  <Mail className="w-5 h-5 text-primary-700" />
                 </div>
                 <div>
                   <p className="font-bold text-slate-900">Email</p>
                   <a 
                     href="mailto:info.alikodangotefoundation@gmail.com" 
-                    className="text-sm text-slate-600 hover:text-green-700 transition-colors underline decoration-dotted underline-offset-4 break-all"
+                    className="text-sm text-slate-600 hover:text-primary-700 transition-colors underline decoration-dotted underline-offset-4 break-all"
                   >
                     info.alikodangotefoundation@gmail.com
                   </a>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="p-2 bg-green-50 rounded-lg">
-                  <Phone className="w-5 h-5 text-green-700" />
+                <div className="p-2 bg-primary-50 rounded-lg">
+                  <Phone className="w-5 h-5 text-primary-700" />
                 </div>
                 <div>
                   <p className="font-bold text-slate-900">Phone</p>
                   <a 
                     href="tel:+234800DANGOTE" 
-                    className="text-sm text-slate-600 hover:text-green-700 transition-colors underline decoration-dotted underline-offset-4"
+                    className="text-sm text-slate-600 hover:text-primary-700 transition-colors underline decoration-dotted underline-offset-4"
                   >
                     +234 800 DANGOTE
                   </a>
@@ -170,12 +170,12 @@ export default function Support() {
                 className="flex items-start gap-4 cursor-pointer group"
                 onClick={() => window.dispatchEvent(new CustomEvent('open-chatbot'))}
               >
-                <div className="p-2 bg-green-50 rounded-lg group-hover:bg-green-100 transition-colors">
-                  <MessageSquare className="w-5 h-5 text-green-700" />
+                <div className="p-2 bg-primary-50 rounded-lg group-hover:bg-primary-100 transition-colors">
+                  <MessageSquare className="w-5 h-5 text-primary-700" />
                 </div>
                 <div>
                   <p className="font-bold text-slate-900">Live Chat</p>
-                  <p className="text-sm text-slate-600 group-hover:text-green-700 transition-colors underline decoration-dotted underline-offset-4">
+                  <p className="text-sm text-slate-600 group-hover:text-primary-700 transition-colors underline decoration-dotted underline-offset-4">
                     Available 24/7 via our chatbot
                   </p>
                 </div>
@@ -183,11 +183,11 @@ export default function Support() {
             </CardContent>
           </Card>
 
-          <Card className="bg-green-700 text-white border-none shadow-lg">
+          <Card className="bg-primary-700 text-white border-none shadow-lg">
             <CardContent className="p-6">
               <AlertCircle className="w-8 h-8 mb-4 opacity-80" />
               <h3 className="text-xl font-bold mb-2">Urgent Matters?</h3>
-              <p className="text-green-50 text-sm mb-4">
+              <p className="text-primary-50 text-sm mb-4">
                 For immediate assistance regarding payment verification or technical issues, please include your Ticket ID in the message.
               </p>
             </CardContent>
@@ -248,7 +248,7 @@ export default function Support() {
                 </div>
                 <Button 
                   type="submit" 
-                  className="w-full bg-green-700 hover:bg-green-800 h-12 text-lg"
+                  className="w-full bg-primary-700 hover:bg-primary-800 h-12 text-lg"
                   disabled={loading}
                 >
                   {loading ? (

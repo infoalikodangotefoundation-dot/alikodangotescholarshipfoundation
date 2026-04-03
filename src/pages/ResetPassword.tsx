@@ -60,12 +60,12 @@ export default function ResetPassword() {
       <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
         <Card className="w-full max-w-md border-slate-200 shadow-xl">
           <CardContent className="pt-10 pb-10 text-center space-y-4">
-            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle2 className="w-10 h-10 text-green-600" />
+            <div className="mx-auto w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mb-4">
+              <CheckCircle2 className="w-10 h-10 text-primary-600" />
             </div>
             <h2 className="text-2xl font-bold text-slate-900">Password Reset Complete</h2>
             <p className="text-slate-500">Your password has been updated successfully. Redirecting you to login...</p>
-            <Button className="w-full bg-green-700 hover:bg-green-800 mt-4" onClick={() => navigate('/login')}>
+            <Button className="w-full bg-primary-700 hover:bg-primary-800 mt-4" onClick={() => navigate('/login')}>
               Go to Login
             </Button>
           </CardContent>
@@ -117,7 +117,7 @@ export default function ResetPassword() {
             </div>
             <Button 
               type="submit" 
-              className="w-full bg-green-700 hover:bg-green-800 h-11" 
+              className="w-full bg-primary-700 hover:bg-primary-800 h-11" 
               disabled={isLoading}
             >
               {isLoading ? (

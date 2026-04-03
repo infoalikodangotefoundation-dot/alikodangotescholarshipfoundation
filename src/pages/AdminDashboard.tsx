@@ -111,7 +111,7 @@ export default function AdminDashboard() {
           <h1 className="text-3xl font-bold text-slate-800">Admin Dashboard</h1>
           <p className="text-slate-600">Manage all scholarship applications.</p>
         </div>
-        <Button onClick={exportToCSV} className="bg-green-700 hover:bg-green-800">
+        <Button onClick={exportToCSV} className="bg-primary-700 hover:bg-primary-800">
           <Download className="w-4 h-4 mr-2" />
           Export CSV
         </Button>
@@ -180,7 +180,7 @@ export default function AdminDashboard() {
                     <div className="text-xs text-slate-500 font-mono">{app.nin}</div>
                   </TableCell>
                   <TableCell>
-                    <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                       {app.paymentStatus === 'pending_verification' ? 'Pending' : 'Paid'}
                     </div>
                     {app.paymentReference && (
@@ -191,7 +191,7 @@ export default function AdminDashboard() {
                   </TableCell>
                   <TableCell>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      app.status === 'Approved' ? 'bg-green-100 text-green-800' :
+                      app.status === 'Approved' ? 'bg-primary-100 text-primary-800' :
                       app.status === 'Denied' ? 'bg-red-100 text-red-800' :
                       app.status === 'Under Review' ? 'bg-blue-100 text-blue-800' :
                       'bg-yellow-100 text-yellow-800'
@@ -226,12 +226,12 @@ export default function AdminDashboard() {
                       <Button 
                         variant="outline" 
                         size="icon" 
-                        className="border-green-200 hover:bg-green-50 hover:text-green-700"
+                        className="border-primary-200 hover:bg-primary-50 hover:text-primary-700"
                         title="Approve"
                         onClick={() => handleStatusChange(app.id, 'Approved')}
                         disabled={app.status === 'Approved'}
                       >
-                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <CheckCircle className="w-4 h-4 text-primary-600" />
                       </Button>
                       <Button 
                         variant="outline" 
