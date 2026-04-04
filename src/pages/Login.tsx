@@ -5,14 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { GraduationCap, Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { GraduationCap, Mail, Lock, ArrowRight, Eye, EyeOff, Facebook } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, loginWithFacebook } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,6 +40,16 @@ export default function Login() {
       navigate('/home');
     } catch (error: any) {
       toast.error(error.message || 'Google login failed');
+    }
+  };
+
+  const handleFacebookLogin = async () => {
+    try {
+      await loginWithFacebook();
+      toast.success('Logged in with Facebook!');
+      navigate('/home');
+    } catch (error: any) {
+      toast.error(error.message || 'Facebook login failed');
     }
   };
 
@@ -125,15 +135,26 @@ export default function Login() {
             </div>
           </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full h-11 border-slate-200 hover:bg-slate-50"
-            onClick={handleGoogleLogin}
-          >
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="h-4 w-4 mr-2" />
-            Google
-          </Button>
+          <div className="grid grid-cols-2 gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-11 border-slate-200 hover:bg-slate-50"
+              onClick={handleGoogleLogin}
+            >
+              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="h-4 w-4 mr-2" />
+              Google
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-11 border-slate-200 hover:bg-slate-50 text-[#1877F2] hover:text-[#1877F2]"
+              onClick={handleFacebookLogin}
+            >
+              <Facebook className="h-4 w-4 mr-2 fill-current" />
+              Facebook
+            </Button>
+          </div>
         </form>
 
         <p className="text-center text-sm text-slate-600">

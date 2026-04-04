@@ -5,6 +5,7 @@ import {
   User as FirebaseUser, 
   signInWithPopup, 
   GoogleAuthProvider, 
+  FacebookAuthProvider,
   signOut,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -36,6 +37,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password?: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
+  loginWithFacebook: () => Promise<void>;
   signUp: (email: string, password: string, fullName: string, phoneNumber: string) => Promise<void>;
   resendVerificationEmail: () => Promise<void>;
   reloadUser: () => Promise<void>;
@@ -51,6 +53,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   login: async () => {},
   loginWithGoogle: async () => {},
+  loginWithFacebook: async () => {},
   signUp: async () => {},
   resendVerificationEmail: async () => {},
   reloadUser: async () => {},
@@ -128,6 +131,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+    } catch (error: any) {
+      if (error.code === 'auth/unauthorized-domain') {
+        throw new Error("UNAUTHORIZED_DOMAIN");
+      }
+      throw error;
+    }
+  };
+
+  const loginWithFacebook = async () => {
+    try {
+      const provider = new FacebookAuthProvider();
       await signInWithPopup(auth, provider);
     } catch (error: any) {
       if (error.code === 'auth/unauthorized-domain') {
@@ -231,7 +246,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, userProfile, loading, login, loginWithGoogle, signUp, resendVerificationEmail, reloadUser, updateProfile, resetPassword, confirmReset, logout }}>
+    <AuthContext.Provider value={{ currentUser, userProfile, loading, login, loginWithGoogle, loginWithFacebook, signUp, resendVerificationEmail, reloadUser, updateProfile, resetPassword, confirmReset, logout }}>
       {!loading && children}
     </AuthContext.Provider>
   );

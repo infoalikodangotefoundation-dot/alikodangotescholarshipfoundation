@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { GraduationCap, Mail, Lock, User, Phone, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { GraduationCap, Mail, Lock, User, Phone, ArrowRight, Eye, EyeOff, Facebook } from 'lucide-react';
 
 export default function SignUp() {
   const [email, setEmail] = useState('');
@@ -14,7 +14,7 @@ export default function SignUp() {
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signUp } = useAuth();
+  const { signUp, loginWithGoogle, loginWithFacebook } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,6 +28,26 @@ export default function SignUp() {
       toast.error(error.message || 'Failed to create account');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithGoogle();
+      toast.success('Logged in with Google!');
+      navigate('/home');
+    } catch (error: any) {
+      toast.error(error.message || 'Google login failed');
+    }
+  };
+
+  const handleFacebookLogin = async () => {
+    try {
+      await loginWithFacebook();
+      toast.success('Logged in with Facebook!');
+      navigate('/home');
+    } catch (error: any) {
+      toast.error(error.message || 'Facebook login failed');
     }
   };
 
@@ -130,6 +150,36 @@ export default function SignUp() {
             {loading ? 'Creating account...' : 'Create Account'}
             {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
           </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-slate-200" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-slate-500">Or continue with</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-11 border-slate-200 hover:bg-slate-50"
+              onClick={handleGoogleLogin}
+            >
+              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="h-4 w-4 mr-2" />
+              Google
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-11 border-slate-200 hover:bg-slate-50 text-[#1877F2] hover:text-[#1877F2]"
+              onClick={handleFacebookLogin}
+            >
+              <Facebook className="h-4 w-4 mr-2 fill-current" />
+              Facebook
+            </Button>
+          </div>
         </form>
 
         <p className="text-center text-sm text-slate-600">
