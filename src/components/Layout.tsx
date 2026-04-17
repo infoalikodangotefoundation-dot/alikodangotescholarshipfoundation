@@ -198,17 +198,6 @@ export default function Layout() {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <div className="px-2 py-1 text-center overflow-hidden bg-primary-50 border-t border-primary-100">
-              {hasBackButton ? (
-                <div className="whitespace-nowrap animate-marquee text-primary-700 font-bold text-[10px] flex items-center" style={{ animationDuration: '20s' }}>
-                  <span className="px-4">Aliko Dangote Scholarship Foundation Portal — Click the back icon to return to the previous page — Aliko Dangote Scholarship Foundation Portal — Click the back icon to return to the previous page</span>
-                </div>
-              ) : (
-                <h1 className="text-primary-700 font-bold text-[10px] whitespace-nowrap">
-                  Aliko Dangote Scholarship Foundation Portal
-                </h1>
-              )}
-            </div>
           </div>
         </header>
       )}

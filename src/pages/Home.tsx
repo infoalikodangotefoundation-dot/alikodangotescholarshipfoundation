@@ -99,7 +99,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-2xl sm:text-4xl md:text-5xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-white drop-shadow-lg mb-3"
+              className="hidden sm:block text-2xl sm:text-4xl md:text-5xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-white drop-shadow-lg mb-3"
             >
               {t('home.title')}
             </motion.h1>
@@ -108,7 +108,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-base sm:text-lg md:text-xl text-gray-200 drop-shadow-md font-medium max-w-2xl px-4 mb-8"
+              className="hidden sm:block text-base sm:text-lg md:text-xl text-gray-200 drop-shadow-md font-medium max-w-2xl px-4 mb-8"
             >
               {t('home.subtitle')}
             </motion.p>
