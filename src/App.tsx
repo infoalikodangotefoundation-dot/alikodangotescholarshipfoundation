@@ -13,11 +13,8 @@ import UniversityDetail from './pages/UniversityDetail';
 import AdminDashboard from './pages/AdminDashboard';
 import ApplicationForm from './pages/ApplicationForm';
 import Login from './pages/Login';
-import SignUp from './pages/SignUp';
-import ForgotPassword from './pages/ForgotPassword';
 import ApplicationSelection from './pages/ApplicationSelection';
 import Profile from './pages/Profile';
-import ResetPassword from './pages/ResetPassword';
 import ApplicationStatus from './pages/ApplicationStatus';
 import Notifications from './pages/Notifications';
 import Legal from './pages/Legal';
@@ -26,10 +23,22 @@ import { Toaster } from 'sonner';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
+import { useLocation } from 'react-router-dom';
+
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, loading } = useAuth();
-  if (loading) return null;
-  if (!currentUser) return <Navigate to="/login" />;
+  const location = useLocation();
+
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-700"></div>
+    </div>
+  );
+
+  if (!currentUser) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
   return <>{children}</>;
 };
 
@@ -42,25 +51,22 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<Navigate to="/home" replace />} />
-              <Route path="home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-              <Route path="benefits" element={<ProtectedRoute><Benefits /></ProtectedRoute>} />
-              <Route path="faq" element={<ProtectedRoute><FAQ /></ProtectedRoute>} />
-              <Route path="how-to-apply" element={<ProtectedRoute><HowToApply /></ProtectedRoute>} />
-              <Route path="university/:id" element={<ProtectedRoute><UniversityDetail /></ProtectedRoute>} />
+              <Route path="home" element={<Home />} />
+              <Route path="benefits" element={<Benefits />} />
+              <Route path="faq" element={<FAQ />} />
+              <Route path="how-to-apply" element={<HowToApply />} />
+              <Route path="university/:id" element={<UniversityDetail />} />
               <Route path="admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               <Route path="apply-selection" element={<ProtectedRoute><ApplicationSelection /></ProtectedRoute>} />
               <Route path="apply" element={<ProtectedRoute><ApplicationForm /></ProtectedRoute>} />
               <Route path="login" element={<Login />} />
-              <Route path="signup" element={<SignUp />} />
-              <Route path="forgot-password" element={<ForgotPassword />} />
-              <Route path="reset-password" element={<ResetPassword />} />
               <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="status" element={<ProtectedRoute><ApplicationStatus /></ProtectedRoute>} />
               <Route path="notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-              <Route path="privacy" element={<ProtectedRoute><Legal type="privacy" /></ProtectedRoute>} />
-              <Route path="terms" element={<ProtectedRoute><Legal type="terms" /></ProtectedRoute>} />
-              <Route path="refund" element={<ProtectedRoute><Legal type="refund" /></ProtectedRoute>} />
-              <Route path="support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
+              <Route path="privacy" element={<Legal type="privacy" />} />
+              <Route path="terms" element={<Legal type="terms" />} />
+              <Route path="refund" element={<Legal type="refund" />} />
+              <Route path="support" element={<Support />} />
             </Route>
           </Routes>
         </Router>

@@ -11,13 +11,12 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, updateDoc } from 'firebase/firestore';
 
 export default function Profile() {
-  const { currentUser, userProfile, logout, updateProfile, resetPassword } = useAuth();
+  const { currentUser, userProfile, logout, updateProfile } = useAuth();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
-  const [isSendingReset, setIsSendingReset] = useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -43,19 +42,6 @@ export default function Profile() {
       navigate('/home');
     } catch (error) {
       toast.error('Failed to logout');
-    }
-  };
-
-  const handlePasswordReset = async () => {
-    if (!currentUser?.email) return;
-    setIsSendingReset(true);
-    try {
-      await resetPassword(currentUser.email);
-      toast.success('Password reset email sent! Please check your inbox.');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to send reset email');
-    } finally {
-      setIsSendingReset(false);
     }
   };
 
@@ -327,35 +313,13 @@ export default function Profile() {
                   <div>
                     <p className="text-sm font-semibold text-slate-900">Email Verification</p>
                     <p className="text-xs text-slate-500">
-                      {currentUser.emailVerified ? 'Your email is verified' : 'Please verify your email'}
+                      {currentUser.emailVerified ? 'Your email is verified' : 'Your email is not verified'}
                     </p>
                   </div>
                 </div>
                 <div className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${currentUser.emailVerified ? 'bg-primary-100 text-primary-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                  {currentUser.emailVerified ? 'Verified' : 'Pending'}
+                  {currentUser.emailVerified ? 'Verified' : 'Unverified'}
                 </div>
-              </div>
-
-              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white rounded-lg shadow-sm">
-                    <Key className="w-4 h-4 text-slate-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">Security</p>
-                    <p className="text-xs text-slate-500">Update your account password</p>
-                  </div>
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="text-primary-700 border-primary-100 hover:bg-primary-50"
-                  onClick={handlePasswordReset}
-                  disabled={isSendingReset}
-                >
-                  {isSendingReset ? <Loader2 className="w-3 h-3 mr-2 animate-spin" /> : null}
-                  Change Password
-                </Button>
               </div>
             </CardContent>
           </Card>

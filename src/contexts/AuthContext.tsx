@@ -5,13 +5,7 @@ import {
   User as FirebaseUser, 
   signInWithPopup, 
   GoogleAuthProvider, 
-  FacebookAuthProvider,
-  signOut,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  confirmPasswordReset
+  signOut
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -35,15 +29,9 @@ interface AuthContextType {
   currentUser: User | null;
   userProfile: UserProfile | null;
   loading: boolean;
-  login: (email: string, password?: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
-  loginWithFacebook: () => Promise<void>;
-  signUp: (email: string, password: string, fullName: string, phoneNumber: string) => Promise<void>;
-  resendVerificationEmail: () => Promise<void>;
   reloadUser: () => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
-  confirmReset: (code: string, newPass: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -51,15 +39,9 @@ const AuthContext = createContext<AuthContextType>({
   currentUser: null,
   userProfile: null,
   loading: true,
-  login: async () => {},
   loginWithGoogle: async () => {},
-  loginWithFacebook: async () => {},
-  signUp: async () => {},
-  resendVerificationEmail: async () => {},
   reloadUser: async () => {},
   updateProfile: async () => {},
-  resetPassword: async () => {},
-  confirmReset: async () => {},
   logout: async () => {},
 });
 
@@ -119,15 +101,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const login = async (email: string, password?: string) => {
-    if (!password) throw new Error("Password is required for email login");
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    
-    if (!userCredential.user.emailVerified) {
-      throw new Error("EMAIL_NOT_VERIFIED");
-    }
-  };
-
   const loginWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -137,59 +110,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error("UNAUTHORIZED_DOMAIN");
       }
       throw error;
-    }
-  };
-
-  const loginWithFacebook = async () => {
-    try {
-      const provider = new FacebookAuthProvider();
-      await signInWithPopup(auth, provider);
-    } catch (error: any) {
-      if (error.code === 'auth/unauthorized-domain') {
-        throw new Error("UNAUTHORIZED_DOMAIN");
-      }
-      throw error;
-    }
-  };
-
-  const signUp = async (email: string, password: string, fullName: string, phoneNumber: string) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const uid = userCredential.user.uid;
-    
-    // Send verification email
-    await sendEmailVerification(userCredential.user);
-    
-    const newProfile = {
-      fullName,
-      phoneNumber,
-      email,
-      role: email === 'info.alikodangotefoundation@gmail.com' ? 'admin' : 'applicant',
-      createdAt: new Date().toISOString(),
-    };
-    
-    try {
-      await setDoc(doc(db, 'users', uid), newProfile);
-      setUserProfile(newProfile);
-    } catch (error: any) {
-      if (error.message?.includes('permission-denied') || error.message?.includes('Missing or insufficient permissions')) {
-        handleFirestoreError(error, OperationType.CREATE, `users/${uid}`);
-      }
-      throw error;
-    }
-    
-    // Sign out after sign up to force verification on next login
-    await signOut(auth);
-  };
-
-  const resendVerificationEmail = async () => {
-    // This is tricky because we might have signed them out.
-    // If we want to resend, we might need them to be signed in.
-    // Or we can use a separate flow. 
-    // Usually, you can only send verification if the user is signed in.
-    if (auth.currentUser) {
-      await sendEmailVerification(auth.currentUser);
-    } else {
-      throw new Error("No user signed in to send verification email to.");
     }
   };
 
@@ -230,15 +150,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const resetPassword = async (email: string) => {
-    const actionCodeSettings = {
-      url: window.location.origin + '/reset-password',
-      handleCodeInApp: true,
-    };
-    await sendPasswordResetEmail(auth, email, actionCodeSettings);
+    throw new Error("Password reset is not applicable as email/password login is disabled.");
   };
 
   const confirmReset = async (code: string, newPass: string) => {
-    await confirmPasswordReset(auth, code, newPass);
+    throw new Error("Password reset is not applicable as email/password login is disabled.");
   };
 
   const logout = async () => {
@@ -246,7 +162,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, userProfile, loading, login, loginWithGoogle, loginWithFacebook, signUp, resendVerificationEmail, reloadUser, updateProfile, resetPassword, confirmReset, logout }}>
+    <AuthContext.Provider value={{ 
+      currentUser, 
+      userProfile, 
+      loading, 
+      loginWithGoogle, 
+      reloadUser, 
+      updateProfile, 
+      logout 
+    }}>
       {!loading && children}
     </AuthContext.Provider>
   );

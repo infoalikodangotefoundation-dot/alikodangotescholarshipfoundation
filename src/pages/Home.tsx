@@ -91,30 +91,15 @@ export default function Home() {
       </div>
 
       {/* Hero Section */}
-      <section className="w-full h-[calc(100vh-64px)] min-h-[600px] text-white relative z-10 flex items-center justify-center overflow-hidden">
-        <div className="container px-4 md:px-6 relative z-10 mx-auto text-center flex flex-col items-center justify-start pt-4 md:pt-6 pb-12 md:pb-0 h-full">
-          {/* Mobile Hero Content - Hidden as requested */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="lg:hidden flex flex-col items-center w-full h-full md:h-auto justify-start space-y-6 md:space-y-4"
-          >
-            <div className="flex flex-col items-center space-y-4">
-              <div className="inline-flex items-center rounded-full bg-primary-600/80 backdrop-blur-sm px-4 py-1.5 text-xs sm:text-sm font-medium text-white mb-2 sm:mb-4 border border-primary-500/30">
-                <GraduationCap className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                2026/2027 Applications Now Open
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Desktop Hero Content (Centralized) */}
-          <div className="hidden lg:flex flex-col items-center absolute bottom-16 left-1/2 -translate-x-1/2 text-center z-20 w-full max-w-5xl">
+      <section className="w-full h-[calc(100vh-64px)] min-h-[600px] text-white relative z-10 flex flex-col justify-end overflow-hidden pb-12 sm:pb-20">
+        <div className="container px-4 md:px-6 relative z-10 mx-auto text-center flex flex-col items-center">
+          {/* Main Hero Content - Now at the bottom */}
+          <div className="flex flex-col items-center text-center w-full max-w-5xl">
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-2xl xl:text-3xl font-bold tracking-tight mb-3 text-white drop-shadow-lg whitespace-nowrap"
+              className="text-2xl sm:text-4xl md:text-5xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-white drop-shadow-lg mb-3"
             >
               {t('home.title')}
             </motion.h1>
@@ -123,19 +108,25 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-lg xl:text-xl text-gray-200 mb-8 drop-shadow-md font-medium max-w-2xl"
+              className="text-base sm:text-lg md:text-xl text-gray-200 drop-shadow-md font-medium max-w-2xl px-4 mb-8"
             >
               {t('home.subtitle')}
             </motion.p>
 
+            {/* Action Row: Badge and Button side by side */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="w-full flex justify-center px-4"
+              className="w-full flex flex-col sm:flex-row items-center justify-center gap-4 px-4"
             >
-              <Link to="/apply-selection" className="w-full max-w-[50vw] flex justify-center">
-                <Button size="lg" className="w-full bg-primary-700 hover:bg-primary-800 text-white font-bold h-12 text-lg rounded-full shadow-2xl hover:scale-[1.02] transition-all duration-300 border-2 border-white/30">
+              <div className="inline-flex items-center rounded-full bg-primary-600/80 backdrop-blur-sm px-4 py-2 text-xs sm:text-sm font-semibold text-white border border-primary-500/30 whitespace-nowrap shadow-lg">
+                <GraduationCap className="mr-2 h-4 w-4" />
+                2026/2027 Applications Now Open
+              </div>
+
+              <Link to="/apply-selection" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:min-w-[200px] bg-primary-700 hover:bg-primary-800 text-white font-bold h-12 text-lg rounded-full shadow-2xl hover:scale-[1.02] transition-all duration-300 border-2 border-white/30">
                   {t('home.apply_now')}
                 </Button>
               </Link>

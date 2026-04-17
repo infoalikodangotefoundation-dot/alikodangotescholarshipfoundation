@@ -67,10 +67,7 @@ export default function Layout() {
     handleNavClick('/apply-selection');
   };
 
-  const isAuthPage = location.pathname === '/login' || 
-                    location.pathname === '/signup' || 
-                    location.pathname === '/forgot-password' || 
-                    location.pathname === '/reset-password';
+  const isAuthPage = location.pathname === '/login';
 
   const hasBackButton = [
     '/benefits',
@@ -196,10 +193,7 @@ export default function Layout() {
                   <DropdownMenuItem onClick={() => navigate('/notifications')}>Notifications</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate('/profile')}>Profile</DropdownMenuItem>
                   {!currentUser && (
-                    <>
-                      <DropdownMenuItem onClick={() => navigate('/login')}>Sign In</DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => navigate('/signup')}>Sign Up</DropdownMenuItem>
-                    </>
+                    <DropdownMenuItem onClick={() => navigate('/login')}>Sign In</DropdownMenuItem>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>

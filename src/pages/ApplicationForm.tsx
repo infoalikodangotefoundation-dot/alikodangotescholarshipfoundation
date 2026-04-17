@@ -21,12 +21,18 @@ import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { handleFirestoreError, OperationType } from '../lib/firestore-errors';
-import { Check, ChevronsUpDown, Loader2, Award, Copy, Search } from 'lucide-react';
+import { Check, ChevronsUpDown, Loader2, Award, Copy, Search, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { FileUpload } from '@/components/FileUpload';
 import { useAuth } from '../contexts/AuthContext';
+
+declare global {
+  interface Window {
+    PaystackPop: any;
+  }
+}
 
 // Validation Schemas
 const step1Schema = z.object({
@@ -261,6 +267,8 @@ export default function ApplicationForm() {
   const [activeUploads, setActiveUploads] = useState(0);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [countdown, setCountdown] = useState(10);
+  const [paymentVerified, setPaymentVerified] = useState(false);
+  const [paymentRef, setPaymentRef] = useState("");
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -324,8 +332,63 @@ export default function ApplicationForm() {
     if (step < 7) {
       nextStep();
     } else {
-      handleFinalSubmit('direct_submission');
+      if (!paymentVerified) {
+        toast.error('Please complete the application fee payment first.');
+        return;
+      }
+      handleFinalSubmit(paymentRef);
     }
+  };
+
+  const verifyPaymentOnServer = async (reference: string) => {
+    try {
+      const response = await fetch('/api/verify-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reference }),
+      });
+
+      const data = await response.json();
+      return data.status === true;
+    } catch (error) {
+      console.error('Payment verification request failed:', error);
+      return false;
+    }
+  };
+
+  const handlePaystackPayment = () => {
+    if (!currentUser) {
+      toast.error('Please login to process payment');
+      return;
+    }
+
+    const handler = window.PaystackPop.setup({
+      key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
+      email: currentUser.email,
+      amount: 5000 * 100, // Amount in kobo (N5,000)
+      currency: "NGN",
+      ref: 'AD-' + Math.floor((Math.random() * 1000000000) + 1),
+      callback: async (response: any) => {
+        setLoading(true);
+        const isVerified = await verifyPaymentOnServer(response.reference);
+        
+        if (isVerified) {
+          setPaymentVerified(true);
+          setPaymentRef(response.reference);
+          toast.success('Payment verified successfully! You can now submit your application.');
+        } else {
+          toast.error('Payment verification failed. Please contact support.');
+        }
+        setLoading(false);
+      },
+      onClose: () => {
+        toast.info('Transaction cancelled');
+      }
+    });
+
+    handler.openIframe();
   };
 
   const handleFinalSubmit = async (paymentReference: string) => {
@@ -362,7 +425,7 @@ export default function ApplicationForm() {
         ...finalData,
         applicationId: appId,
         paymentReference,
-        paymentStatus: 'pending_verification',
+        paymentStatus: 'verified',
         status: 'Submitted',
         submittedAt: new Date().toISOString(),
         userId: currentUser.uid,
@@ -1315,62 +1378,38 @@ export default function ApplicationForm() {
             <Award className="w-5 h-5" />
             Application Fee Payment
           </h3>
-          <div className="bg-white p-4 rounded-lg border border-primary-100 text-sm space-y-2">
-            <p className="text-slate-600">Please pay the application fee of <span className="font-bold text-primary-700">₦5,000</span> to the account below:</p>
-            <div className="grid grid-cols-2 gap-2 pt-2">
-              <span className="text-slate-500">Bank:</span>
-              <span className="font-bold">Opay</span>
-              <span className="text-slate-500">Account Name:</span>
-              <span className="font-bold">Aliko Dangote Scholarship Foundation</span>
-              <span className="text-slate-500">Account Number:</span>
-              <div className="flex items-center gap-2">
-                <span className="font-bold">1234567890</span>
-                <Button 
-                  type="button" 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-6 w-6 text-primary-600 hover:text-primary-700 hover:bg-primary-100"
-                  onClick={() => {
-                    navigator.clipboard.writeText('1234567890');
-                    toast.success('Account number copied to clipboard');
-                  }}
-                >
-                  <Copy className="w-3 h-3" />
-                </Button>
+          <div className="bg-white p-6 rounded-lg border border-primary-100 text-center space-y-4">
+            <p className="text-slate-600">To complete your application, please pay the non-refundable processing fee of <span className="font-bold text-primary-700">₦5,000</span>.</p>
+            
+            {!paymentVerified ? (
+              <Button 
+                type="button"
+                onClick={handlePaystackPayment}
+                className="w-full bg-[#181818] hover:bg-black text-white py-6 rounded-xl flex items-center justify-center gap-2 group transition-all"
+                disabled={loading}
+              >
+                {loading ? <Loader2 className="animate-spin h-5 w-5" /> : (
+                  <>
+                    <span>Pay Now with Paystack</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
+              </Button>
+            ) : (
+              <div className="bg-green-50 border border-green-200 p-4 rounded-xl flex items-center gap-3 text-left text-green-800">
+                <div className="bg-green-100 p-2 rounded-full">
+                  <Check className="w-5 h-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="font-bold">Payment Verified</p>
+                  <p className="text-xs text-green-600">Reference: {paymentRef}</p>
+                </div>
               </div>
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <input type="hidden" {...register('paymentProofUrl')} />
-            <FileUpload 
-              label="Upload Payment Screenshot (Optional)" 
-              accept="image/*"
-              onUploadStart={() => setActiveUploads(prev => prev + 1)}
-              onUploadError={() => setActiveUploads(prev => Math.max(0, prev - 1))}
-              onUploadSuccess={(url) => {
-                setActiveUploads(prev => Math.max(0, prev - 1));
-                setValue('paymentProofUrl', url, { shouldValidate: true });
-                updateData({ paymentProofUrl: url });
-              }} 
-              value={watch('paymentProofUrl')}
-            />
-            <p className="text-xs text-slate-500 italic">You can submit your application now and upload proof of payment later if needed.</p>
-            {errors.paymentProofUrl && <p className="text-sm text-red-500">{errors.paymentProofUrl.message as string}</p>}
-          </div>
-
-          <div className="flex items-start space-x-3 pt-2">
-            <Checkbox 
-              id="paymentConfirmed" 
-              checked={watch('paymentConfirmed')}
-              onCheckedChange={(checked) => setValue('paymentConfirmed', checked as boolean, { shouldValidate: true })}
-            />
-            <div className="grid gap-1.5 leading-none">
-              <Label htmlFor="paymentConfirmed" className="font-medium cursor-pointer text-sm text-primary-800">
-                I understand that my application will only be processed after payment of ₦5,000 is verified.
-              </Label>
-              {errors.paymentConfirmed && <p className="text-sm text-red-500">{errors.paymentConfirmed.message as string}</p>}
-            </div>
+            )}
+            
+            <p className="text-[10px] text-slate-400 uppercase tracking-widest pt-2">
+              Secured by Paystack
+            </p>
           </div>
         </div>
 
