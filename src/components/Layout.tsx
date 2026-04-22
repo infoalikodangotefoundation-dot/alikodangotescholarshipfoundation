@@ -44,7 +44,6 @@ export default function Layout() {
   const [isApplying, setIsApplying] = React.useState(false);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     if (location.pathname === '/apply-selection' || location.pathname === '/apply') {
       setIsApplying(true);
     } else {
@@ -67,7 +66,7 @@ export default function Layout() {
     handleNavClick('/apply-selection');
   };
 
-  const isAuthPage = location.pathname === '/login';
+  const isAuthPage = location.pathname === '/login' || isApplying;
 
   const hasBackButton = [
     '/benefits',
@@ -206,7 +205,7 @@ export default function Layout() {
         <Outlet />
       </main>
 
-      {!isAuthPage && <FloatingChatbot />}
+      {!isApplying && !isAuthPage && <FloatingChatbot />}
 
       {!isAuthPage && (
         <footer className="relative z-10 bg-slate-900 text-slate-300 py-12 mt-auto pb-24 md:pb-12">

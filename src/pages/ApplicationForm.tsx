@@ -283,6 +283,10 @@ export default function ApplicationForm() {
 
   const currentSchema = [step1Schema, step2Schema, step3Schema, step4Schema, step5Schema, step6Schema, step7Schema][step - 1];
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [step]);
+
     const { register, handleSubmit, formState: { errors, touchedFields }, setValue, watch, trigger, reset: resetForm } = useForm<any>({
     resolver: zodResolver(currentSchema),
     values: data,
@@ -1369,6 +1373,22 @@ export default function ApplicationForm() {
                 </div>
               </div>
             </section>
+          </div>
+        </div>
+
+        <div className="space-y-6 pt-6">
+          <div className="text-center space-y-4">
+            <p className="text-sm text-slate-500 italic">
+              You will be redirected to Paystack to complete your payment.
+            </p>
+            <Button 
+              type="button"
+              onClick={() => window.open('https://paystack.shop/pay/3dp-cbdj2a', '_blank')}
+              className="w-full bg-primary-700 hover:bg-primary-800 text-white font-bold py-6 rounded-xl shadow-lg flex items-center justify-center gap-2 group transition-all"
+            >
+              Pay Now with Paystack
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
           </div>
         </div>
 

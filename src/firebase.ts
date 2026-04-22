@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
+import { doc, getDocFromServer, initializeFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
 import firebaseConfigFromFile from '../firebase-applet-config.json';
@@ -18,9 +18,12 @@ const app = initializeApp(firebaseConfig);
 
 // Handle (default) database ID correctly
 const firestoreDbId = firebaseConfigFromFile.firestoreDatabaseId;
-export const db = firestoreDbId && firestoreDbId !== '(default)' 
-  ? getFirestore(app, firestoreDbId) 
-  : getFirestore(app);
+const dbId = firestoreDbId && firestoreDbId !== '(default)' ? firestoreDbId : undefined;
+
+// Use initializeFirestore with long-polling for better reliability in some proxy environments
+export const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true,
+}, dbId);
 
 export const storage = getStorage(app);
 export const auth = getAuth(app);
